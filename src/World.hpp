@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <map>
+#include <functional>
 #include "PolygonTypes.hpp"
 
 namespace QuadTree
@@ -37,9 +38,15 @@ namespace QuadTree
 		         double h,
 		         double oH,
 		         double oV);
-
-
 	};
+
+	inline bool operator==(const QuadNode &qn1, const QuadNode &qn2)
+	{
+		return qn1.width == qn2.width
+		       && qn1.height == qn2.height
+		       && qn1.originVertical == qn2.originVertical
+		       && qn1.originHorizontal == qn2.originHorizontal;
+	}
 
 	class World
 	{
@@ -53,14 +60,14 @@ namespace QuadTree
 		//! @brief The total number of polygon in the world
 		double _totalPopulation;
 		//! @brief The map containing all of the world polygons (we access them by their UID)
-		std::map<unsigned int, APolygon *> population;
+		std::map<unsigned int, std::pair<APolygon *, std::vector<std::reference_wrapper<QuadNode>>>> population;
 		//! @brief The root node for the quadtree
 		QuadNode rootNode;
 
 		//! @brief add a polygon in the current tree
 		//! @param node The node we want to add the polygon (it will be attached to it's children if it needs to)
 		//! @param polygon The polygon to add
-		void addPolygonInTree(QuadNode &node, APolygon *polygon);
+		void addPolygonInTree(QuadNode &node, unsigned int polygonUID);
 
 		//! @brief Transform a leaf into a parent of leaves and dispatch it's current polygons
 		//! @param leaf The leaf to transform

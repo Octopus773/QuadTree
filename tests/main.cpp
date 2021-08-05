@@ -15,12 +15,15 @@ int main(int ac, char **av)
 		                                      new QuadTree::Point{4, 4},
 		                                      new QuadTree::Point{7, 3},
 		                                      new QuadTree::Point{6.5, 6},
-		                                      new QuadTree::Point{6, 6.5}
+		                                      new QuadTree::Point{6, 6.5},
+		                                      new QuadTree::Point{8, 7},
+		                                      new QuadTree::Point{9, 9},
 	                                      });
 
 	for (const auto &point : points) {
 		world.addPolygon(point);
 	}
+
 
 	std::cout << "end" << std::endl;
 

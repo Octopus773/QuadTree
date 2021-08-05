@@ -5,6 +5,7 @@
 #include "World.hpp"
 
 #include <utility>
+#include <functional>
 
 namespace QuadTree
 {
@@ -25,21 +26,23 @@ namespace QuadTree
 		}
 		static unsigned int uuidInc = 0;
 		polygon->setUID(uuidInc++);
-		this->population[polygon->getUID()] = polygon;
-		this->addPolygonInTree(this->rootNode, polygon);
+		this->population[polygon->getUID()] = std::make_pair(polygon, std::vector<std::reference_wrapper<QuadNode>>{});
+		this->addPolygonInTree(this->rootNode, polygon->getUID());
 	}
 
-	void World::addPolygonInTree(QuadNode &node, APolygon *polygon)
+	void World::addPolygonInTree(QuadNode &node, unsigned int polygonUID)
 	{
 		if (node.children.empty()) {
 			if (node.populationUIDs.size() >= this->_maxPolygonPerDivision) {
 				this->splitLeaf(node);
-				return this->addPolygonInTree(node, polygon);
+				return this->addPolygonInTree(node, polygonUID);
 			}
-			node.populationUIDs.emplace_back(polygon->getUID());
+			node.populationUIDs.emplace_back(polygonUID);
+			this->population[polygonUID].second.emplace_back(node);
 			return;
 		}
-		auto points = polygon->getPoints();
+		auto &polygon = this->population.at(polygonUID);
+		auto points = polygon.first->getPoints();
 		int index = 0;
 		if (points[0].first > node.originHorizontal + (node.width / 2)) {
 			index++;
@@ -47,7 +50,7 @@ namespace QuadTree
 		if (points[0].second > node.originVertical + (node.height / 2)) {
 			index += 2;
 		}
-		this->addPolygonInTree(node.children.at(index), polygon);
+		this->addPolygonInTree(node.children.at(index), polygonUID);
 	}
 
 	void World::splitLeaf(QuadNode &leaf)
@@ -63,7 +66,9 @@ namespace QuadTree
 			                           leaf.originVertical + ((i > 1) * midHeight));
 		}
 		for (const auto &uid : leaf.populationUIDs) {
-			this->addPolygonInTree(leaf, this->population.at(uid));
+			auto &polygon = this->population[uid];
+			std::erase(polygon.second, std::ref(leaf));
+			this->addPolygonInTree(leaf, uid);
 		}
 		leaf.populationUIDs.clear();
 	}
