@@ -1,0 +1,40 @@
+//
+// Created by cbihan on 05/08/2021.
+//
+
+#pragma once
+
+#include <vector>
+
+namespace QuadTree
+{
+	class APolygon
+	{
+	private:
+		unsigned int _uid = 0;
+	public:
+
+		[[nodiscard]] unsigned int getUID() const;
+
+		void setUID(unsigned int uid);
+
+		//! @brief Returns the points forming the polygon
+		//! @return A vector of the points coordinates (horizontal, vertical) forming the polygon (coordinates are absolute)
+		[[nodiscard]] virtual std::vector<std::pair<unsigned int, unsigned int>> getPoints() const = 0;
+	};
+
+	class Point : public APolygon
+	{
+	private:
+		unsigned int _horizontalPos;
+		unsigned int _verticalPos;
+	public:
+
+		std::vector<std::pair<unsigned int, unsigned int>> getPoints() const override;
+
+		Point(unsigned int hPos, unsigned int vPos);
+		Point(const Point &) = delete;
+		~Point() = default;
+		Point &operator=(const Point &) = delete;
+	};
+}
