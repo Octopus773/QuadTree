@@ -56,9 +56,7 @@ namespace QuadTree
 		//! @brief The height of the world
 		double _height;
 		//! @brief The maximum number of polygon per division
-		double _maxPolygonPerDivision;
-		//! @brief The total number of polygon in the world
-		double _totalPopulation;
+		unsigned int _maxPolygonPerDivision;
 		//! @brief The map containing all of the world polygons (we access them by their UID)
 		std::map<unsigned int, std::pair<APolygon *, std::vector<std::reference_wrapper<QuadNode>>>> population;
 		//! @brief The root node for the quadtree

@@ -14,7 +14,6 @@ namespace QuadTree
 		: _width(width),
 		  _height(height),
 		  _maxPolygonPerDivision(3),
-		  _totalPopulation(0),
 		  rootNode(width, height, 0, 0)
 	{
 	}
