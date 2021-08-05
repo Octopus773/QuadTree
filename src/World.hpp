@@ -12,6 +12,13 @@
 namespace QuadTree
 {
 
+	enum Sq {
+		TopLeft = 0,
+		TopRight = 1,
+		BottomLeft = 2,
+		BottomRight = 3
+	};
+
 	class QuadNode
 	{
 	public:
