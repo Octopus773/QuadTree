@@ -20,7 +20,7 @@ namespace QuadTree
 
 		//! @brief Returns the points forming the polygon
 		//! @return A vector of the points coordinates (horizontal, vertical) forming the polygon (coordinates are absolute)
-		[[nodiscard]] virtual std::vector<std::pair<unsigned int, unsigned int>> getPoints() const = 0;
+		[[nodiscard]] virtual std::vector<std::pair<double, double>> getPoints() const = 0;
 
 		//! @brief Allow us to pass by copy APolygon Classes
 		[[nodiscard]] virtual APolygon *clone() const = 0;
@@ -31,18 +31,18 @@ namespace QuadTree
 	class Point : public APolygon
 	{
 	private:
-		unsigned int _horizontalPos;
-		unsigned int _verticalPos;
+		double _horizontalPos;
+		double _verticalPos;
 	public:
 
 		//! @brief Returns the points forming the polygon
 		//! @return A vector of the points coordinates (horizontal, vertical) forming the polygon (coordinates are absolute)
-		[[nodiscard]] std::vector<std::pair<unsigned int, unsigned int>> getPoints() const override;
+		[[nodiscard]] std::vector<std::pair<double, double>> getPoints() const override;
 
 		//! @brief Allow us to pass by copy Point Classes
 		[[nodiscard]] APolygon *clone() const override;
 
-		Point(unsigned int hPos, unsigned int vPos);
+		Point(double hPos, double vPos);
 
 		Point(const Point &) = delete;
 

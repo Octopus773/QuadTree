@@ -17,13 +17,13 @@ namespace QuadTree
 		this->_uid = uid;
 	}
 
-	Point::Point(unsigned int hPos, unsigned int vPos)
+	Point::Point(double hPos, double vPos)
 		: _horizontalPos(hPos),
 		  _verticalPos(vPos)
 	{
 	}
 
-	std::vector<std::pair<unsigned int, unsigned int>> Point::getPoints() const
+	std::vector<std::pair<double, double>> Point::getPoints() const
 	{
 		return {{this->_horizontalPos, this->_verticalPos}};
 	}

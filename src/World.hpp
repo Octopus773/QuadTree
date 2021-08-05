@@ -25,18 +25,18 @@ namespace QuadTree
 		std::vector<unsigned int> populationUIDs;
 
 		//! @brief The width of the node
-		unsigned int width;
+		double width;
 		//! @brief The height of the node
-		unsigned int height;
+		double height;
 		//! @brief The base horizontal coordinate (top left corner)
-		unsigned int originHorizontal;
+		double originHorizontal;
 		//! @brief Te base vertical coordinate (top left corner)
-		unsigned int originVertical;
+		double originVertical;
 
-		QuadNode(unsigned int w,
-		         unsigned int h,
-		         unsigned int oH,
-		         unsigned int oV);
+		QuadNode(double w,
+		         double h,
+		         double oH,
+		         double oV);
 
 
 	};
@@ -45,13 +45,13 @@ namespace QuadTree
 	{
 	private:
 		//! @brief The width of the world
-		unsigned int _width;
+		double _width;
 		//! @brief The height of the world
-		unsigned int _height;
+		double _height;
 		//! @brief The maximum number of polygon per division
-		unsigned int _maxPolygonPerDivision;
+		double _maxPolygonPerDivision;
 		//! @brief The total number of polygon in the world
-		unsigned int _totalPopulation;
+		double _totalPopulation;
 		//! @brief The map containing all of the world polygons (we access them by their UID)
 		std::map<unsigned int, APolygon *> population;
 		//! @brief The root node for the quadtree
@@ -70,7 +70,7 @@ namespace QuadTree
 		//! @brief Add a polygon to the world
 		void addPolygon(APolygon *polygon);
 
-		World(unsigned int height, unsigned int width);
+		World(double height, double width);
 
 		World(const World &) = delete;
 

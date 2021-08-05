@@ -9,7 +9,7 @@
 namespace QuadTree
 {
 
-	World::World(unsigned int height, unsigned int width)
+	World::World(double height, double width)
 		: _width(width),
 		  _height(height),
 		  _maxPolygonPerDivision(3),
@@ -32,7 +32,7 @@ namespace QuadTree
 	void World::addPolygonInTree(QuadNode &node, APolygon *polygon)
 	{
 		if (node.children.empty()) {
-			if (node.populationUIDs.size() > this->_maxPolygonPerDivision) {
+			if (node.populationUIDs.size() >= this->_maxPolygonPerDivision) {
 				this->splitLeaf(node);
 				return this->addPolygonInTree(node, polygon);
 			}
@@ -45,7 +45,7 @@ namespace QuadTree
 			index++;
 		}
 		if (points[0].second > node.originVertical + (node.height / 2)) {
-			index++;
+			index += 2;
 		}
 		this->addPolygonInTree(node.children.at(index), polygon);
 	}
@@ -55,8 +55,8 @@ namespace QuadTree
 		if (!leaf.children.empty()) {
 			return;
 		}
-		unsigned int midWidth = leaf.width / 2;
-		unsigned int midHeight = leaf.height / 2;
+		double midWidth = leaf.width / 2;
+		double midHeight = leaf.height / 2;
 		for (int i = 0; i < 4; i++) {
 			leaf.children.emplace_back(midWidth, midHeight,
 			                           leaf.originHorizontal + ((i & 1) * midWidth),
@@ -68,8 +68,8 @@ namespace QuadTree
 		leaf.populationUIDs.clear();
 	}
 
-	QuadNode::QuadNode(unsigned int w, unsigned int h, unsigned int oH,
-	                   unsigned int oV)
+	QuadNode::QuadNode(double w, double h, double oH,
+	                   double oV)
 		: width(w),
 		  height(h),
 		  originHorizontal(oH),
