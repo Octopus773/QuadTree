@@ -6,7 +6,7 @@
 
 #include <vector>
 #include <map>
-#include "PopulationTypes.hpp"
+#include "PolygonTypes.hpp"
 
 namespace QuadTree
 {
@@ -14,12 +14,26 @@ namespace QuadTree
 	class QuadNode
 	{
 	public:
+		//! @brief Child nodes
+		//! @note child at index 0 is top left,
+		//!                      1 is top right,
+		//!                      2 is bottom left,
+		//!                      3 is bottom right
 		std::vector<QuadNode> children;
 		//! @brief Contains the UUID of each element contained int this QuadNode
 		//! @note Only leaves nodes contains UIDs
 		std::vector<unsigned int> populationUIDs;
 
-		[[nodiscard]] bool isLeave() const;
+		unsigned int width;
+		unsigned int height;
+		unsigned int originHorizontal;
+		unsigned int originVertical;
+
+		QuadNode(unsigned int width,
+		         unsigned int height,
+		         unsigned int originHorizontal,
+		         unsigned int originVertical);
+
 
 	};
 
@@ -34,14 +48,20 @@ namespace QuadTree
 
 		QuadNode rootNode;
 
-		void addPolygonInTree(APolygon &polygon);
+		void addPolygonInTree(QuadNode &node, APolygon &polygon);
+
+		void splitLeaf(QuadNode &leaf);
+
 	public:
 
 		void addPolygon(APolygon polygon);
 
-		World(unsigned int height, unsigned  int width);
+		World(unsigned int height, unsigned int width);
+
 		World(const World &) = delete;
+
 		~World() = default;
+
 		World &operator=(const World &) = delete;
 	};
 }

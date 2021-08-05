@@ -11,8 +11,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(SOURCES
 	src/World.cpp
 	src/World.hpp
-	src/PopulationTypes.hpp
-	src/PopulationTypes.cpp)
+	src/PolygonTypes.hpp
+	src/PolygonTypes.cpp
+	)
 
 include_directories(src)
 

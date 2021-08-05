@@ -30,7 +30,7 @@ namespace QuadTree
 		unsigned int _verticalPos;
 	public:
 
-		std::vector<std::pair<unsigned int, unsigned int>> getPoints() const override;
+		[[nodiscard]] std::vector<std::pair<unsigned int, unsigned int>> getPoints() const override;
 
 		Point(unsigned int hPos, unsigned int vPos);
 		Point(const Point &) = delete;

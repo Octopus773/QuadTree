@@ -2,7 +2,7 @@
 // Created by cbihan on 05/08/2021.
 //
 
-#include "PopulationTypes.hpp"
+#include "PolygonTypes.hpp"
 
 namespace QuadTree
 {
