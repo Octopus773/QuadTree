@@ -128,6 +128,11 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.population[5].second[0] == world.rootNode.children[3].children[3]);
 	CHECK(world.population[5].first == points[5]);
 
+	CHECK(world.getNeighbours(5).empty());
+
+	CHECK(world.getNeighbours(2).size() == 1);
+	CHECK(*world.getNeighbours(2).begin() == points[3]);
+
 	for (const auto &point : points) {
 		delete point;
 	}

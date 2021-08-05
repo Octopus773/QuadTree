@@ -72,6 +72,28 @@ namespace QuadTree
 		leaf.populationUIDs.clear();
 	}
 
+	std::unordered_set<APolygon *> World::getNeighbours(unsigned int polygonUID)
+	{
+		std::vector<unsigned int> neighboursUIDs;
+		std::unordered_set<APolygon *> neighbours;
+		const auto &polygonRefs = this->population.at(polygonUID).second;
+		for (const auto &ref : polygonRefs) {
+			std::copy_if(ref.get().populationUIDs.begin(),
+			             ref.get().populationUIDs.end(),
+			             std::back_inserter(neighboursUIDs),
+			             [polygonUID, &neighboursUIDs](const unsigned int poly) {
+				             return polygonUID != poly
+				                    && std::find(neighboursUIDs.begin(),
+				                                 neighboursUIDs.end(),
+				                                 poly) == neighboursUIDs.end();
+			             });
+		}
+		for (const auto &neighbourUID : neighboursUIDs) {
+			neighbours.insert(this->population.at(neighbourUID).first);
+		}
+		return neighbours;
+	}
+
 	QuadNode::QuadNode(double w, double h, double oH,
 	                   double oV)
 		: width(w),

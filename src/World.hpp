@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_set>
 #include <map>
 #include <functional>
 #include "PolygonTypes.hpp"
@@ -81,6 +82,9 @@ namespace QuadTree
 	public:
 		//! @brief Add a polygon to the world
 		void addPolygon(APolygon *polygon);
+
+
+		std::unordered_set<APolygon *> getNeighbours(unsigned int polygonUID);
 
 		World(double height, double width);
 

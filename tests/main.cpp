@@ -25,6 +25,11 @@ int main(int ac, char **av)
 	}
 
 
+
+	(world.getNeighbours(5).empty());
+
+	(world.getNeighbours(2).size() == 1);
+	(*world.getNeighbours(2).begin() == points[3]);
 	std::cout << "end" << std::endl;
 
 }
