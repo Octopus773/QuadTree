@@ -40,6 +40,14 @@ TEST_CASE("Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.populationUIDs.empty());
 	CHECK(world.rootNode.children.size() == 4);
 
+	CHECK(world.rootNode.children[0].children.empty());
+	CHECK(world.rootNode.children[0].populationUIDs.size() == 1);
+	CHECK(world.rootNode.children[0].populationUIDs[0] == 0);
+	CHECK(world.rootNode.children[0].originVertical == 0);
+	CHECK(world.rootNode.children[0].originHorizontal == 0);
+	CHECK(world.rootNode.children[0].height == 5);
+	CHECK(world.rootNode.children[0].width == 5);
+
 
 	for (const auto &point : points) {
 		delete point;
