@@ -12,33 +12,34 @@ namespace QuadTree
 	World::World(unsigned int height, unsigned int width)
 		: _width(width),
 		  _height(height),
-		  _maxPopulationPerDivision(10),
+		  _maxPopulationPerDivision(3),
 		  _totalPopulation(0),
 		  rootNode(width, height, 0, 0)
 	{
 	}
 
-	void World::addPolygon(APolygon polygon)
+	void World::addPolygon(APolygon *polygon)
 	{
-		if (polygon.getPoints().empty()) {
+		if (!polygon || polygon->getPoints().empty()) {
 			return;
 		}
 		static unsigned int uuidInc = 0;
-		polygon.setUID(uuidInc++);
-		this->population[polygon.getUID()] = std::move(polygon);
+		polygon->setUID(uuidInc++);
+		this->population[polygon->getUID()] = polygon;
+		this->addPolygonInTree(this->rootNode, polygon);
 	}
 
-	void World::addPolygonInTree(QuadNode &node, APolygon &polygon)
+	void World::addPolygonInTree(QuadNode &node, APolygon *polygon)
 	{
 		if (node.children.empty()) {
 			if (node.populationUIDs.size() > this->_maxPopulationPerDivision) {
 				this->splitLeaf(node);
 				return this->addPolygonInTree(node, polygon);
 			}
-			node.populationUIDs.emplace_back(polygon.getUID());
+			node.populationUIDs.emplace_back(polygon->getUID());
 			return;
 		}
-		auto points = polygon.getPoints();
+		auto points = polygon->getPoints();
 		int index = 0;
 		if (points[0].first > node.originHorizontal + (node.width / 2)) {
 			index++;
@@ -67,12 +68,12 @@ namespace QuadTree
 		leaf.populationUIDs.clear();
 	}
 
-	QuadNode::QuadNode(unsigned int width, unsigned int height, unsigned int originHorizontal,
-	                   unsigned int originVertical)
-		: width(width),
-		  height(height),
-		  originHorizontal(originHorizontal),
-		  originVertical(originVertical)
+	QuadNode::QuadNode(unsigned int w, unsigned int h, unsigned int oH,
+	                   unsigned int oV)
+		: width(w),
+		  height(h),
+		  originHorizontal(oH),
+		  originVertical(oV)
 	{
 	}
 }

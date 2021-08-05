@@ -27,4 +27,9 @@ namespace QuadTree
 	{
 		return {{this->_horizontalPos, this->_verticalPos}};
 	}
+
+	APolygon *Point::clone() const
+	{
+		return new Point(this->_horizontalPos, this->_verticalPos);
+	}
 }

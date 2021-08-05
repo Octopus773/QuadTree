@@ -29,10 +29,10 @@ namespace QuadTree
 		unsigned int originHorizontal;
 		unsigned int originVertical;
 
-		QuadNode(unsigned int width,
-		         unsigned int height,
-		         unsigned int originHorizontal,
-		         unsigned int originVertical);
+		QuadNode(unsigned int w,
+		         unsigned int h,
+		         unsigned int oH,
+		         unsigned int oV);
 
 
 	};
@@ -44,17 +44,17 @@ namespace QuadTree
 		unsigned int _height;
 		unsigned int _maxPopulationPerDivision;
 		unsigned int _totalPopulation;
-		std::map<unsigned int, APolygon> population;
+		std::map<unsigned int, APolygon *> population;
 
 		QuadNode rootNode;
 
-		void addPolygonInTree(QuadNode &node, APolygon &polygon);
+		void addPolygonInTree(QuadNode &node, APolygon *polygon);
 
 		void splitLeaf(QuadNode &leaf);
 
 	public:
 
-		void addPolygon(APolygon polygon);
+		void addPolygon(APolygon *polygon);
 
 		World(unsigned int height, unsigned int width);
 
