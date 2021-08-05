@@ -12,7 +12,7 @@ namespace QuadTree
 	World::World(unsigned int height, unsigned int width)
 		: _width(width),
 		  _height(height),
-		  _maxPopulationPerDivision(3),
+		  _maxPolygonPerDivision(3),
 		  _totalPopulation(0),
 		  rootNode(width, height, 0, 0)
 	{
@@ -32,7 +32,7 @@ namespace QuadTree
 	void World::addPolygonInTree(QuadNode &node, APolygon *polygon)
 	{
 		if (node.children.empty()) {
-			if (node.populationUIDs.size() > this->_maxPopulationPerDivision) {
+			if (node.populationUIDs.size() > this->_maxPolygonPerDivision) {
 				this->splitLeaf(node);
 				return this->addPolygonInTree(node, polygon);
 			}
