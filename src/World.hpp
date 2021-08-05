@@ -8,7 +8,7 @@
 #include <unordered_set>
 #include <map>
 #include <functional>
-#include "PolygonTypes.hpp"
+#include "PolygonTypes/APolygon.hpp"
 
 namespace QuadTree
 {

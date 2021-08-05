@@ -7,7 +7,7 @@
 #define private public
 
 #include "World.hpp"
-#include "PolygonTypes.hpp"
+#include "PolygonTypes/Point.hpp"
 
 TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 {

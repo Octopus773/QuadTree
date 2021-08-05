@@ -11,9 +11,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(SOURCES
 	src/World.cpp
 	src/World.hpp
-	src/PolygonTypes.hpp
-	src/PolygonTypes.cpp
-	)
+	src/PolygonTypes/Point.cpp src/PolygonTypes/Point.hpp src/PolygonTypes/APolygon.cpp src/PolygonTypes/APolygon.hpp)
 
 include_directories(src)
 

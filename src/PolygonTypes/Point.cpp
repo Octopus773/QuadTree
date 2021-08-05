@@ -1,25 +1,15 @@
 //
-// Created by cbihan on 05/08/2021.
+// Created by cbihan on 06/08/2021.
 //
 
-#include "PolygonTypes.hpp"
+#include "Point.hpp"
 
 namespace QuadTree
 {
-
-	unsigned int APolygon::getUID() const
-	{
-		return this->_uid;
-	}
-
-	void APolygon::setUID(unsigned int uid)
-	{
-		this->_uid = uid;
-	}
-
-	Point::Point(double hPos, double vPos)
+	Point::Point(double hPos, double vPos, std::string name)
 		: _horizontalPos(hPos),
-		  _verticalPos(vPos)
+		  _verticalPos(vPos),
+		  _name(std::move(name))
 	{
 	}
 
@@ -31,5 +21,10 @@ namespace QuadTree
 	APolygon *Point::clone() const
 	{
 		return new Point(this->_horizontalPos, this->_verticalPos);
+	}
+
+	std::string Point::getName() const
+	{
+		return this->_name;
 	}
 }
