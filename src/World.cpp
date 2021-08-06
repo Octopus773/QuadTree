@@ -26,11 +26,11 @@ namespace QuadTree
 		}
 		static unsigned int uuidInc = 0;
 		polygon->setUID(uuidInc++);
-		this->population[polygon->getUID()] = std::make_pair(polygon, std::vector<std::reference_wrapper<QuadNode>>{});
+		this->population[polygon->getUID()] = std::make_pair(polygon, std::vector<std::reference_wrapper<Quadrant>>{});
 		this->addPolygonInTree(this->rootNode, polygon->getUID());
 	}
 
-	void World::addPolygonInTree(QuadNode &node, unsigned int polygonUID)
+	void World::addPolygonInTree(Quadrant &node, unsigned int polygonUID)
 	{
 		if (node.children.empty()) {
 			if (node.populationUIDs.size() >= this->_maxPolygonPerDivision) {
@@ -53,7 +53,7 @@ namespace QuadTree
 		this->addPolygonInTree(node.children.at(index), polygonUID);
 	}
 
-	void World::splitLeaf(QuadNode &leaf)
+	void World::splitLeaf(Quadrant &leaf)
 	{
 		if (!leaf.children.empty()) {
 			return;
@@ -95,12 +95,5 @@ namespace QuadTree
 		return neighbours;
 	}
 
-	QuadNode::QuadNode(double w, double h, double oH,
-	                   double oV)
-		: width(w),
-		  height(h),
-		  originHorizontal(oH),
-		  originVertical(oV)
-	{
-	}
+
 }

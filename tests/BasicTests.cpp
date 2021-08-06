@@ -7,6 +7,7 @@
 #define private public
 
 #include "World.hpp"
+#include "Quadrant.hpp"
 #include "PolygonTypes/Point.hpp"
 
 TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
@@ -141,7 +142,7 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 TEST_CASE("Check init point and QuadNode", "[QuadTree][init]")
 {
 	auto point = new QuadTree::Point{7, 3};
-	QuadTree::QuadNode qn(10, 15, 0, 5);
+	QuadTree::Quadrant qn(10, 15, 0, 5);
 
 
 	CHECK(qn.children.empty());
