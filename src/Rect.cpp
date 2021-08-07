@@ -23,4 +23,12 @@ namespace QuadTree
 	{
 		return this->maxVertical - this->minVertical;
 	}
+
+	Rect::Rect()
+		: minVertical(0),
+		  minHorizontal(0),
+		  maxHorizontal(0),
+		  maxVertical(0)
+	{
+	}
 }

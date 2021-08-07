@@ -24,6 +24,8 @@ namespace QuadTree
 
 		[[nodiscard]] double getHeight() const;
 
+		Rect();
+
 		Rect(double minHori,
 		     double minVert,
 		     double maxHori,
