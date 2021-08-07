@@ -4,18 +4,16 @@
 
 #include "World.hpp"
 
-#include <utility>
 #include <functional>
 #include "PolygonTypes/APolygon.hpp"
+#include "Utils.hpp"
 
 namespace QuadTree
 {
 
 	World::World(double height, double width)
-		: _width(width),
-		  _height(height),
-		  _maxPolygonPerDivision(3),
-		  rootNode(width, height, 0, 0)
+		: _maxPolygonPerDivision(3),
+		  _rootNode(0, 0, width, height)
 	{
 	}
 
@@ -27,7 +25,7 @@ namespace QuadTree
 		static unsigned int uuidInc = 0;
 		polygon->setUID(uuidInc++);
 		this->population.insert({polygon->getUID(), ElementInfo(polygon)});
-		this->addPolygonInTree(this->rootNode, polygon->getUID());
+		this->addPolygonInTree(this->_rootNode, polygon->getUID());
 	}
 
 	void World::addPolygonInTree(Quadrant &node, unsigned int polygonUID)
@@ -43,9 +41,12 @@ namespace QuadTree
 		}
 		auto &polygon = this->population.at(polygonUID);
 		auto points = polygon.polygon->getPoints();
-		int index = 0;
 
-		this->addPolygonInTree(node.children.at(index), polygonUID);
+		for (auto &quadrant : node.children) {
+			if (Utils::pointInRect(quadrant.pos, points.front())) {
+				this->addPolygonInTree(quadrant, polygonUID);
+			}
+		}
 	}
 
 	void World::splitLeaf(Quadrant &leaf)

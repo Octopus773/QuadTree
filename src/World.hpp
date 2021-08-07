@@ -25,16 +25,13 @@ namespace QuadTree
 	class World
 	{
 	private:
-		//! @brief The width of the world
-		double _width;
-		//! @brief The height of the world
-		double _height;
+
 		//! @brief The maximum number of polygon per division
 		unsigned int _maxPolygonPerDivision;
 		//! @brief The map containing all of the world polygons (we access them by their UID)
 		std::map<unsigned int, ElementInfo> population;
 		//! @brief The root node for the quadtree
-		Quadrant rootNode;
+		Quadrant _rootNode;
 
 		//! @brief add a polygon in the current tree
 		//! @param node The node we want to add the polygon (it will be attached to it's children if it needs to)
