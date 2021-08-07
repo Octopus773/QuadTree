@@ -31,4 +31,11 @@ namespace QuadTree
 		  maxVertical(0)
 	{
 	}
+
+	std::ostream &operator<<(std::ostream &os, Rect const &rect)
+	{
+		os << '{' << rect.minHorizontal << ", " << rect.minVertical << "}, {" << rect.maxHorizontal << ", "
+		<< rect.maxVertical << "}";
+		return os;
+	}
 }

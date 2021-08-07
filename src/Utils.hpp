@@ -22,5 +22,10 @@ namespace QuadTree::Utils
 	//! @return The Axis Aligned Bounding Box (AABB) for the given polygon
 	[[nodiscard]] Rect getAABB(const APolygon *polygon);
 
+	//! @brief This function give the Axis Aligned Bounding Box (AABB) for a given Polygon
+	//! @param polygonPoints All the points forming the polygon
+	//! @return The Axis Aligned Bounding Box (AABB) for the given polygon
+	[[nodiscard]] Rect getAABB(const std::vector<std::pair<double, double>> &polygonPoints);
+
 }
 

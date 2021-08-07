@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <iostream>
+
 
 namespace QuadTree
 {
@@ -39,5 +41,9 @@ namespace QuadTree
 		       && rect1.minVertical == rect2.minVertical
 		       && rect1.minHorizontal == rect2.minHorizontal;
 	}
+
+	// for debug purpuses (expansion of custom structs with catch2 lib)
+	std::ostream &operator<<(std::ostream &os, Rect const &rect);
+
 
 }

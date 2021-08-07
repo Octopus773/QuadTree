@@ -15,9 +15,12 @@ namespace QuadTree::Utils
 
 	Rect getAABB(const APolygon *polygon)
 	{
-		auto points = polygon->getPoints();
+		return getAABB(polygon->getPoints());
+	}
 
-		switch (points.size()) {
+	Rect getAABB(const std::vector<std::pair<double, double>> &polygonPoints)
+	{
+		switch (polygonPoints.size()) {
 		case 0:
 			//TODO throw an exception
 			return {
@@ -28,18 +31,18 @@ namespace QuadTree::Utils
 			};
 		case 1:
 			return {
-				points.front().first,
-				points.front().second,
-				points.front().first,
-				points.front().second
+				polygonPoints.front().first,
+				polygonPoints.front().second,
+				polygonPoints.front().first,
+				polygonPoints.front().second
 			};
 		default:
-			double maxHorizontal = 0;
-			double maxVertical = 0;
-			double minHorizontal = 0;
-			double minVertical = 0;
+			double maxHorizontal = -std::numeric_limits<double>::infinity();
+			double maxVertical = -std::numeric_limits<double>::infinity();
+			double minHorizontal = std::numeric_limits<double>::infinity();
+			double minVertical = std::numeric_limits<double>::infinity();
 
-			for (const auto &point : points) {
+			for (const auto &point : polygonPoints) {
 				maxHorizontal = std::max(point.first, maxHorizontal);
 				minHorizontal = std::min(point.first, minHorizontal);
 				maxVertical = std::max(point.second, maxVertical);
