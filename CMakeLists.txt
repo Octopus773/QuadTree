@@ -37,7 +37,7 @@ target_link_libraries(quadtreetestbin PUBLIC quadtree)
 add_executable(unit_tests EXCLUDE_FROM_ALL
 	${SOURCES}
 	tests/BasicTests.cpp
-	tests/Catch2Main.cpp)
+	tests/Catch2Main.cpp tests/UtilsFunctionTests.cpp)
 
 find_package(Catch2 QUIET)
 if (NOT Catch2_FOUND)

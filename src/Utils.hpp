@@ -5,8 +5,8 @@
 #pragma once
 
 #include <utility>
-#include "PolygonTypes/APolygon.hpp"
 #include "Rect.hpp"
+#include "PolygonTypes/APolygon.hpp"
 
 namespace QuadTree::Utils
 {
