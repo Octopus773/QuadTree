@@ -15,7 +15,15 @@ set(SOURCES
 	src/PolygonTypes/Point.hpp
 	src/PolygonTypes/APolygon.cpp
 	src/PolygonTypes/APolygon.hpp
-	src/Quadrant.cpp src/Quadrant.hpp src/ElementInfo.cpp src/ElementInfo.hpp src/Utils.cpp src/Utils.hpp src/Rect.cpp src/Rect.hpp)
+	src/Quadrant.cpp
+	src/Quadrant.hpp
+	src/ElementInfo.cpp
+	src/ElementInfo.hpp
+	src/Utils.cpp
+	src/Utils.hpp
+	src/Rect.cpp
+	src/Rect.hpp
+	)
 
 include_directories(src)
 
