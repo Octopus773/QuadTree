@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include "Rect.hpp"
 
 namespace QuadTree
 {
@@ -21,27 +22,17 @@ namespace QuadTree
 		//! @brief Contains the UUID of each element contained int this QuadNode
 		//! @note Only leaves nodes contains UIDs
 		std::vector<unsigned int> populationUIDs;
+		//! @brief The area covered by the Quadrant
+		Rect pos;
 
-		//! @brief The width of the node
-		double width;
-		//! @brief The height of the node
-		double height;
-		//! @brief The base horizontal coordinate (top left corner)
-		double originHorizontal;
-		//! @brief Te base vertical coordinate (top left corner)
-		double originVertical;
-
-		Quadrant(double w,
-		         double h,
-		         double oH,
-		         double oV);
+		Quadrant(double minHori,
+		         double minVert,
+		         double maxHori,
+		         double maxVert);
 	};
 
 	inline bool operator==(const Quadrant &qn1, const Quadrant &qn2)
 	{
-		return qn1.width == qn2.width
-		&& qn1.height == qn2.height
-		&& qn1.originVertical == qn2.originVertical
-		&& qn1.originHorizontal == qn2.originHorizontal;
+		return qn1.pos == qn2.pos;
 	}
 }

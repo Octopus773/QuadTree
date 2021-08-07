@@ -15,7 +15,7 @@
 namespace QuadTree
 {
 
-	enum Sq {
+	enum Qd {
 		TopLeft = 0,
 		TopRight = 1,
 		BottomLeft = 2,

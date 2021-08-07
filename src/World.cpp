@@ -44,12 +44,7 @@ namespace QuadTree
 		auto &polygon = this->population.at(polygonUID);
 		auto points = polygon.polygon->getPoints();
 		int index = 0;
-		if (points[0].first > node.originHorizontal + (node.width / 2)) {
-			index++;
-		}
-		if (points[0].second > node.originVertical + (node.height / 2)) {
-			index += 2;
-		}
+
 		this->addPolygonInTree(node.children.at(index), polygonUID);
 	}
 
@@ -58,12 +53,15 @@ namespace QuadTree
 		if (!leaf.children.empty()) {
 			return;
 		}
-		double midWidth = leaf.width / 2;
-		double midHeight = leaf.height / 2;
+		double midWidth = leaf.pos.getWidth() / 2;
+		double midHeight = leaf.pos.getHeight() / 2;
 		for (int i = 0; i < 4; i++) {
-			leaf.children.emplace_back(midWidth, midHeight,
-			                           leaf.originHorizontal + ((i & 1) * midWidth),
-			                           leaf.originVertical + ((i > 1) * midHeight));
+			auto quadMinVert = leaf.pos.minVertical + ((i > 1) * midHeight);
+			auto quadMinHori = leaf.pos.minHorizontal + ((i & 1) * midWidth);
+			leaf.children.emplace_back(quadMinHori,
+			                           quadMinVert,
+			                           quadMinHori + midWidth,
+			                           quadMinVert + midHeight);
 		}
 		for (const auto &uid : leaf.populationUIDs) {
 			auto &polygon = this->population.find(uid)->second;

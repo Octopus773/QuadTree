@@ -17,8 +17,8 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world._width == 10);
 	CHECK(world._height == 10);
 	CHECK(world._maxPolygonPerDivision == 3);
-	CHECK(world.rootNode.originHorizontal == 0);
-	CHECK(world.rootNode.originVertical == 0);
+	CHECK(world.rootNode.minHorizontal == 0);
+	CHECK(world.rootNode.minVertical == 0);
 
 	std::vector<QuadTree::Point *> points({
 		                                      new QuadTree::Point{4, 4},
@@ -46,10 +46,10 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.children[0].children.empty());
 	CHECK(world.rootNode.children[0].populationUIDs.size() == 1);
 	CHECK(world.rootNode.children[0].populationUIDs[0] == 0);
-	CHECK(world.rootNode.children[0].originVertical == 0);
-	CHECK(world.rootNode.children[0].originHorizontal == 0);
-	CHECK(world.rootNode.children[0].height == 5);
-	CHECK(world.rootNode.children[0].width == 5);
+	CHECK(world.rootNode.children[0].minVertical == 0);
+	CHECK(world.rootNode.children[0].minHorizontal == 0);
+	CHECK(world.rootNode.children[0].maxHorizontal == 5);
+	CHECK(world.rootNode.children[0].maxVertical == 5);
 	CHECK(world.population[0].references.size() == 1);
 	CHECK(world.population[0].references[0] == world.rootNode.children[0]);
 	CHECK(world.population[0].polygon == points[0]);
@@ -58,10 +58,10 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.children[1].children.empty());
 	CHECK(world.rootNode.children[1].populationUIDs.size() == 1);
 	CHECK(world.rootNode.children[1].populationUIDs[0] == 1);
-	CHECK(world.rootNode.children[1].originVertical == 0);
-	CHECK(world.rootNode.children[1].originHorizontal == 5);
-	CHECK(world.rootNode.children[1].height == 5);
-	CHECK(world.rootNode.children[1].width == 5);
+	CHECK(world.rootNode.children[1].minVertical == 0);
+	CHECK(world.rootNode.children[1].minHorizontal == 5);
+	CHECK(world.rootNode.children[1].maxHorizontal == 5);
+	CHECK(world.rootNode.children[1].maxVertical == 5);
 	CHECK(world.population[0].references.size() == 1);
 	CHECK(world.population[1].references[0] == world.rootNode.children[1]);
 	CHECK(world.population[1].polygon == points[1]);
@@ -70,20 +70,20 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	// points (6.5, 6); (6, 6.5); (8, 7); (9, 9)
 	CHECK(world.rootNode.children[3].children.size() == 4);
 	CHECK(world.rootNode.children[3].populationUIDs.empty());
-	CHECK(world.rootNode.children[3].originVertical == 5);
-	CHECK(world.rootNode.children[3].originHorizontal == 5);
-	CHECK(world.rootNode.children[3].height == 5);
-	CHECK(world.rootNode.children[3].width == 5);
+	CHECK(world.rootNode.children[3].minVertical == 5);
+	CHECK(world.rootNode.children[3].minHorizontal == 5);
+	CHECK(world.rootNode.children[3].maxHorizontal == 5);
+	CHECK(world.rootNode.children[3].maxVertical == 5);
 
 	//      point (6.5, 6) index: 2 ; (6, 6.5) index: 3
 	CHECK(world.rootNode.children[3].children[0].children.empty());
 	CHECK(world.rootNode.children[3].children[0].populationUIDs.size() == 2);
 	CHECK(world.rootNode.children[3].children[0].populationUIDs[0] == 2);
 	CHECK(world.rootNode.children[3].children[0].populationUIDs[1] == 3);
-	CHECK(world.rootNode.children[3].children[0].height == 2.5);
-	CHECK(world.rootNode.children[3].children[0].width == 2.5);
-	CHECK(world.rootNode.children[3].children[0].originHorizontal == 5);
-	CHECK(world.rootNode.children[3].children[0].originVertical == 5);
+	CHECK(world.rootNode.children[3].children[0].maxHorizontal == 2.5);
+	CHECK(world.rootNode.children[3].children[0].maxVertical == 2.5);
+	CHECK(world.rootNode.children[3].children[0].minHorizontal == 5);
+	CHECK(world.rootNode.children[3].children[0].minVertical == 5);
 
 	CHECK(world.population[2].references.size() == 1);
 	CHECK(world.population[2].references[0] == world.rootNode.children[3].children[0]);
@@ -98,32 +98,32 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.children[3].children[1].children.empty());
 	CHECK(world.rootNode.children[3].children[1].populationUIDs.size() == 1);
 	CHECK(world.rootNode.children[3].children[1].populationUIDs[0] == 4);
-	CHECK(world.rootNode.children[3].children[1].height == 2.5);
-	CHECK(world.rootNode.children[3].children[1].width == 2.5);
-	CHECK(world.rootNode.children[3].children[1].originHorizontal == 7.5);
-	CHECK(world.rootNode.children[3].children[1].originVertical == 5);
+	CHECK(world.rootNode.children[3].children[1].maxHorizontal == 2.5);
+	CHECK(world.rootNode.children[3].children[1].maxVertical == 2.5);
+	CHECK(world.rootNode.children[3].children[1].minHorizontal == 7.5);
+	CHECK(world.rootNode.children[3].children[1].minVertical == 5);
 
 	CHECK(world.population[4].references.size() == 1);
 	CHECK(world.population[4].references[0] == world.rootNode.children[3].children[1]);
 	CHECK(world.population[4].polygon == points[4]);
 
 	//      check empty
-	CHECK(world.rootNode.children[3].children[QuadTree::Sq::BottomLeft].children.empty());
-	CHECK(world.rootNode.children[3].children[QuadTree::Sq::BottomLeft].populationUIDs.empty());
-	CHECK(world.rootNode.children[3].children[QuadTree::Sq::BottomLeft].height == 2.5);
-	CHECK(world.rootNode.children[3].children[QuadTree::Sq::BottomLeft].width == 2.5);
-	CHECK(world.rootNode.children[3].children[QuadTree::Sq::BottomLeft].originHorizontal == 5);
-	CHECK(world.rootNode.children[3].children[QuadTree::Sq::BottomLeft].originVertical == 7.5);
+	CHECK(world.rootNode.children[3].children[QuadTree::Qd::BottomLeft].children.empty());
+	CHECK(world.rootNode.children[3].children[QuadTree::Qd::BottomLeft].populationUIDs.empty());
+	CHECK(world.rootNode.children[3].children[QuadTree::Qd::BottomLeft].maxHorizontal == 2.5);
+	CHECK(world.rootNode.children[3].children[QuadTree::Qd::BottomLeft].maxVertical == 2.5);
+	CHECK(world.rootNode.children[3].children[QuadTree::Qd::BottomLeft].minHorizontal == 5);
+	CHECK(world.rootNode.children[3].children[QuadTree::Qd::BottomLeft].minVertical == 7.5);
 
 
 	//      point (9, 9) index: 5
 	CHECK(world.rootNode.children[3].children[3].children.empty());
 	CHECK(world.rootNode.children[3].children[3].populationUIDs.size() == 1);
 	CHECK(world.rootNode.children[3].children[3].populationUIDs[0] == 5);
-	CHECK(world.rootNode.children[3].children[3].height == 2.5);
-	CHECK(world.rootNode.children[3].children[3].width == 2.5);
-	CHECK(world.rootNode.children[3].children[3].originHorizontal == 7.5);
-	CHECK(world.rootNode.children[3].children[3].originVertical == 7.5);
+	CHECK(world.rootNode.children[3].children[3].maxHorizontal == 2.5);
+	CHECK(world.rootNode.children[3].children[3].maxVertical == 2.5);
+	CHECK(world.rootNode.children[3].children[3].minHorizontal == 7.5);
+	CHECK(world.rootNode.children[3].children[3].minVertical == 7.5);
 
 	CHECK(world.population[5].references.size() == 1);
 	CHECK(world.population[5].references[0] == world.rootNode.children[3].children[3]);
@@ -147,10 +147,10 @@ TEST_CASE("Check init point and QuadNode", "[QuadTree][init]")
 
 	CHECK(qn.children.empty());
 	CHECK(qn.populationUIDs.empty());
-	CHECK(qn.originVertical == 5);
-	CHECK(qn.originHorizontal == 0);
-	CHECK(qn.height == 15);
-	CHECK(qn.width == 10);
+	CHECK(qn.minVertical == 5);
+	CHECK(qn.minHorizontal == 0);
+	CHECK(qn.maxHorizontal == 15);
+	CHECK(qn.maxVertical == 10);
 
 	point->setUID(678087);
 	CHECK(point->getUID() == 678087);

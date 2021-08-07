@@ -6,12 +6,9 @@
 
 namespace QuadTree
 {
-	Quadrant::Quadrant(double w, double h, double oH,
-	                   double oV)
-		: width(w),
-		  height(h),
-		  originHorizontal(oH),
-		  originVertical(oV)
+
+	Quadrant::Quadrant(double minHori, double minVert, double maxHori, double maxVert)
+		: pos(minHori, minVert, maxHori, maxVert)
 	{
 	}
 }
