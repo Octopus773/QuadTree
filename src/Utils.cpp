@@ -37,6 +37,7 @@ namespace QuadTree::Utils
 				polygonPoints.front().second
 			};
 		default:
+			// TODO might need to change that won't work if machine doesn't support  IEEE 754 floats
 			double maxHorizontal = -std::numeric_limits<double>::infinity();
 			double maxVertical = -std::numeric_limits<double>::infinity();
 			double minHorizontal = std::numeric_limits<double>::infinity();
