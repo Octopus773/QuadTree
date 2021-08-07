@@ -50,9 +50,9 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.children[0].originHorizontal == 0);
 	CHECK(world.rootNode.children[0].height == 5);
 	CHECK(world.rootNode.children[0].width == 5);
-	CHECK(world.population[0].second.size() == 1);
-	CHECK(world.population[0].second[0] == world.rootNode.children[0]);
-	CHECK(world.population[0].first == points[0]);
+	CHECK(world.population[0].references.size() == 1);
+	CHECK(world.population[0].references[0] == world.rootNode.children[0]);
+	CHECK(world.population[0].polygon == points[0]);
 
 	// point (7, 3) inddex: 1
 	CHECK(world.rootNode.children[1].children.empty());
@@ -62,9 +62,9 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.children[1].originHorizontal == 5);
 	CHECK(world.rootNode.children[1].height == 5);
 	CHECK(world.rootNode.children[1].width == 5);
-	CHECK(world.population[0].second.size() == 1);
-	CHECK(world.population[1].second[0] == world.rootNode.children[1]);
-	CHECK(world.population[1].first == points[1]);
+	CHECK(world.population[0].references.size() == 1);
+	CHECK(world.population[1].references[0] == world.rootNode.children[1]);
+	CHECK(world.population[1].polygon == points[1]);
 
 
 	// points (6.5, 6); (6, 6.5); (8, 7); (9, 9)
@@ -85,12 +85,12 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.children[3].children[0].originHorizontal == 5);
 	CHECK(world.rootNode.children[3].children[0].originVertical == 5);
 
-	CHECK(world.population[2].second.size() == 1);
-	CHECK(world.population[2].second[0] == world.rootNode.children[3].children[0]);
-	CHECK(world.population[2].first == points[2]);
-	CHECK(world.population[3].second.size() == 1);
-	CHECK(world.population[3].second[0] == world.rootNode.children[3].children[0]);
-	CHECK(world.population[3].first == points[3]);
+	CHECK(world.population[2].references.size() == 1);
+	CHECK(world.population[2].references[0] == world.rootNode.children[3].children[0]);
+	CHECK(world.population[2].polygon == points[2]);
+	CHECK(world.population[3].references.size() == 1);
+	CHECK(world.population[3].references[0] == world.rootNode.children[3].children[0]);
+	CHECK(world.population[3].polygon == points[3]);
 
 
 
@@ -103,9 +103,9 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.children[3].children[1].originHorizontal == 7.5);
 	CHECK(world.rootNode.children[3].children[1].originVertical == 5);
 
-	CHECK(world.population[4].second.size() == 1);
-	CHECK(world.population[4].second[0] == world.rootNode.children[3].children[1]);
-	CHECK(world.population[4].first == points[4]);
+	CHECK(world.population[4].references.size() == 1);
+	CHECK(world.population[4].references[0] == world.rootNode.children[3].children[1]);
+	CHECK(world.population[4].polygon == points[4]);
 
 	//      check empty
 	CHECK(world.rootNode.children[3].children[QuadTree::Sq::BottomLeft].children.empty());
@@ -125,9 +125,9 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world.rootNode.children[3].children[3].originHorizontal == 7.5);
 	CHECK(world.rootNode.children[3].children[3].originVertical == 7.5);
 
-	CHECK(world.population[5].second.size() == 1);
-	CHECK(world.population[5].second[0] == world.rootNode.children[3].children[3]);
-	CHECK(world.population[5].first == points[5]);
+	CHECK(world.population[5].references.size() == 1);
+	CHECK(world.population[5].references[0] == world.rootNode.children[3].children[3]);
+	CHECK(world.population[5].polygon == points[5]);
 
 	CHECK(world.getNeighbours(5).empty());
 

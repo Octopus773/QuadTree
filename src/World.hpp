@@ -10,6 +10,7 @@
 #include <functional>
 #include "PolygonTypes/APolygon.hpp"
 #include "Quadrant.hpp"
+#include "ElementInfo.hpp"
 
 namespace QuadTree
 {
@@ -31,7 +32,7 @@ namespace QuadTree
 		//! @brief The maximum number of polygon per division
 		unsigned int _maxPolygonPerDivision;
 		//! @brief The map containing all of the world polygons (we access them by their UID)
-		std::map<unsigned int, std::pair<APolygon *, std::vector<std::reference_wrapper<Quadrant>>>> population;
+		std::map<unsigned int, ElementInfo> population;
 		//! @brief The root node for the quadtree
 		Quadrant rootNode;
 

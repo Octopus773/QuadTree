@@ -26,7 +26,7 @@ namespace QuadTree
 		}
 		static unsigned int uuidInc = 0;
 		polygon->setUID(uuidInc++);
-		this->population[polygon->getUID()] = std::make_pair(polygon, std::vector<std::reference_wrapper<Quadrant>>{});
+		this->population.insert({polygon->getUID(), ElementInfo(polygon)});
 		this->addPolygonInTree(this->rootNode, polygon->getUID());
 	}
 
@@ -38,11 +38,11 @@ namespace QuadTree
 				return this->addPolygonInTree(node, polygonUID);
 			}
 			node.populationUIDs.emplace_back(polygonUID);
-			this->population[polygonUID].second.emplace_back(node);
+			this->population.find(polygonUID)->second.references.emplace_back(node);
 			return;
 		}
 		auto &polygon = this->population.at(polygonUID);
-		auto points = polygon.first->getPoints();
+		auto points = polygon.polygon->getPoints();
 		int index = 0;
 		if (points[0].first > node.originHorizontal + (node.width / 2)) {
 			index++;
@@ -66,8 +66,8 @@ namespace QuadTree
 			                           leaf.originVertical + ((i > 1) * midHeight));
 		}
 		for (const auto &uid : leaf.populationUIDs) {
-			auto &polygon = this->population[uid];
-			std::erase(polygon.second, std::ref(leaf));
+			auto &polygon = this->population.find(uid)->second;
+			std::erase(polygon.references, std::ref(leaf));
 			this->addPolygonInTree(leaf, uid);
 		}
 		leaf.populationUIDs.clear();
@@ -77,7 +77,7 @@ namespace QuadTree
 	{
 		std::vector<unsigned int> neighboursUIDs;
 		std::unordered_set<APolygon *> neighbours;
-		const auto &polygonRefs = this->population.at(polygonUID).second;
+		const auto &polygonRefs = this->population.at(polygonUID).references;
 		for (const auto &ref : polygonRefs) {
 			std::copy_if(ref.get().populationUIDs.begin(),
 			             ref.get().populationUIDs.end(),
@@ -90,7 +90,7 @@ namespace QuadTree
 			             });
 		}
 		for (const auto &neighbourUID : neighboursUIDs) {
-			neighbours.insert(this->population.at(neighbourUID).first);
+			neighbours.insert(this->population.at(neighbourUID).polygon);
 		}
 		return neighbours;
 	}
