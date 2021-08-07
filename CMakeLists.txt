@@ -29,7 +29,8 @@ include_directories(src)
 
 add_library(quadtree STATIC ${SOURCES})
 
-add_executable(quadtreetestbin tests/main.cpp)
+add_executable(quadtreetestbin EXCLUDE_FROM_ALL
+	tests/main.cpp)
 target_link_libraries(quadtreetestbin PUBLIC quadtree)
 
 
