@@ -21,12 +21,12 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	CHECK(world._rootNode.pos.minVertical == 0);
 
 	std::vector<QuadTree::Point *> points({
-		                                      new QuadTree::Point{4, 4},
-		                                      new QuadTree::Point{7, 3},
-		                                      new QuadTree::Point{6.5, 6},
-		                                      new QuadTree::Point{6, 6.5},
-		                                      new QuadTree::Point{8, 7},
-		                                      new QuadTree::Point{9, 9},
+		                                      new QuadTree::Point{4, 4, "0"},
+		                                      new QuadTree::Point{7, 3, "1"},
+		                                      new QuadTree::Point{6.5, 6, "2"},
+		                                      new QuadTree::Point{6, 6.5, "3"},
+		                                      new QuadTree::Point{8, 7, "4"},
+		                                      new QuadTree::Point{9, 9, "5"},
 	                                      });
 
 	CHECK(points[0]->getPoints().size() == 1);
@@ -45,7 +45,7 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	// point (4, 4) index: 0
 	CHECK(world._rootNode.children[0].children.empty());
 	CHECK(world._rootNode.children[0].populationUIDs.size() == 1);
-	CHECK(world._rootNode.children[0].populationUIDs[0] == 0);
+	CHECK(world.population[world._rootNode.children[0].populationUIDs[0]].polygon->getName() == "0");
 	CHECK(world._rootNode.children[0].pos.minVertical == 0);
 	CHECK(world._rootNode.children[0].pos.minHorizontal == 0);
 	CHECK(world._rootNode.children[0].pos.maxHorizontal == 5);
@@ -57,7 +57,7 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	// point (7, 3) inddex: 1
 	CHECK(world._rootNode.children[1].children.empty());
 	CHECK(world._rootNode.children[1].populationUIDs.size() == 1);
-	CHECK(world._rootNode.children[1].populationUIDs[0] == 1);
+	CHECK(world.population[world._rootNode.children[1].populationUIDs[0]].polygon->getName() == "1");
 	CHECK(world._rootNode.children[1].pos.minVertical == 0);
 	CHECK(world._rootNode.children[1].pos.minHorizontal == 5);
 	CHECK(world._rootNode.children[1].pos.getWidth() == 5);
@@ -78,8 +78,8 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	//      point (6.5, 6) index: 2 ; (6, 6.5) index: 3
 	CHECK(world._rootNode.children[3].children[0].children.empty());
 	CHECK(world._rootNode.children[3].children[0].populationUIDs.size() == 2);
-	CHECK(world._rootNode.children[3].children[0].populationUIDs[0] == 2);
-	CHECK(world._rootNode.children[3].children[0].populationUIDs[1] == 3);
+	CHECK(world.population[world._rootNode.children[3].children[0].populationUIDs[0]].polygon->getName() == "2");
+	CHECK(world.population[world._rootNode.children[3].children[0].populationUIDs[1]].polygon->getName() == "3");
 	CHECK(world._rootNode.children[3].children[0].pos.getWidth() == 2.5);
 	CHECK(world._rootNode.children[3].children[0].pos.getHeight() == 2.5);
 	CHECK(world._rootNode.children[3].children[0].pos.minHorizontal == 5);
@@ -97,7 +97,7 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	//      point (8, 7) index: 4
 	CHECK(world._rootNode.children[3].children[1].children.empty());
 	CHECK(world._rootNode.children[3].children[1].populationUIDs.size() == 1);
-	CHECK(world._rootNode.children[3].children[1].populationUIDs[0] == 4);
+	CHECK(world.population[world._rootNode.children[3].children[1].populationUIDs[0]].polygon->getName() == "4");
 	CHECK(world._rootNode.children[3].children[1].pos.getWidth() == 2.5);
 	CHECK(world._rootNode.children[3].children[1].pos.getHeight() == 2.5);
 	CHECK(world._rootNode.children[3].children[1].pos.minHorizontal == 7.5);
@@ -119,7 +119,7 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	//      point (9, 9) index: 5
 	CHECK(world._rootNode.children[3].children[3].children.empty());
 	CHECK(world._rootNode.children[3].children[3].populationUIDs.size() == 1);
-	CHECK(world._rootNode.children[3].children[3].populationUIDs[0] == 5);
+	CHECK(world.population[world._rootNode.children[3].children[3].populationUIDs[0]].polygon->getName() == "5");
 	CHECK(world._rootNode.children[3].children[3].pos.getWidth() == 2.5);
 	CHECK(world._rootNode.children[3].children[3].pos.getHeight() == 2.5);
 	CHECK(world._rootNode.children[3].children[3].pos.minHorizontal == 7.5);
