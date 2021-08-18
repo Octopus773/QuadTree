@@ -87,6 +87,7 @@ namespace QuadTree::Collisions
 			{rect2.maxHorizontal, rect2.maxVertical},
 			{rect2.minHorizontal, rect2.minVertical + rect2.getHeight()}
 		});
+		// TODO might need to really check with AABB in mind to save time if needed
 		return rect1.minHorizontal > rect2.maxHorizontal || rect1.minVertical > rect2.maxVertical
 		|| rect1.maxHorizontal < rect2.minHorizontal || rect1.maxVertical < rect2.minVertical;
 	}
