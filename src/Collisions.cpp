@@ -7,15 +7,15 @@
 
 namespace QuadTree::Collisions
 {
-	bool isOverlapping(const ElementInfo &polygonInfo, const Rect &rectangle)
+	bool isOverlapping(const ElementInfo &polygonInfo1, const ElementInfo &polygonInfo2)
 	{
-		if (polygonInfo.polygon->getPoints().size() == 1) {
-			return pointInRect(rectangle, polygonInfo.polygon->getPoints()[0]);
+		if (!isOverlapping(polygonInfo1.aabb, polygonInfo2.aabb)) {
+			return false;
 		}
-		return isOverlapping(polygonInfo.aabb, rectangle);
+		return areOverlappingConvexPolygons(polygonInfo1, polygonInfo2);
 	}
 
-	bool isInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p)
+	bool isPointInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p)
 	{
 		// There must be at least 3 vertices in polygon[]
 		if (points.size() < 3) return false;

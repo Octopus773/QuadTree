@@ -10,16 +10,7 @@
 namespace QuadTree::Collisions
 {
 	//! @brief Tells is a polygon overlaps a rectangle
-	[[nodiscard]] bool isOverlapping(const ElementInfo &polygonInfo, const Rect &rectangle);
-
-	//! @brief Tells is a convex polygon overlaps another convex polygon
-	[[nodiscard]] inline bool isOverlappingConvex(const ElementInfo &polygonInfo1, const ElementInfo &polygonInfo2)
-	{
-		return std::any_of(polygonInfo1.polygon->getPoints().begin(), polygonInfo1.polygon->getPoints().end(),
-		                   [](std::pair<double, double> point) {
-			                   return true;
-		                   });
-	}
+	[[nodiscard]] bool isOverlapping(const ElementInfo &polygonInfo1, const ElementInfo &polygonInfo2);
 
 	//! @brief Tells is a rect and an another rect are overlapping
 	[[nodiscard]] inline bool isOverlapping(const Rect &rect1, const Rect &rect2)
@@ -64,11 +55,29 @@ namespace QuadTree::Collisions
 
 	//! @brief Tells if p1q1 and p2q2 intersects
 	//! @return true if line segment 'p1q1' and 'p2q2' intersect.
-	[[nodiscard]] bool doIntersect(std::pair<double, double> p1, std::pair<double, double> q1, std::pair<double, double> p2,
-	                 std::pair<double, double> q2);
+	[[nodiscard]] bool
+	doIntersect(std::pair<double, double> p1, std::pair<double, double> q1, std::pair<double, double> p2,
+	            std::pair<double, double> q2);
 
 	//! @brief Tells if a point is in a convex Polygon
 	//! @return true if the point p lies inside the polygon[] with n vertices
-	[[nodiscard]] bool isInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p);
+	[[nodiscard]] bool
+	isPointInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p);
+
+	//! @brief Tells is a convex polygon overlaps another convex polygon
+	[[nodiscard]] inline bool
+	areOverlappingConvexPolygons(const ElementInfo &polygonInfo1, const ElementInfo &polygonInfo2)
+	{
+		const auto pointsPoly1 = polygonInfo1.polygon->getPoints();
+		const auto pointsPoly2 = polygonInfo2.polygon->getPoints();
+		return std::any_of(pointsPoly1.begin(), pointsPoly1.end(),
+		                   [&pointsPoly2 = std::as_const(pointsPoly2)](std::pair<double, double> point) {
+			                   return isPointInsideConvexPolygon(pointsPoly2, point);
+		                   })
+		       || std::any_of(pointsPoly2.begin(), pointsPoly2.end(),
+		                      [&pointsPoly1 = std::as_const(pointsPoly1)](std::pair<double, double> point) {
+			                      return isPointInsideConvexPolygon(pointsPoly1, point);
+		                      });
+	}
 
 }
