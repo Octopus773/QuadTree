@@ -25,26 +25,25 @@ namespace QuadTree
 		static unsigned int uuidInc = 0;
 		polygon->setUID(uuidInc++);
 		this->population.insert({polygon->getUID(), ElementInfo(polygon)});
-		this->addPolygonInTree(this->_rootNode, polygon->getUID());
+		this->addPolygonInTree(this->_rootNode, this->population.at(polygon->getUID()));
 	}
 
-	void World::addPolygonInTree(Quadrant &node, unsigned int polygonUID)
+	void World::addPolygonInTree(Quadrant &node, ElementInfo &polygonInfo)
 	{
 		if (node.children.empty()) {
 			if (node.populationUIDs.size() >= this->_maxPolygonPerDivision) {
 				this->splitLeaf(node);
-				return this->addPolygonInTree(node, polygonUID);
+				return this->addPolygonInTree(node, polygonInfo);
 			}
-			node.populationUIDs.emplace_back(polygonUID);
-			this->population.find(polygonUID)->second.references.emplace_back(node);
+			node.populationUIDs.emplace_back(polygonInfo.polygon->getUID());
+			polygonInfo.references.emplace_back(node);
 			return;
 		}
-		auto &polygon = this->population.at(polygonUID);
-		auto points = polygon.polygon->getPoints();
+		auto points = polygonInfo.polygon->getPoints();
 
 		for (auto &quadrant : node.children) {
 			if (Utils::pointInRect(quadrant.pos, points.front())) {
-				this->addPolygonInTree(quadrant, polygonUID);
+				this->addPolygonInTree(quadrant, polygonInfo);
 			}
 		}
 	}
@@ -67,7 +66,7 @@ namespace QuadTree
 		for (const auto &uid : leaf.populationUIDs) {
 			auto &polygon = this->population.find(uid)->second;
 			std::erase(polygon.references, std::ref(leaf));
-			this->addPolygonInTree(leaf, uid);
+			this->addPolygonInTree(leaf, this->population.at(uid));
 		}
 		leaf.populationUIDs.clear();
 	}
@@ -93,6 +92,5 @@ namespace QuadTree
 		}
 		return neighbours;
 	}
-
 
 }

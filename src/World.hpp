@@ -35,8 +35,8 @@ namespace QuadTree
 
 		//! @brief add a polygon in the current tree
 		//! @param node The node we want to add the polygon (it will be attached to it's children if it needs to)
-		//! @param polygon The polygon to add
-		void addPolygonInTree(Quadrant &node, unsigned int polygonUID);
+		//! @param polygonInfo All the infos of the polygon (ElementInfo should be stored in population class member)
+		void addPolygonInTree(Quadrant &node, ElementInfo &polygonInfo);
 
 		//! @brief Transform a leaf into a parent of leaves and dispatch it's current polygons
 		//! @param leaf The leaf to transform

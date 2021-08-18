@@ -11,7 +11,7 @@
 namespace QuadTree::Utils
 {
 
-	//! @brief Tells is a point is in a rectangle
+	//! @brief Tells is a point is in a axis aligned rectangle
 	//! @param rect The rectangle
 	//! @param pointPos The point position (horizontal, vertical)
 	//! @return True if the point is in the rect otherwise false
