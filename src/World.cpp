@@ -7,6 +7,7 @@
 #include <functional>
 #include "PolygonTypes/APolygon.hpp"
 #include "Utils.hpp"
+#include "Collisions.hpp"
 
 namespace QuadTree
 {
@@ -42,7 +43,7 @@ namespace QuadTree
 		auto points = polygonInfo.polygon->getPoints();
 
 		for (auto &quadrant : node.children) {
-			if (Utils::pointInRect(quadrant.pos, points.front())) {
+			if (Collisions::pointInRect(quadrant.pos, points.front())) {
 				this->addPolygonInTree(quadrant, polygonInfo);
 			}
 		}

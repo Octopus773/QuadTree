@@ -7,6 +7,7 @@
 
 #include "Rect.hpp"
 #include "Utils.hpp"
+#include "Collisions.hpp"
 #include "PolygonTypes/Point.hpp"
 
 using namespace QuadTree;
@@ -24,14 +25,14 @@ TEST_CASE("pointInRect normal use ", "[QuadTree][Utils][pointInRect]")
 {
 	Rect rect(0, 0, 10, 10);
 
-	CHECK(Utils::pointInRect(rect, {5, 5}));
-	CHECK(Utils::pointInRect(rect, {5, 0}));
-	CHECK(Utils::pointInRect(rect, {10, 10}));
-	CHECK(Utils::pointInRect(rect, {2.3, 7.898}));
-	CHECK(!Utils::pointInRect(rect, {10.01, 10}));
-	CHECK(!Utils::pointInRect(rect, {576, -456}));
-	CHECK(Utils::pointInRect(rect, {-0, -0}));
-	CHECK(!Utils::pointInRect(rect, {-2, 3}));
+	CHECK(Collisions::pointInRect(rect, {5, 5}));
+	CHECK(Collisions::pointInRect(rect, {5, 0}));
+	CHECK(Collisions::pointInRect(rect, {10, 10}));
+	CHECK(Collisions::pointInRect(rect, {2.3, 7.898}));
+	CHECK(!Collisions::pointInRect(rect, {10.01, 10}));
+	CHECK(!Collisions::pointInRect(rect, {576, -456}));
+	CHECK(Collisions::pointInRect(rect, {-0, -0}));
+	CHECK(!Collisions::pointInRect(rect, {-2, 3}));
 }
 
 TEST_CASE("getAABB normal on Point", "[QuadTree][Rect][getAABB]")

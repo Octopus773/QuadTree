@@ -10,7 +10,7 @@
 namespace QuadTree
 {
 
-	//! @brief A structure to represent a rectangle
+	//! @brief A structure to represent an axis aligned rectangle
 	struct Rect
 	{
 		//! @brief The minimum Vertical point
