@@ -24,8 +24,17 @@ namespace QuadTree
 		return new Rectangle(*this);
 	}
 
-	Rectangle::Rectangle(std::array<std::pair<double, double>, 4> pts)
-		: points(std::move(pts))
+	Rectangle::Rectangle(std::array<std::pair<double, double>, 4> pts, std::string rectName)
+		: points(std::move(pts)),
+		  name(std::move(rectName))
 	{
+	}
+
+	void Rectangle::moveTo(std::pair<double, double> newMin)
+	{
+		for (auto &point : points) {
+			point.second += newMin.second;
+			point.first += newMin.first;
+		}
 	}
 }

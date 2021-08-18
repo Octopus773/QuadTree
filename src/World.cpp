@@ -93,4 +93,14 @@ namespace QuadTree
 		return neighbours;
 	}
 
+	void World::removePolygonInTree(ElementInfo &polygonInfo)
+	{
+		auto uid = polygonInfo.polygon->getUID();
+		for (auto &reference : polygonInfo.references) {
+			auto &populationUIDs = reference.get().populationUIDs;
+			populationUIDs.erase(std::remove(populationUIDs.begin(), populationUIDs.end(), uid), populationUIDs.end());
+		}
+		polygonInfo.references.clear();
+	}
+
 }

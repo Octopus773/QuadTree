@@ -38,6 +38,8 @@ namespace QuadTree
 		//! @param polygonInfo All the infos of the polygon (ElementInfo should be stored in population class member)
 		void addPolygonInTree(Quadrant &node, ElementInfo &polygonInfo);
 
+		void removePolygonInTree(ElementInfo &polygonInfo);
+
 		//! @brief Transform a leaf into a parent of leaves and dispatch it's current polygons
 		//! @param leaf The leaf to transform
 		void splitLeaf(Quadrant &leaf);

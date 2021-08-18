@@ -19,6 +19,9 @@ namespace QuadTree
 		//! @brief The name for user custom identification
 		std::string name;
 
+		//! @brief Move a rect to the given location (minimum corner) keeps it's size
+		void moveTo(std::pair<double, double> newMin);
+
 		//! @brief Return the name of the polygon
 		//! @note User defined identifier
 		//!       It allow users to identify more easily what polygon they have after the getNeighbour call for the QuadTree
@@ -31,7 +34,7 @@ namespace QuadTree
 		//! @brief Allow us to pass by copy APolygon Classes
 		[[nodiscard]] APolygon *clone() const override;
 
-		explicit Rectangle(std::array<std::pair<double, double>, 4> pts);
+		explicit Rectangle(std::array<std::pair<double, double>, 4> pts, std::string name = "Rectangle");
 		Rectangle (const Rectangle &) = default;
 		~Rectangle() override = default;
 		Rectangle &operator=(const Rectangle &) = default;
