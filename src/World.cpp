@@ -40,12 +40,14 @@ namespace QuadTree
 			polygonInfo.references.emplace_back(node);
 			return;
 		}
-		auto points = polygonInfo.polygon->getPoints();
 
 		for (auto &quadrant : node.children) {
-			if (Collisions::pointInRect(quadrant.pos, points.front())) {
+			if (Collisions::pointInRect(quadrant.pos, polygonInfo.polygon->getPoints().front())) {
 				this->addPolygonInTree(quadrant, polygonInfo);
 			}
+			/*if (Collisions::isOverlapping(quadrant.pos, polygonInfo.aabb)) {
+				this->addPolygonInTree(quadrant, polygonInfo);
+			}*/
 		}
 	}
 

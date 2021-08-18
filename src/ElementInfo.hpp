@@ -15,11 +15,13 @@ namespace QuadTree
 
 	struct ElementInfo
 	{
+		//! @brief The polygon
 		APolygon *polygon;
-
+		//! @brief a reference to each leaf node containing it's UID
 		std::vector<std::reference_wrapper<Quadrant>> references;
-
+		//! @brief The Axis aligned bounding box for the polygon
 		Rect aabb;
+
 
 		explicit ElementInfo(APolygon *pol);
 		explicit ElementInfo();

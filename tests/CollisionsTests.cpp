@@ -4,6 +4,7 @@
 
 #include <catch2/catch.hpp>
 #include "Collisions.hpp"
+#include "Rect.hpp"
 
 using namespace QuadTree;
 
@@ -42,7 +43,11 @@ TEST_CASE("isPointInsideConvexPolygon functional tests", "[QuadTree][Collisions]
 	CHECK(!Collisions::isPointInsideConvexPolygon(polygon3, p));
 }
 
-TEST_CASE("areOverlappingConvexPolygon normal use", "[QuadTree][Collisions][areOverlappingConvexPolygon]")
+TEST_CASE("isOverlapping rect normal use", "[QuadTree][Collisions][isOverlapping]")
 {
-
+	CHECK(Collisions::isOverlapping({0, 0, 10, 10}, {0, 0, 10, 10}));
+	CHECK(Collisions::isOverlapping({0, 0, 10, 10}, {10, 10, 10, 10}));
+	CHECK(!Collisions::isOverlapping({0, 0, 7, 7}, {8, 8, 10, 10}));
+	CHECK(!Collisions::isOverlapping({40, 10, 100, 23}, {8, 8, 10, 10}));
+	CHECK(Collisions::isOverlapping({4, 4, 4, 4}, {4, 4, 4, 4}));
 }

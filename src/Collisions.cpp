@@ -12,7 +12,7 @@ namespace QuadTree::Collisions
 		if (!isOverlapping(polygonInfo1.aabb, polygonInfo2.aabb)) {
 			return false;
 		}
-		return areOverlappingConvexPolygons(polygonInfo1, polygonInfo2);
+		return areOverlappingConvexPolygons(polygonInfo1.polygon->getPoints(), polygonInfo2.polygon->getPoints());
 	}
 
 	bool isPointInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p)
@@ -27,12 +27,14 @@ namespace QuadTree::Collisions
 		// Count intersections of the above line with sides of polygon
 		int count = 0;
 		for (auto i = points.begin(); i != points.end(); i++) {
-			if (doIntersect(*i, *(i + 1), p, extreme)) {
+			// TODO might need to find a better way to do this
+			auto next = i == points.end() - 1 ? points.begin() : i + 1;
+			if (doIntersect(*i, *next, p, extreme)) {
 				// If the point 'p' is colinear with line segment 'i-next',
 				// then check if it lies on segment. If it lies, return true,
 				// otherwise false
-				if (orientation(*i, p, *(i + 1)) == 0)
-					return onSegment(*i, p, *(i + 1));
+				if (orientation(*i, p, *next) == 0)
+					return onSegment(*i, p, *next);
 
 				count++;
 			}
