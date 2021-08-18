@@ -21,29 +21,23 @@ namespace QuadTree::Collisions
 		if (points.size() < 3) return false;
 
 		// Create a point for line segment from p to infinite
-		std::pair<double, double> extreme = {std::numeric_limits<double>::infinity(), p.second};
+		std::pair<double, double> extreme = {10000, p.second};
 
 		// Count intersections of the above line with sides of polygon
-		int count = 0, i = 0;
-		do {
-			int next = (i + 1) % points.size();
-
-			// Check if the line segment from 'p' to 'extreme' intersects
-			// with the line segment from 'polygon[i]' to 'polygon[next]'
-			if (doIntersect(points[i], points[next], p, extreme)) {
+		int count = 0;
+		for (auto i = points.begin(); i != points.end(); i++) {
+			if (doIntersect(*i, *(i + 1), p, extreme)) {
 				// If the point 'p' is colinear with line segment 'i-next',
 				// then check if it lies on segment. If it lies, return true,
 				// otherwise false
-				if (orientation(points[i], p, points[next]) == 0)
-					return onSegment(points[i], p, points[next]);
+				if (orientation(*i, p, *(i + 1)) == 0)
+					return onSegment(*i, p, *(i + 1));
 
 				count++;
 			}
-			i = next;
-		} while (i != 0);
-
+		}
 		// Return true if count is odd, false otherwise
-		return count & 1; // Same as (count%2 == 1)
+		return count & 1;
 	}
 
 	bool doIntersect(std::pair<double, double> p1, std::pair<double, double> q1, std::pair<double, double> p2,
