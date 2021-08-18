@@ -64,11 +64,11 @@ namespace QuadTree::Collisions
 
 	//! @brief Tells if p1q1 and p2q2 intersects
 	//! @return true if line segment 'p1q1' and 'p2q2' intersect.
-	bool doIntersect(std::pair<double, double> p1, std::pair<double, double> q1, std::pair<double, double> p2,
+	[[nodiscard]] bool doIntersect(std::pair<double, double> p1, std::pair<double, double> q1, std::pair<double, double> p2,
 	                 std::pair<double, double> q2);
 
 	//! @brief Tells if a point is in a convex Polygon
 	//! @return true if the point p lies inside the polygon[] with n vertices
-	bool isInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p);
+	[[nodiscard]] bool isInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p);
 
 }
