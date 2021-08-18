@@ -15,13 +15,14 @@ namespace QuadTree::Collisions
 		return isOverlapping(polygonInfo.aabb, rectangle);
 	}
 
-	bool isInside(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p)
+	bool isInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p)
 	{
 		// There must be at least 3 vertices in polygon[]
 		if (points.size() < 3) return false;
 
 		// Create a point for line segment from p to infinite
-		std::pair<double, double> extreme = {10000, p.second};
+		// can't use infinity due to 0 * inf equals nan
+		std::pair<double, double> extreme = {std::numeric_limits<double>::max(), p.second};
 
 		// Count intersections of the above line with sides of polygon
 		int count = 0;

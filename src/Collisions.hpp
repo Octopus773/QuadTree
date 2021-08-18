@@ -47,27 +47,28 @@ namespace QuadTree::Collisions
 		       q.second <= std::max(p.second, r.second) && q.second >= std::min(p.second, r.second);
 	}
 
-	// To find orientation of ordered triplet (p, q, r).
-	// The function returns following values
-	// 0 --> p, q and r are colinear
-	// 1 --> Clockwise
-	// 2 --> Counterclockwise
+	//! @brief To find orientation of ordered triplet (p, q, r).
+	//! @return
+	//! 0 --> p, q and r are colinear
+	//! 1 --> Clockwise
+	//! 2 --> Counterclockwise
 	[[nodiscard]] inline int
 	orientation(std::pair<double, double> p, std::pair<double, double> q, std::pair<double, double> r)
 	{
-		int val = (q.second - p.second) * (r.first - q.first) -
-		          (q.first - p.first) * (r.second - q.second);
+		double val = ((q.second - p.second) * (r.first - q.first)) -
+		             ((q.first - p.first) * (r.second - q.second));
 
 		if (val == 0) return 0; // colinear
 		return (val > 0) ? 1 : 2; // clock or counterclock wise
 	}
 
-	// The function that returns true if line segment 'p1q1'
-	// and 'p2q2' intersect.
+	//! @brief Tells if p1q1 and p2q2 intersects
+	//! @return true if line segment 'p1q1' and 'p2q2' intersect.
 	bool doIntersect(std::pair<double, double> p1, std::pair<double, double> q1, std::pair<double, double> p2,
 	                 std::pair<double, double> q2);
 
-	// Returns true if the point p lies inside the polygon[] with n vertices
-	bool isInside(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p);
+	//! @brief Tells if a point is in a convex Polygon
+	//! @return true if the point p lies inside the polygon[] with n vertices
+	bool isInsideConvexPolygon(const std::vector<std::pair<double, double>> &points, std::pair<double, double> p);
 
 }
