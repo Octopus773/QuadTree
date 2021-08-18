@@ -42,12 +42,9 @@ namespace QuadTree
 		}
 
 		for (auto &quadrant : node.children) {
-			if (Collisions::pointInRect(quadrant.pos, polygonInfo.polygon->getPoints().front())) {
+			if (Collisions::isOverlapping(quadrant.pos, polygonInfo.aabb)) {
 				this->addPolygonInTree(quadrant, polygonInfo);
 			}
-			/*if (Collisions::isOverlapping(quadrant.pos, polygonInfo.aabb)) {
-				this->addPolygonInTree(quadrant, polygonInfo);
-			}*/
 		}
 	}
 
