@@ -33,7 +33,7 @@ add_library(quadtree STATIC ${SOURCES})
 
 add_executable(quadtreetestbin EXCLUDE_FROM_ALL
 	tests/main.cpp)
-target_link_libraries(quadtreetestbin PUBLIC quadtree)
+target_link_libraries(quadtreetestbin PUBLIC quadtree sfml-window sfml-graphics sfml-system)
 
 
 add_executable(unit_tests EXCLUDE_FROM_ALL
