@@ -25,7 +25,7 @@ set(SOURCES
 	src/Rect.hpp
 	src/Collisions.cpp
 	src/Collisions.hpp
-	)
+	src/PolygonTypes/Rectangle.cpp src/PolygonTypes/Rectangle.hpp)
 
 include_directories(src)
 
