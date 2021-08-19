@@ -12,8 +12,9 @@
 namespace QuadTree
 {
 
-	World::World(double height, double width)
-		: _maxPolygonPerDivision(3),
+	World::World(double height, double width, unsigned int maxPolygonPerDivision, unsigned int maxDepth)
+		: _maxPolygonPerDivision(maxPolygonPerDivision),
+		  _maxDepth(maxDepth),
 		  _rootNode(0, 0, width, height)
 	{
 	}
@@ -29,12 +30,12 @@ namespace QuadTree
 		this->addPolygonInTree(this->_rootNode, this->population.at(polygon->getUID()));
 	}
 
-	void World::addPolygonInTree(Quadrant &node, ElementInfo &polygonInfo)
+	void World::addPolygonInTree(Quadrant &node, ElementInfo &polygonInfo, unsigned int depth)
 	{
 		if (node.children.empty()) {
-			if (node.populationUIDs.size() >= this->_maxPolygonPerDivision) {
+			if (depth < this->_maxDepth && node.populationUIDs.size() >= this->_maxPolygonPerDivision) {
 				this->splitLeaf(node);
-				return this->addPolygonInTree(node, polygonInfo);
+				return this->addPolygonInTree(node, polygonInfo, depth + 1);
 			}
 			node.populationUIDs.emplace_back(polygonInfo.polygon->getUID());
 			polygonInfo.references.emplace_back(node);
@@ -43,7 +44,7 @@ namespace QuadTree
 
 		for (auto &quadrant : node.children) {
 			if (Collisions::isOverlapping(quadrant.pos, polygonInfo.aabb)) {
-				this->addPolygonInTree(quadrant, polygonInfo);
+				this->addPolygonInTree(quadrant, polygonInfo, depth + 1);
 			}
 		}
 	}
@@ -101,6 +102,45 @@ namespace QuadTree
 			populationUIDs.erase(std::remove(populationUIDs.begin(), populationUIDs.end(), uid), populationUIDs.end());
 		}
 		polygonInfo.references.clear();
+	}
+
+	void World::removePolygon(APolygon *polygon)
+	{
+		if (!this->population.contains(polygon->getUID())) {
+			return;
+		}
+		auto &individual = this->population[polygon->getUID()];
+		this->removePolygonInTree(individual);
+		this->population.erase(polygon->getUID());
+	}
+
+	void World::updatePolygon(APolygon *polygon)
+	{
+		if (!this->population.contains(polygon->getUID())) {
+			return;
+		}
+		this->removePolygonInTree(this->population[polygon->getUID()]);
+		this->addPolygonInTree(this->_rootNode, this->population[polygon->getUID()]);
+	}
+
+	void World::setMaxPolygonPerDivision(unsigned int maxPolygons)
+	{
+		this->_maxPolygonPerDivision = maxPolygons;
+	}
+
+	unsigned int World::getMaxPolygonPerDivision() const
+	{
+		return this->_maxPolygonPerDivision;
+	}
+
+	void World::setMaxDepth(unsigned int maxDepth)
+	{
+		this->_maxDepth = maxDepth;
+	}
+
+	unsigned int World::getMaxDepth() const
+	{
+		return this->_maxDepth;
 	}
 
 }

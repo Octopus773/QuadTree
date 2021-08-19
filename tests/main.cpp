@@ -97,19 +97,14 @@ int main(int ac, char **av)
 												  new QuadTree::Point{9, 9},*/
 		                                         //new QuadTree::Rectangle({{{4.5, 4.5}, {4, 6}, {6, 6}, {6, 4}}}),
 	                                         });
-/*	points.reserve(50);
-	for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < 10; i++) {
 		points.emplace_back(new QuadTree::Rectangle({{{0, 0}, {0, 5}, {5, 5}, {5, 0}}}));
-	}*/
+	}
 
 	for (const auto &point : points) {
 		world.addPolygon(point);
 	}
 	sf::RenderWindow window(sf::VideoMode(1010, 1010), "QuadTree superior!");
-	sf::Vertex line[]{
-		sf::Vertex(sf::Vector2f(10, 10)),
-		sf::Vertex(sf::Vector2f(150, 150))
-	};
 
 	auto clock = std::chrono::steady_clock::now();
 
@@ -126,6 +121,9 @@ int main(int ac, char **av)
 
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(now - clock).count() > 900) {
 			clock = now;
+
+			world.updatePolygon(points[0]);
+			/*
 			auto rectD = new QuadTree::Rectangle({{{0, 0}, {0, 5}, {5, 5}, {5, 0}}});
 			rectD->moveTo({std::rand() % 950, std::rand() % 950});
 			for (auto &pt : rectD->points) {
@@ -133,6 +131,7 @@ int main(int ac, char **av)
 				pt.second += std::rand() % 10;
 			}
 			world.addPolygon(rectD);
+			 */
 		}
 		window.clear();
 		drawQuadTree(window, world._rootNode);
