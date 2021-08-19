@@ -34,7 +34,7 @@ namespace QuadTree
 	{
 		if (node.children.empty()) {
 			if (depth < this->_maxDepth && node.populationUIDs.size() >= this->_maxPolygonPerDivision) {
-				this->splitLeaf(node);
+				this->splitLeaf(node, depth);
 				return this->addPolygonInTree(node, polygonInfo, depth + 1);
 			}
 			node.populationUIDs.emplace_back(polygonInfo.polygon->getUID());
@@ -49,7 +49,7 @@ namespace QuadTree
 		}
 	}
 
-	void World::splitLeaf(Quadrant &leaf)
+	void World::splitLeaf(Quadrant &leaf, unsigned int depth)
 	{
 		if (!leaf.children.empty()) {
 			return;
@@ -67,7 +67,7 @@ namespace QuadTree
 		for (const auto &uid : leaf.populationUIDs) {
 			auto &polygon = this->population.find(uid)->second;
 			std::erase(polygon.references, std::ref(leaf));
-			this->addPolygonInTree(leaf, this->population.at(uid));
+			this->addPolygonInTree(leaf, this->population.at(uid), depth + 1);
 		}
 		leaf.populationUIDs.clear();
 	}

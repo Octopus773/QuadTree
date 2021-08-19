@@ -50,7 +50,8 @@ namespace QuadTree
 
 		//! @brief Transform a leaf into a parent of leaves and dispatch it's current polygons
 		//! @param leaf The leaf to transform
-		void splitLeaf(Quadrant &leaf);
+		//! @param depth The depth of the leaf in the tree
+		void splitLeaf(Quadrant &leaf, unsigned int depth);
 
 	public:
 
@@ -86,7 +87,7 @@ namespace QuadTree
 
 		std::unordered_set<APolygon *> getNeighbours(unsigned int polygonUID);
 
-		World(double height, double width, unsigned int maxPolygonPerDivision = 3, unsigned int maxDepth = 2);
+		World(double height, double width, unsigned int maxPolygonPerDivision = 3, unsigned int maxDepth = 5);
 
 		World(const World &) = delete;
 
