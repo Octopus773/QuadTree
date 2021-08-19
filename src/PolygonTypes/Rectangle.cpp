@@ -30,11 +30,13 @@ namespace QuadTree
 	{
 	}
 
-	void Rectangle::moveTo(std::pair<double, double> newMin)
+	void Rectangle::moveTo(std::pair<double, double> pos)
 	{
-		for (auto &point : points) {
-			point.second += newMin.second;
-			point.first += newMin.first;
+		double hTranslation = pos.second - this->points[0].second;
+		double vTranslation = pos.first - this->points[0].first;
+		for (auto &point : this->points) {
+			point.second += hTranslation;
+			point.first += vTranslation;
 		}
 	}
 }

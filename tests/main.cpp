@@ -98,7 +98,13 @@ int main(int ac, char **av)
 		                                         //new QuadTree::Rectangle({{{4.5, 4.5}, {4, 6}, {6, 6}, {6, 4}}}),
 	                                         });
 	for (int i = 0; i < 10; i++) {
-		points.emplace_back(new QuadTree::Rectangle({{{0, 0}, {0, 5}, {5, 5}, {5, 0}}}));
+		auto rectD = new QuadTree::Rectangle({{{0, 0}, {0, 5}, {5, 5}, {5, 0}}});
+		rectD->moveTo({std::rand() % 950, std::rand() % 950});
+		for (auto &pt : rectD->points) {
+			pt.first += std::rand() % 10;
+			pt.second += std::rand() % 10;
+		}
+		points.emplace_back(rectD);
 	}
 
 	for (const auto &point : points) {
@@ -122,6 +128,7 @@ int main(int ac, char **av)
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(now - clock).count() > 900) {
 			clock = now;
 
+			dynamic_cast<QuadTree::Rectangle *>(points[0])->moveTo({std::rand() % 950 , std::rand() % 950});
 			world.updatePolygon(points[0]);
 			/*
 			auto rectD = new QuadTree::Rectangle({{{0, 0}, {0, 5}, {5, 5}, {5, 0}}});

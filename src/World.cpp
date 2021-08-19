@@ -120,6 +120,7 @@ namespace QuadTree
 			return;
 		}
 		this->removePolygonInTree(this->population[polygon->getUID()]);
+		this->population[polygon->getUID()].aabb = Utils::getAABB(polygon);
 		this->addPolygonInTree(this->_rootNode, this->population[polygon->getUID()]);
 	}
 

@@ -19,8 +19,9 @@ namespace QuadTree
 		//! @brief The name for user custom identification
 		std::string name;
 
-		//! @brief Move a rect to the given location (minimum corner) keeps it's size
-		void moveTo(std::pair<double, double> newMin);
+		//! @brief Move a rect to the given location (point at index 0) keeps it's size
+		//! @param pos new pos
+		void moveTo(std::pair<double, double> pos);
 
 		//! @brief Return the name of the polygon
 		//! @note User defined identifier
