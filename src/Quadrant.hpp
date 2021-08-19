@@ -5,6 +5,7 @@
 #pragma once
 
 #include <vector>
+#include <list>
 #include "Rect.hpp"
 
 namespace QuadTree
@@ -21,7 +22,7 @@ namespace QuadTree
 		std::vector<Quadrant> children;
 		//! @brief Contains the UUID of each element contained int this QuadNode
 		//! @note Only leaves nodes contains UIDs
-		std::vector<unsigned int> populationUIDs;
+		std::list<unsigned int> populationUIDs;
 		//! @brief The area covered by the Quadrant
 		Rect pos;
 

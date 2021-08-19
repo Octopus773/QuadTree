@@ -45,7 +45,8 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	// point (4, 4) index: 0
 	CHECK(world._rootNode.children[0].children.empty());
 	CHECK(world._rootNode.children[0].populationUIDs.size() == 1);
-	CHECK(world.population[world._rootNode.children[0].populationUIDs[0]].polygon->getName() == "0");
+	auto it = world._rootNode.children[0].populationUIDs.begin();
+	CHECK(world.population[*it].polygon->getName() == "0");
 	CHECK(world._rootNode.children[0].pos.minVertical == 0);
 	CHECK(world._rootNode.children[0].pos.minHorizontal == 0);
 	CHECK(world._rootNode.children[0].pos.maxHorizontal == 5);
@@ -57,7 +58,8 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	// point (7, 3) inddex: 1
 	CHECK(world._rootNode.children[1].children.empty());
 	CHECK(world._rootNode.children[1].populationUIDs.size() == 1);
-	CHECK(world.population[world._rootNode.children[1].populationUIDs[0]].polygon->getName() == "1");
+	it = world._rootNode.children[1].populationUIDs.begin();
+	CHECK(world.population[*it].polygon->getName() == "1");
 	CHECK(world._rootNode.children[1].pos.minVertical == 0);
 	CHECK(world._rootNode.children[1].pos.minHorizontal == 5);
 	CHECK(world._rootNode.children[1].pos.getWidth() == 5);
@@ -78,8 +80,10 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	//      point (6.5, 6) index: 2 ; (6, 6.5) index: 3
 	CHECK(world._rootNode.children[3].children[0].children.empty());
 	CHECK(world._rootNode.children[3].children[0].populationUIDs.size() == 2);
-	CHECK(world.population[world._rootNode.children[3].children[0].populationUIDs[0]].polygon->getName() == "2");
-	CHECK(world.population[world._rootNode.children[3].children[0].populationUIDs[1]].polygon->getName() == "3");
+	it = world._rootNode.children[3].children[0].populationUIDs.begin();
+	CHECK(world.population[*it].polygon->getName() == "2");
+	std::advance(it, 1);
+	CHECK(world.population[*it].polygon->getName() == "3");
 	CHECK(world._rootNode.children[3].children[0].pos.getWidth() == 2.5);
 	CHECK(world._rootNode.children[3].children[0].pos.getHeight() == 2.5);
 	CHECK(world._rootNode.children[3].children[0].pos.minHorizontal == 5);
@@ -97,7 +101,8 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	//      point (8, 7) index: 4
 	CHECK(world._rootNode.children[3].children[1].children.empty());
 	CHECK(world._rootNode.children[3].children[1].populationUIDs.size() == 1);
-	CHECK(world.population[world._rootNode.children[3].children[1].populationUIDs[0]].polygon->getName() == "4");
+	it = world._rootNode.children[3].children[1].populationUIDs.begin();
+	CHECK(world.population[*it].polygon->getName() == "4");
 	CHECK(world._rootNode.children[3].children[1].pos.getWidth() == 2.5);
 	CHECK(world._rootNode.children[3].children[1].pos.getHeight() == 2.5);
 	CHECK(world._rootNode.children[3].children[1].pos.minHorizontal == 7.5);
@@ -119,7 +124,8 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 	//      point (9, 9) index: 5
 	CHECK(world._rootNode.children[3].children[3].children.empty());
 	CHECK(world._rootNode.children[3].children[3].populationUIDs.size() == 1);
-	CHECK(world.population[world._rootNode.children[3].children[3].populationUIDs[0]].polygon->getName() == "5");
+	it = world._rootNode.children[3].children[3].populationUIDs.begin();
+	CHECK(world.population[*it].polygon->getName() == "5");
 	CHECK(world._rootNode.children[3].children[3].pos.getWidth() == 2.5);
 	CHECK(world._rootNode.children[3].children[3].pos.getHeight() == 2.5);
 	CHECK(world._rootNode.children[3].children[3].pos.minHorizontal == 7.5);
