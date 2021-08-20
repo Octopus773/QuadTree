@@ -12,7 +12,7 @@
 
 #define private public
 
-#include "World.hpp"
+#include "QuadTree.hpp"
 
 using namespace QuadTree::Collisions;
 using namespace std;
@@ -60,7 +60,7 @@ void drawQuadTree(sf::RenderWindow &window, QuadTree::Quadrant &quadrant)
 	}
 }
 
-void drawPolygons(sf::RenderWindow &window, QuadTree::World &world)
+void drawPolygons(sf::RenderWindow &window, QuadTree::QuadTree &world)
 {
 	int idx = 0;
 	for (const auto &poly : world.population) {
@@ -85,7 +85,7 @@ void drawPolygons(sf::RenderWindow &window, QuadTree::World &world)
 int main(int ac, char **av)
 {
 	std::srand(std::time(nullptr));
-	QuadTree::World world(1000, 1000);
+	QuadTree::QuadTree world(1000, 1000);
 	world._maxPolygonPerDivision = 5;
 
 	std::vector<QuadTree::APolygon *> points({

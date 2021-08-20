@@ -9,23 +9,9 @@ endif ()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(SOURCES
-	src/World.cpp
-	src/World.hpp
-	src/PolygonTypes/Point.cpp
-	src/PolygonTypes/Point.hpp
-	src/PolygonTypes/APolygon.cpp
-	src/PolygonTypes/APolygon.hpp
-	src/Quadrant.cpp
-	src/Quadrant.hpp
-	src/ElementInfo.cpp
-	src/ElementInfo.hpp
-	src/Utils.cpp
-	src/Utils.hpp
-	src/Rect.cpp
-	src/Rect.hpp
-	src/Collisions.cpp
-	src/Collisions.hpp
-	src/PolygonTypes/Rectangle.cpp src/PolygonTypes/Rectangle.hpp)
+	src/QuadTree.cpp
+	src/QuadTree.hpp
+	src/QuadTree.cpp src/QuadTree.hpp src/QuadNode.cpp src/QuadNode.hpp src/FreeList.hpp)
 
 include_directories(src)
 

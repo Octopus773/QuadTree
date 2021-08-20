@@ -6,13 +6,13 @@
 
 #define private public
 
-#include "World.hpp"
+#include "QuadTree.hpp"
 #include "Quadrant.hpp"
 #include "PolygonTypes/Point.hpp"
 
 TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 {
-	QuadTree::World world(10, 10);
+	QuadTree::QuadTree world(10, 10);
 
 	CHECK(world._rootNode.pos.getWidth() == 10);
 	CHECK(world._rootNode.pos.getHeight() == 10);
