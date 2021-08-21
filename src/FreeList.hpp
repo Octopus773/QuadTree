@@ -14,25 +14,25 @@ namespace QuadTree
 	class FreeList
 	{
 	public:
-		/// Creates a new free list.
+		//! @brief Creates a new free list.
 		FreeList();
 
-		/// Inserts an element to the free list and returns an index to it.
+		//! @brief Inserts an element to the free list and returns an index to it.
 		int insert(const T &element);
 
-		// Removes the nth element from the free list.
+		//! @brief Removes the nth element from the free list.
 		void erase(int n);
 
-		// Removes all elements from the free list.
+		//! @brief Removes all elements from the free list.
 		void clear();
 
-		// Returns the range of valid indices.
+		//! @brief Returns the range of valid indices.
 		[[nodiscard]] int range() const;
 
-		// Returns the nth element.
+		//! @brief Returns the nth element.
 		T &operator[](int n);
 
-		// Returns the nth element.
+		//! @brief Returns the nth element.
 		const T &operator[](int n) const;
 
 	private:

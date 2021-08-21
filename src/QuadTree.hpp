@@ -6,11 +6,22 @@
 
 #include <vector>
 #include <list>
+#include <memory>
 #include "FreeList.hpp"
 #include "QuadNode.hpp"
 
 namespace QuadTree
 {
+
+	//! @brief Represents a node in the quadtree.
+	struct QuadNode
+	{
+		//! @brief Points to the first child if this node is a branch or the first element if this node is a leaf.
+		int32_t firstChild;
+
+		//! @brief Stores the number of elements in the leaf or -1 if it this node is not a leaf.
+		int32_t count;
+	};
 
 	// Represents an element in the quadtree.
 	struct QuadElt
@@ -38,7 +49,7 @@ namespace QuadTree
 	class QuadTree
 	{
 		// Stores all the elements in the quadtree.
-		FreeList<QuadElt> elts;
+		FreeList<std::shared_ptr<T>> elements;
 
 		// Stores all the element nodes in the quadtree.
 		FreeList<QuadEltNode> elt_nodes;
@@ -48,57 +59,101 @@ namespace QuadTree
 		std::vector<QuadNode> nodes;
 
 		// Stores the quadtree extents.
-		//QuadCRect root_rect;
+		int xmin;
+		int ymin;
+		int xmax;
+		int ymax;
 
 		// Stores the first free node in the quadtree to be reclaimed as 4
 		// contiguous nodes at once. A value of -1 indicates that the free
 		// list is empty, at which point we simply insert 4 nodes to the
 		// back of the nodes array.
-		int free_node;
+		int free_node = -1;
 
 		// Stores the maximum depth allowed for the quadtree.
-		int max_depth;
+		unsigned int max_depth;
+		unsigned int max_element_per_node;
+
+		//! @brief Split a leaf node into children
+		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
+		void split_leaf(QuadNode &leaf, const int rect[4]);
+
+	public:
+
+		explicit QuadTree(int x1, int y1, int x2, int y2);
 	};
 
-	static std::list<QuadNode> find_leaves(const Quadtree& tree, const QuadNode& root, const int rect[4])
+	template<typename T>
+	QuadTree<T>::QuadTree(int x1, int y1, int x2, int y2)
+		: xmin(x1),
+		  ymin(y1),
+		  xmax(x2),
+		  ymax(y2),
+		  max_depth(5),
+		  max_element_per_node(8)
 	{
-		std::list<QuadNode> leaves, to_process;
-		to_process.push_back(root);
-		while (!to_process.empty())
-		{
-			const auto nd = to_process.back();
-			to_process.pop_back();
+	}
 
+	template<typename T>
+	void QuadTree<T>::split_leaf(QuadNode &leaf, const int rect[4])
+	{
+		auto &elementNodeIndex = leaf.firstChild;
+		std::array<std::vector<int>, 4> indexes_to_link;
+		std::vector<int> indexes_to_remove;
 
+		const int childWidth = (rect[2] - rect[0]) >> 1;
+		const int childHeight = (rect[3] - rect[1]) >> 1;
 
-			// If this node is a leaf, insert it to the list.
-			if (tree.nodes[nd.index].count != -1)
-				leaves.push_back(nd);
-			else
-			{
-				// Otherwise push the children that intersect the rectangle.
-				const int mx = nd.crect[0], my = nd.crect[1];
-				const int hx = nd.crect[2] >> 1, hy = nd.crect[3] >> 1;
-				const int fc = tree.nodes[nd.index].first_child;
-				const int l = mx-hx, t = my-hx, r = mx+hx, b = my+hy;
+		do {
+			auto &elementNode = this->elt_nodes[elementNodeIndex];
+			auto &element = this->elements[elementNode.element];
 
-				if (rect[1] <= my)
-				{
-					if (rect[0] <= mx)
-						to_process.push_back(child_data(l,t, hx, hy, fc+0, nd.depth+1));
-					if (rect[2] > mx)
-						to_process.push_back(child_data(r,t, hx, hy, fc+1, nd.depth+1));
-				}
-				if (rect[3] > my)
-				{
-					if (rect[0] <= mx)
-						to_process.push_back(child_data(l,b, hx, hy, fc+2, nd.depth+1));
-					if (rect[2] > mx)
-						to_process.push_back(child_data(r,b, hx, hy, fc+3, nd.depth+1));
-				}
+			// top right
+			if (element->collideRect({rect[0],
+			                          rect[1],
+			                          rect[0] + childWidth,
+			                          rect[1] + childHeight})) {
+				indexes_to_link[0].emplace_back(this->elt_nodes.insert({-1, elementNode.element}));
+			}
+			// top left
+			if (element->collideRect({rect[0] + childWidth,
+			                          rect[1],
+			                          rect[0] + childWidth + childWidth,
+			                          rect[1] + childHeight})) {
+				indexes_to_link[1].emplace_back(this->elt_nodes.insert({-1, elementNode.element}));
+			}
+			// bottom right
+			if (element->collideRect({rect[0],
+			                          rect[1] + childHeight,
+			                          rect[0] + childWidth,
+			                          rect[1] + childHeight + childHeight})) {
+				indexes_to_link[2].emplace_back(this->elt_nodes.insert({-1, elementNode.element}));
+			}
+			// bottom left
+			if (element->collideRect({rect[0] + childWidth,
+			                          rect[1] + childHeight,
+			                          rect[0] + childWidth + childWidth,
+			                          rect[1] + childHeight + childHeight})) {
+				indexes_to_link[3].emplace_back(this->elt_nodes.insert({-1, elementNode.element}));
+			}
+
+			indexes_to_remove.emplace_back(elementNodeIndex);
+			elementNodeIndex = elementNode.next;
+		} while (elementNodeIndex != -1);
+
+		for (const auto &indexes : indexes_to_link) {
+			this->nodes.emplace_back({indexes.empty() ? -2 : indexes[0], indexes.size()});
+			for (int i = 0; i < static_cast<int>(indexes.size()) - 1; i++) {
+				this->elt_nodes[indexes[i]].next = indexes[i + 1];
 			}
 		}
-		return leaves;
+
+		for (const auto &index : indexes_to_remove) {
+			this->elt_nodes.erase(index);
+		}
+
+		leaf.firstChild = this->nodes.size() - 4;
+		leaf.count = -1;
 	}
 }
 
