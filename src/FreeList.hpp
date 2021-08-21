@@ -18,7 +18,7 @@ namespace QuadTree
 		FreeList();
 
 		//! @brief Inserts an element to the free list and returns an index to it.
-		int insert(const T &element);
+		int insert(T element);
 
 		//! @brief Removes the nth element from the free list.
 		void erase(int n);
@@ -52,17 +52,17 @@ namespace QuadTree
 	}
 
 	template<class T>
-	int FreeList<T>::insert(const T &element)
+	int FreeList<T>::insert(T element)
 	{
 		if (this->_first_free != -1) {
 			const int index = this->_first_free;
 			this->_first_free = this->_data[this->_first_free].next;
-			this->_data[index].element = element;
+			this->_data[index].element = std::move(element);
 			return index;
 		} else {
 			FreeElement fe;
 			fe.element = element;
-			this->_data.push_back(fe);
+			this->_data.emplace_back(fe);
 			return static_cast<int>(this->_data.size() - 1);
 		}
 	}

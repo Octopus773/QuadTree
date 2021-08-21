@@ -78,7 +78,11 @@ namespace QuadTree
 		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
 		void split_leaf(QuadNode &leaf, const int rect[4]);
 
+		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const int rect[4], int depth);
+
 	public:
+
+		void add(std::shared_ptr<T> element);
 
 		explicit QuadTree(int x1, int y1, int x2, int y2);
 	};
@@ -92,6 +96,14 @@ namespace QuadTree
 		  max_depth(5),
 		  max_element_per_node(8)
 	{
+	}
+
+	template<typename T>
+	void QuadTree<T>::add(std::shared_ptr<T> element)
+	{
+		int elementIndex = this->elements.insert(element);
+
+
 	}
 
 	template<typename T>
@@ -154,6 +166,95 @@ namespace QuadTree
 
 		leaf.firstChild = this->nodes.size() - 4;
 		leaf.count = -1;
+	}
+
+	template<typename T>
+	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const int rect[4], int depth)
+	{
+		if (node.count == -1) {
+
+			const int childWidth = (rect[2] - rect[0]) >> 1;
+			const int childHeight = (rect[3] - rect[1]) >> 1;
+
+			auto element = this->elements[elementIndex];
+
+
+			// top right
+			if (element->collideRect({rect[0],
+			                          rect[1],
+			                          rect[0] + childWidth,
+			                          rect[1] + childHeight})) {
+				this->addElementQuadNodeInTree(elementIndex,
+				                               this->nodes[node.firstChild],
+				                               {rect[0],
+				                                rect[1],
+				                                rect[0] + childWidth,
+				                                rect[1] + childHeight},
+				                               depth + 1);
+			}
+			// top left
+			if (element->collideRect({rect[0] + childWidth,
+			                          rect[1],
+			                          rect[0] + childWidth + childWidth,
+			                          rect[1] + childHeight})) {
+				this->addElementQuadNodeInTree(elementIndex,
+				                               this->nodes[node.firstChild + 1],
+				                               {rect[0] + childWidth,
+				                                rect[1],
+				                                rect[0] + childWidth + childWidth,
+				                                rect[1] + childHeight},
+				                               depth + 1);
+			}
+			// bottom right
+			if (element->collideRect({rect[0],
+			                          rect[1] + childHeight,
+			                          rect[0] + childWidth,
+			                          rect[1] + childHeight + childHeight})) {
+				this->addElementQuadNodeInTree(elementIndex,
+				                               this->nodes[node.firstChild + 2],
+				                               {rect[0],
+				                                rect[1] + childHeight,
+				                                rect[0] + childWidth,
+				                                rect[1] + childHeight + childHeight},
+				                               depth + 1);
+			}
+			// bottom left
+			if (element->collideRect({rect[0] + childWidth,
+			                          rect[1] + childHeight,
+			                          rect[0] + childWidth + childWidth,
+			                          rect[1] + childHeight + childHeight})) {
+				this->addElementQuadNodeInTree(elementIndex,
+				                               this->nodes[node.firstChild + 3],
+				                               {rect[0] + childWidth,
+				                                rect[1] + childHeight,
+				                                rect[0] + childWidth + childWidth,
+				                                rect[1] + childHeight + childHeight},
+				                               depth + 1);
+			}
+			return;
+		}
+
+		int quadNodeIndex = node.firstChild;
+
+		if (node.count == 0) {
+			node.firstChild = this->elt_nodes.insert({-1, elementIndex});
+			node.count++;
+			return;
+		} else {
+			while (true) {
+				if (this->elt_nodes[quadNodeIndex].next == -1) {
+					this->elt_nodes[quadNodeIndex].next = this->elt_nodes.insert({-1, elementIndex});
+					node.count++;
+					break;
+				}
+				quadNodeIndex = this->elt_nodes[quadNodeIndex].next;
+			}
+		}
+
+		if (depth < this->max_depth && node.count > this->max_element_per_node) {
+			this->split_leaf(node, rect);
+		}
+
 	}
 }
 
