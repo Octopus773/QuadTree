@@ -167,34 +167,121 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 			// node 12
 		case 10:
 			CHECK(neighbours.size() == 2);
-			CHECK(std::find_if(neighbours.begin(), neighbours.end(), [](const auto &neighbour) {
-				return neighbour->getUID() == 24;
-			}) != neighbours.end());
-			CHECK(std::find_if(neighbours.begin(), neighbours.end(), [](const auto &neighbour) {
-				return neighbour->getUID() == 29;
-			}) != neighbours.end());
+			for (const auto &value : {24, 29}) {
+				CHECK(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
 			break;
 		case 24:
 			CHECK(neighbours.size() == 2);
-			CHECK(std::find_if(neighbours.begin(), neighbours.end(), [](const auto &neighbour) {
-				return neighbour->getUID() == 10;
-			}) != neighbours.end());
-			CHECK(std::find_if(neighbours.begin(), neighbours.end(), [](const auto &neighbour) {
-				return neighbour->getUID() == 29;
-			}) != neighbours.end());
+			for (const auto &value : {10, 29}) {
+				CHECK(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
 			break;
 		case 29:
 			CHECK(neighbours.size() == 2);
-			CHECK(std::find_if(neighbours.begin(), neighbours.end(), [](const auto &neighbour) {
-				return neighbour->getUID() == 24;
-			}) != neighbours.end());
-			CHECK(std::find_if(neighbours.begin(), neighbours.end(), [](const auto &neighbour) {
-				return neighbour->getUID() == 10;
-			}) != neighbours.end());
+			for (const auto &value : {24, 10}) {
+				CHECK(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
+			break;
+			// node 13
+		case 4:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 18);
+			break;
+		case 18:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 4);
+			break;
+			// node 14
+		case 16:
+			CHECK(neighbours.size() == 3);
+			for (const auto &value : {19, 28, 27}) {
+				CHECK(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
+			break;
+		case 19:
+			CHECK(neighbours.size() == 3);
+			for (const auto &value : {16, 27, 28}) {
+				CHECK(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
+			break;
+		case 27:
+			CHECK(neighbours.size() == 3);
+			for (const auto &value : {16, 19, 28}) {
+				CHECK(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
+			break;
+		case 28:
+			CHECK(neighbours.size() == 3);
+			for (const auto &value : {16, 19, 27}) {
+				CHECK(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
+			break;
+			// node 15
+		case 11:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 12);
+			break;
+		case 12:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 11);
+			break;
+			// node 16
+		case 20:
+			CHECK(neighbours.empty());
+			break;
+			// node 19
+		case 23:
+			CHECK(neighbours.empty());
+			break;
+			// node 20
+		case 9:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 13);
+			break;
+		case 13:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 9);
+			break;
+			// node 21
+		case 21:
+			CHECK(neighbours.empty());
+			break;
+			// node 23
+		case 0:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 25);
+			break;
+		case 25:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 0);
+			break;
+			// node 24
+		case 5:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 26);
+			break;
+		case 26:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 5);
 			break;
 		default:
 			// shouldn't pass here
-			//CHECK(false);
+			CHECK(false);
 			break;
 		}
 
