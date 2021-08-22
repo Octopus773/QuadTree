@@ -68,7 +68,7 @@ namespace QuadTree
 			this->_data[index].first = std::move(element);
 			return index;
 		} else {
-			this->_data.emplace_back(element, -1);
+			this->_data.push_back({element, -1});
 			return static_cast<int>(this->_data.size() - 1);
 		}
 	}
@@ -76,6 +76,7 @@ namespace QuadTree
 	template<class T>
 	void FreeList<T>::erase(int n)
 	{
+
 		if (this->_first_free < n) {
 			this->_data[n].second = this->_data[this->_first_free].second;
 			this->_data[this->_first_free].second = n;

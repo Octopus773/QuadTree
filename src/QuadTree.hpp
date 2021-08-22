@@ -8,6 +8,7 @@
 #include <list>
 #include <algorithm>
 #include <memory>
+#include <iostream>
 #include <unordered_set>
 #include "FreeList.hpp"
 #include "QuadNode.hpp"
@@ -138,7 +139,7 @@ namespace QuadTree
 		const double childHeight = (rect[3] - rect[1]) / 2;
 
 		do {
-			auto &elementNode = this->elementNodes[elementNodeIndex];
+			const auto elementNode = this->elementNodes[elementNodeIndex];
 			const auto &element = this->elements[elementNode.element];
 
 			// top right
@@ -170,7 +171,7 @@ namespace QuadTree
 				indexes_to_link[3].emplace_back(this->elementNodes.insert({-1, elementNode.element}));
 			}
 
-			indexes_to_remove.emplace_back(elementNodeIndex);
+			indexes_to_remove.push_back(elementNodeIndex);
 			elementNodeIndex = elementNode.next;
 		} while (elementNodeIndex != -1);
 
