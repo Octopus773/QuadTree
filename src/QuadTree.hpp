@@ -88,9 +88,9 @@ namespace QuadTree
 
 		//! @brief Split a leaf node into children
 		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
-		void split_leaf(QuadNode &leaf, const double rect[4]);
+		void split_leaf(QuadNode &leaf, const std::array<double, 4> &rect);
 
-		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const double rect[4], int depth);
+		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect, int depth);
 
 	public:
 
@@ -111,15 +111,7 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::add(std::shared_ptr<T> element)
-	{
-		int elementIndex = this->elements.insert(element);
-
-
-	}
-
-	template<typename T>
-	void QuadTree<T>::split_leaf(QuadNode &leaf, const double rect[4])
+	void QuadTree<T>::split_leaf(QuadNode &leaf, const std::array<double, 4> &rect)
 	{
 		auto &elementNodeIndex = leaf.firstChild;
 		std::array<std::vector<int>, 4> indexes_to_link;
@@ -181,7 +173,7 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const double rect[4], int depth)
+	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect, int depth)
 	{
 		if (node.count == -1) {
 
@@ -267,6 +259,14 @@ namespace QuadTree
 			this->split_leaf(node, rect);
 		}
 
+	}
+
+	template<typename T>
+	void QuadTree<T>::add(std::shared_ptr<T> element)
+	{
+		int elementIndex = this->elements.insert(element);
+
+		this->addElementQuadNodeInTree(elementIndex, this->nodes[0], {this->xmin, this->ymin, this->xmax, this->ymax}, 0);
 	}
 }
 

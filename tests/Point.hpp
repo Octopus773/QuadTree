@@ -23,8 +23,8 @@ namespace QuadTree::Tests
 		[[nodiscard]] std::string getName() const;
 
 
-		//! @brief Tells if the point collide the rectangle
-		[[nodiscard]] bool collide(const double rect[4]);
+		//! @brief Tells if the point collideRect the rectangle
+		[[nodiscard]] bool collideRect(const std::array<double, 4> &rect);
 
 		Point(double hPos, double vPos, std::string name = "Point");
 

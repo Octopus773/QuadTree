@@ -61,7 +61,7 @@ namespace QuadTree
 			this->_data[index].first = std::move(element);
 			return index;
 		} else {
-			this->_data.emplace_back({element, -1});
+			this->_data.emplace_back(element, -1);
 			return static_cast<int>(this->_data.size() - 1);
 		}
 	}
@@ -89,12 +89,12 @@ namespace QuadTree
 	template<class T>
 	T &FreeList<T>::operator[](int n)
 	{
-		return this->_data[n].second;
+		return this->_data[n].first;
 	}
 
 	template<class T>
 	const T &FreeList<T>::operator[](int n) const
 	{
-		return this->_data[n].second;
+		return this->_data[n].first;
 	}
 }

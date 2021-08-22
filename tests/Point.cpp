@@ -21,8 +21,8 @@ namespace QuadTree::Tests
 		return this->_name;
 	}
 
-	bool Point::collide(const double rect[4])
+	bool Point::collideRect(const std::array<double, 4> &rect)
 	{
-		return pointInRect(rect, {this->_horizontalPos, this->_verticalPos});
+		return pointInRect(rect.data(), {this->_horizontalPos, this->_verticalPos});
 	}
 }
