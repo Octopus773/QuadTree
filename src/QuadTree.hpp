@@ -90,7 +90,7 @@ namespace QuadTree
 		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
 		void split_leaf(QuadNode &leaf, const std::array<double, 4> &rect);
 
-		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect, int depth);
+		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect, unsigned int depth);
 
 	public:
 
@@ -173,7 +173,7 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect, int depth)
+	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect, unsigned int depth)
 	{
 		if (node.count == -1) {
 
@@ -255,7 +255,7 @@ namespace QuadTree
 			}
 		}
 
-		if (depth < this->max_depth && node.count > this->max_element_per_node) {
+		if (depth < this->max_depth && static_cast<unsigned>(node.count) > this->max_element_per_node) {
 			this->split_leaf(node, rect);
 		}
 
