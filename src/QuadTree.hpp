@@ -13,6 +13,18 @@
 namespace QuadTree
 {
 
+	//! @brief USed to get the correct value from a const double rect[4] (passed as argument)
+	enum Rect {
+		//! @brief minimum horizontal
+		minH = 0,
+		//! @brief minimum vertical
+		minV = 1,
+		//! @brief maximum horizontal
+		maxH = 2,
+		//! @brief maximum vertical
+		maxV = 3
+	};
+
 	//! @brief Represents a node in the quadtree.
 	struct QuadNode
 	{
