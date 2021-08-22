@@ -9,9 +9,8 @@ endif ()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(SOURCES
-	src/QuadTree.cpp
 	src/QuadTree.hpp
-	src/QuadTree.cpp src/QuadTree.hpp src/QuadNode.cpp src/QuadNode.hpp src/FreeList.hpp)
+	src/QuadTree.hpp src/QuadNode.cpp src/QuadNode.hpp src/FreeList.hpp)
 
 include_directories(src)
 

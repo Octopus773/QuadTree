@@ -6,7 +6,9 @@
 
 #include <vector>
 #include <list>
+#include <algorithm>
 #include <memory>
+#include <unordered_set>
 #include "FreeList.hpp"
 #include "QuadNode.hpp"
 
@@ -89,7 +91,13 @@ namespace QuadTree
 		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect,
 		                              unsigned int depth);
 
+
+		std::vector<int> findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect);
+
 	public:
+
+
+		std::vector<std::shared_ptr<T>> getNeighbours(const std::shared_ptr<T> &element) const;
 
 		//! @brief Stores the maximum depth allowed for the quadtree.
 		//! @note The tree won't be recreated when changing this value
@@ -131,7 +139,7 @@ namespace QuadTree
 
 		do {
 			auto &elementNode = this->elementNodes[elementNodeIndex];
-			auto &element = this->elements[elementNode.element];
+			const auto &element = this->elements[elementNode.element];
 
 			// top right
 			if (element->collideRect({rect[0],
@@ -190,7 +198,7 @@ namespace QuadTree
 			const double childWidth = (rect[2] - rect[0]) / 2;
 			const double childHeight = (rect[3] - rect[1]) / 2;
 
-			auto element = this->elements[elementIndex];
+			const auto &element = this->elements[elementIndex];
 
 
 			// top right
@@ -278,6 +286,115 @@ namespace QuadTree
 
 		this->addElementQuadNodeInTree(elementIndex, this->nodes[0], {this->xmin, this->ymin, this->xmax, this->ymax},
 		                               0);
+	}
+
+	template<typename T>
+	std::vector<std::shared_ptr<T>> QuadTree<T>::getNeighbours(const std::shared_ptr<T> &element) const
+	{
+		int index = this->elements.findIndex(element);
+
+		if (index == -1) {
+			throw std::runtime_error("element not found in tree");
+		}
+
+		std::vector<int> leavesIndexes = this->findLeaves(index, 0, {this->xmin, this->ymin, this->xmax, this->ymax});
+		std::vector<int> neighboursIndexes;
+
+		for (const auto &leaveIndex : leavesIndexes) {
+			const auto &leaf = this->nodes[leaveIndex];
+			int elementNodeIndex = leaf.firstChild;
+			for (int i = 0; i < leaf.count; i++) {
+				neighboursIndexes.emplace_back(this->elementNodes[elementNodeIndex].element);
+				elementNodeIndex = this->elementNodes[elementNodeIndex].next;
+			}
+		}
+
+		// eliminates duplicates
+		std::unordered_set<int> s;
+		for (int i : neighboursIndexes)
+			s.insert(i);
+		s.erase(index);
+		neighboursIndexes.assign(s.begin(), s.end());
+		std::sort(neighboursIndexes.begin(), neighboursIndexes.end());
+
+
+		std::vector<std::shared_ptr<T>> neighbours;
+		for (const auto &neighbourIndex: neighboursIndexes) {
+			neighbours.emplace_back(this->elements[neighbourIndex]);
+		}
+		return neighbours;
+	}
+
+	template<typename T>
+	std::vector<int> QuadTree<T>::findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect)
+	{
+		std::vector<int> leavesIndexes;
+		auto &node = this->nodes[nodeIndex];
+
+		if (node.count != -1) {
+			leavesIndexes.emplace_back(nodeIndex);
+			return leavesIndexes;
+		}
+
+		const double childWidth = (rect[2] - rect[0]) / 2;
+		const double childHeight = (rect[3] - rect[1]) / 2;
+
+		const auto &element = this->elements[elementIndex];
+
+
+		// top right
+		if (element->collideRect({rect[0],
+		                          rect[1],
+		                          rect[0] + childWidth,
+		                          rect[1] + childHeight})) {
+			auto leavesFound = this->findLeaves(elementIndex,
+			                                    this->nodes[node.firstChild],
+			                                    {rect[0],
+			                                     rect[1],
+			                                     rect[0] + childWidth,
+			                                     rect[1] + childHeight});
+			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
+		}
+		// top left
+		if (element->collideRect({rect[0] + childWidth,
+		                          rect[1],
+		                          rect[0] + childWidth + childWidth,
+		                          rect[1] + childHeight})) {
+			auto leavesFound = this->findLeaves(elementIndex,
+			                                    this->nodes[node.firstChild + 1],
+			                                    {rect[0] + childWidth,
+			                                     rect[1],
+			                                     rect[0] + childWidth + childWidth,
+			                                     rect[1] + childHeight});
+			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
+		}
+		// bottom right
+		if (element->collideRect({rect[0],
+		                          rect[1] + childHeight,
+		                          rect[0] + childWidth,
+		                          rect[1] + childHeight + childHeight})) {
+			auto leavesFound = this->findLeaves(elementIndex,
+			                                    this->nodes[node.firstChild + 2],
+			                                    {rect[0],
+			                                     rect[1] + childHeight,
+			                                     rect[0] + childWidth,
+			                                     rect[1] + childHeight + childHeight});
+			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
+		}
+		// bottom left
+		if (element->collideRect({rect[0] + childWidth,
+		                          rect[1] + childHeight,
+		                          rect[0] + childWidth + childWidth,
+		                          rect[1] + childHeight + childHeight})) {
+			auto leavesFound = this->findLeaves(elementIndex,
+			                                    this->nodes[node.firstChild + 3],
+			                                    {rect[0] + childWidth,
+			                                     rect[1] + childHeight,
+			                                     rect[0] + childWidth + childWidth,
+			                                     rect[1] + childHeight + childHeight});
+			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
+		}
+		return leavesIndexes;
 	}
 }
 

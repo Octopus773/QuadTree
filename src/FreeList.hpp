@@ -29,11 +29,17 @@ namespace QuadTree
 		//! @brief Returns the range of valid indices.
 		[[nodiscard]] int range() const;
 
+		//! @brief Gives the index of an element, if not found returns -1
+		[[nodiscard]] int findIndex(T element) const;
+
 		//! @brief Returns the nth element.
 		T &operator[](int n);
 
 		//! @brief Returns the nth element.
 		const T &operator[](int n) const;
+
+		//! @brief call pred with all the active elements
+		void for_each(std::function<void (T &)> pred);
 
 	private:
 		/*
@@ -43,6 +49,7 @@ namespace QuadTree
 			int next;
 		}; */
 		std::vector <std::pair<T, int>> _data{};
+		//! @brief first free index
 		int _first_free;
 	};
 
@@ -69,8 +76,13 @@ namespace QuadTree
 	template<class T>
 	void FreeList<T>::erase(int n)
 	{
-		this->_data[n].second = this->_first_free;
-		this->_first_free = n;
+		if (this->_first_free < n) {
+			this->_data[n].second = this->_data[this->_first_free].second;
+			this->_data[this->_first_free].second = n;
+		} else {
+			this->_data[n].second = this->_first_free;
+			this->_first_free = n;
+		}
 	}
 
 	template<class T>
@@ -96,5 +108,26 @@ namespace QuadTree
 	const T &FreeList<T>::operator[](int n) const
 	{
 		return this->_data[n].first;
+	}
+
+	template<class T>
+	int FreeList<T>::findIndex(T element) const
+	{
+		auto it = std::find(this->_data.begin(), this->_data.end(), element);
+		return it == this->_data.end() ? -1 : it;
+	}
+
+	template<class T>
+	void FreeList<T>::for_each(std::function<void(T &)> pred)
+	{
+		int next_empty_index = this->_first_free;
+
+		for (int i = 0; i < this->_data.size(); i++) {
+			if (i == next_empty_index) {
+				next_empty_index = this->_data[i].second;
+				continue;
+			}
+			pred(this->_data[i].first);
+		}
 	}
 }
