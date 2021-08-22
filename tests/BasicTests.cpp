@@ -281,7 +281,7 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 			CHECK(neighbours[0]->getUID() == 5);
 			break;
 		default:
-			// shouldn't pass here
+			// shouldn't go here
 			CHECK(false);
 			break;
 		}

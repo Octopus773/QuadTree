@@ -10,7 +10,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(SOURCES
 	src/QuadTree.hpp
-	src/QuadTree.hpp src/QuadNode.cpp src/QuadNode.hpp src/FreeList.hpp)
+	src/QuadTree.hpp
+	src/QuadNode.cpp
+	src/QuadNode.hpp
+	src/FreeList.hpp
+	)
 
 include_directories(src)
 
@@ -27,7 +31,10 @@ add_executable(unit_tests EXCLUDE_FROM_ALL
 	tests/Catch2Main.cpp
 	tests/UtilsFunctionTests.cpp
 	tests/CollisionsTests.cpp
-	tests/Point.cpp tests/Point.hpp tests/Collisions.hpp)
+	tests/Point.cpp
+	tests/Point.hpp
+	tests/Collisions.hpp
+	)
 
 find_package(Catch2 QUIET)
 if (NOT Catch2_FOUND)
