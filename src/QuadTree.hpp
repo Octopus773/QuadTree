@@ -59,10 +59,10 @@ namespace QuadTree
 		std::vector<QuadNode> nodes;
 
 		// Stores the quadtree extents.
-		int xmin;
-		int ymin;
-		int xmax;
-		int ymax;
+		double xmin;
+		double ymin;
+		double xmax;
+		double ymax;
 
 		// Stores the first free node in the quadtree to be reclaimed as 4
 		// contiguous nodes at once. A value of -1 indicates that the free
@@ -76,9 +76,9 @@ namespace QuadTree
 
 		//! @brief Split a leaf node into children
 		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
-		void split_leaf(QuadNode &leaf, const int rect[4]);
+		void split_leaf(QuadNode &leaf, const double rect[4]);
 
-		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const int rect[4], int depth);
+		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const double rect[4], int depth);
 
 	public:
 
@@ -107,14 +107,14 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::split_leaf(QuadNode &leaf, const int rect[4])
+	void QuadTree<T>::split_leaf(QuadNode &leaf, const double rect[4])
 	{
 		auto &elementNodeIndex = leaf.firstChild;
 		std::array<std::vector<int>, 4> indexes_to_link;
 		std::vector<int> indexes_to_remove;
 
-		const int childWidth = (rect[2] - rect[0]) >> 1;
-		const int childHeight = (rect[3] - rect[1]) >> 1;
+		const double childWidth = (rect[2] - rect[0]) / 2;
+		const double childHeight = (rect[3] - rect[1]) / 2;
 
 		do {
 			auto &elementNode = this->elt_nodes[elementNodeIndex];
@@ -154,7 +154,7 @@ namespace QuadTree
 		} while (elementNodeIndex != -1);
 
 		for (const auto &indexes : indexes_to_link) {
-			this->nodes.emplace_back({indexes.empty() ? -2 : indexes[0], indexes.size()});
+			this->nodes.emplace_back(indexes.empty() ? -2 : indexes[0], indexes.size());
 			for (int i = 0; i < static_cast<int>(indexes.size()) - 1; i++) {
 				this->elt_nodes[indexes[i]].next = indexes[i + 1];
 			}
@@ -169,12 +169,12 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const int rect[4], int depth)
+	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const double rect[4], int depth)
 	{
 		if (node.count == -1) {
 
-			const int childWidth = (rect[2] - rect[0]) >> 1;
-			const int childHeight = (rect[3] - rect[1]) >> 1;
+			const double childWidth = (rect[2] - rect[0]) / 2;
+			const double childHeight = (rect[3] - rect[1]) / 2;
 
 			auto element = this->elements[elementIndex];
 

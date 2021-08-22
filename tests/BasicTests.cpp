@@ -144,25 +144,3 @@ TEST_CASE("Functional test Normal use of quadtree points", "[QuadTree][Basic]")
 		delete point;
 	}
 }
-
-TEST_CASE("Check init point and QuadNode", "[QuadTree][init]")
-{
-	auto point = new QuadTree::Point{7, 3};
-	QuadTree::Quadrant qn(0, 5, 15, 11);
-
-
-	CHECK(qn.children.empty());
-	CHECK(qn.populationUIDs.empty());
-	CHECK(qn.pos.minVertical == 5);
-	CHECK(qn.pos.minHorizontal == 0);
-	CHECK(qn.pos.getWidth() == 15);
-	CHECK(qn.pos.getHeight() == 6);
-
-	point->setUID(678087);
-	CHECK(point->getUID() == 678087);
-	CHECK(point->getPoints().size() == 1);
-	CHECK(point->getPoints()[0].first == 7);
-	CHECK(point->getPoints()[0].second == 3);
-
-	delete point;
-}
