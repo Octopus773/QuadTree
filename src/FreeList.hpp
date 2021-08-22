@@ -113,8 +113,10 @@ namespace QuadTree
 	template<class T>
 	int FreeList<T>::findIndex(T element) const
 	{
-		auto it = std::find(this->_data.begin(), this->_data.end(), element);
-		return it == this->_data.end() ? -1 : it;
+		auto it = std::find_if(this->_data.begin(), this->_data.end(), [&element](const auto &elementList) {
+			return element == elementList.first;
+		});
+		return it == this->_data.end() ? -1 : it - this->_data.begin();
 	}
 
 	template<class T>

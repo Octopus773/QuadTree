@@ -92,7 +92,7 @@ namespace QuadTree
 		                              unsigned int depth);
 
 
-		std::vector<int> findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect);
+		std::vector<int> findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect) const;
 
 	public:
 
@@ -326,7 +326,7 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	std::vector<int> QuadTree<T>::findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect)
+	std::vector<int> QuadTree<T>::findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect) const
 	{
 		std::vector<int> leavesIndexes;
 		auto &node = this->nodes[nodeIndex];
@@ -348,7 +348,7 @@ namespace QuadTree
 		                          rect[0] + childWidth,
 		                          rect[1] + childHeight})) {
 			auto leavesFound = this->findLeaves(elementIndex,
-			                                    this->nodes[node.firstChild],
+			                                    node.firstChild,
 			                                    {rect[0],
 			                                     rect[1],
 			                                     rect[0] + childWidth,
@@ -361,7 +361,7 @@ namespace QuadTree
 		                          rect[0] + childWidth + childWidth,
 		                          rect[1] + childHeight})) {
 			auto leavesFound = this->findLeaves(elementIndex,
-			                                    this->nodes[node.firstChild + 1],
+			                                    node.firstChild + 1,
 			                                    {rect[0] + childWidth,
 			                                     rect[1],
 			                                     rect[0] + childWidth + childWidth,
@@ -374,7 +374,7 @@ namespace QuadTree
 		                          rect[0] + childWidth,
 		                          rect[1] + childHeight + childHeight})) {
 			auto leavesFound = this->findLeaves(elementIndex,
-			                                    this->nodes[node.firstChild + 2],
+			                                    node.firstChild + 2,
 			                                    {rect[0],
 			                                     rect[1] + childHeight,
 			                                     rect[0] + childWidth,
@@ -387,7 +387,7 @@ namespace QuadTree
 		                          rect[0] + childWidth + childWidth,
 		                          rect[1] + childHeight + childHeight})) {
 			auto leavesFound = this->findLeaves(elementIndex,
-			                                    this->nodes[node.firstChild + 3],
+			                                    node.firstChild + 3,
 			                                    {rect[0] + childWidth,
 			                                     rect[1] + childHeight,
 			                                     rect[0] + childWidth + childWidth,

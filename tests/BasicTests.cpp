@@ -27,7 +27,9 @@ TEST_CASE("QuadTree Basic Use", "[QuadTree]")
 		qT.add(pt);
 	}
 
-
+	for (const auto &pt : points) {
+		qT.getNeighbours(pt);
+	}
 
 
 
