@@ -12,21 +12,27 @@
 namespace QuadTree::Tests
 {
 
+	//! @brief Point class used to test the quadtree
 	class Point
 	{
 	private:
 		double _horizontalPos;
 		double _verticalPos;
 		std::string _name;
+		int _uid;
 	public:
 
 		[[nodiscard]] std::string getName() const;
+
+		[[nodiscard]] int getUID() const;
 
 
 		//! @brief Tells if the point collideRect the rectangle
 		[[nodiscard]] bool collideRect(const std::array<double, 4> &rect);
 
 		Point(double hPos, double vPos, std::string name = "Point");
+
+		Point(double hPos, double vPos, int uid);
 
 		Point(const Point &) = delete;
 

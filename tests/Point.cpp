@@ -25,4 +25,17 @@ namespace QuadTree::Tests
 	{
 		return pointInRect(rect.data(), {this->_horizontalPos, this->_verticalPos});
 	}
+
+	Point::Point(double hPos, double vPos, int uid)
+		: _horizontalPos(hPos),
+		  _verticalPos(vPos),
+		  _name("Point"),
+		  _uid(uid)
+	{
+	}
+
+	int Point::getUID() const
+	{
+		return this->_uid;
+	}
 }
