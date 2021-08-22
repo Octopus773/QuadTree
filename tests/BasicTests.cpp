@@ -54,6 +54,7 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 {
 	// dataset realized with
 	// https://editor.p5js.org/Aslatas/sketches/bQwvi43Uf
+	// modified code in ressources/datacreator.js
 
 	QuadTree::QuadTree<QuadTree::Tests::Point> qT(0, 0, 510, 510);
 
