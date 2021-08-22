@@ -36,12 +36,13 @@ namespace QuadTree
 		const T &operator[](int n) const;
 
 	private:
+		/*
 		union FreeElement
 		{
 			T element;
 			int next;
-		};
-		std::vector <FreeElement> _data{};
+		}; */
+		std::vector <std::pair<T, int>> _data{};
 		int _first_free;
 	};
 
@@ -56,13 +57,11 @@ namespace QuadTree
 	{
 		if (this->_first_free != -1) {
 			const int index = this->_first_free;
-			this->_first_free = this->_data[this->_first_free].next;
-			this->_data[index].element = std::move(element);
+			this->_first_free = this->_data[this->_first_free].second;
+			this->_data[index].first = std::move(element);
 			return index;
 		} else {
-			FreeElement fe;
-			fe.element = element;
-			this->_data.emplace_back(fe);
+			this->_data.emplace_back({element, -1});
 			return static_cast<int>(this->_data.size() - 1);
 		}
 	}
@@ -70,7 +69,7 @@ namespace QuadTree
 	template<class T>
 	void FreeList<T>::erase(int n)
 	{
-		this->_data[n].next = this->_first_free;
+		this->_data[n].second = this->_first_free;
 		this->_first_free = n;
 	}
 
@@ -90,12 +89,12 @@ namespace QuadTree
 	template<class T>
 	T &FreeList<T>::operator[](int n)
 	{
-		return this->_data[n].element;
+		return this->_data[n].second;
 	}
 
 	template<class T>
 	const T &FreeList<T>::operator[](int n) const
 	{
-		return this->_data[n].element;
+		return this->_data[n].second;
 	}
 }

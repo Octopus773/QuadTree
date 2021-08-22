@@ -96,11 +96,11 @@ namespace QuadTree
 
 		void add(std::shared_ptr<T> element);
 
-		explicit QuadTree(int x1, int y1, int x2, int y2);
+		explicit QuadTree(double x1, double y1, double x2, double y2);
 	};
 
 	template<typename T>
-	QuadTree<T>::QuadTree(int x1, int y1, int x2, int y2)
+	QuadTree<T>::QuadTree(double x1, double y1, double x2, double y2)
 		: xmin(x1),
 		  ymin(y1),
 		  xmax(x2),
