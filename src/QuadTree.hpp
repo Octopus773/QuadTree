@@ -8,7 +8,6 @@
 #include <list>
 #include <algorithm>
 #include <memory>
-#include <iostream>
 #include <unordered_set>
 #include "FreeList.hpp"
 #include "QuadNode.hpp"
@@ -37,17 +36,6 @@ namespace QuadTree
 
 		//! @brief Stores the number of elements in the leaf or -1 if it this node is not a leaf.
 		int32_t count;
-	};
-
-	// Represents an element in the quadtree.
-	struct QuadElt
-	{
-		// Stores the ID for the element (can be used to
-		// refer to external data).
-		int id;
-
-		// Stores the rectangle for the element.
-		int x1, y1, x2, y2;
 	};
 
 	//! @brief Represents an element node in the quadtree.
@@ -86,14 +74,15 @@ namespace QuadTree
 
 		//! @brief Split a leaf node into children
 		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
-		void split_leaf(QuadNode leaf, const std::array<double, 4> &rect);
+		void split_leaf(int leafIndex, const std::array<double, 4> &rect);
 
 		//! @brief creates the necessary QuadEltNode in the tree
-		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect,
+		void addElementQuadNodeInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect,
 		                              unsigned int depth);
 
 
-		std::vector<int> findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect) const;
+		[[nodiscard]] std::vector<int>
+		findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect) const;
 
 	public:
 
@@ -129,9 +118,9 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::split_leaf(QuadNode leaf, const std::array<double, 4> &rect)
+	void QuadTree<T>::split_leaf(int leafIndex, const std::array<double, 4> &rect)
 	{
-		auto &elementNodeIndex = leaf.firstChild;
+		auto &elementNodeIndex = this->nodes[leafIndex].firstChild;
 		std::array<std::vector<int>, 4> indexes_to_link;
 		std::vector<int> indexes_to_remove;
 
@@ -186,15 +175,15 @@ namespace QuadTree
 			this->elementNodes.erase(index);
 		}
 
-		leaf.firstChild = this->nodes.size() - 4;
-		leaf.count = -1;
+		this->nodes[leafIndex].firstChild = this->nodes.size() - 4;
+		this->nodes[leafIndex].count = -1;
 	}
 
 	template<typename T>
-	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect,
+	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect,
 	                                           unsigned int depth)
 	{
-		if (node.count == -1) {
+		if (this->nodes[nodeIndex].count == -1) {
 
 			const double childWidth = (rect[2] - rect[0]) / 2;
 			const double childHeight = (rect[3] - rect[1]) / 2;
@@ -208,7 +197,7 @@ namespace QuadTree
 			                          rect[0] + childWidth,
 			                          rect[1] + childHeight})) {
 				this->addElementQuadNodeInTree(elementIndex,
-				                               this->nodes[node.firstChild],
+				                               this->nodes[nodeIndex].firstChild,
 				                               {rect[0],
 				                                rect[1],
 				                                rect[0] + childWidth,
@@ -221,7 +210,7 @@ namespace QuadTree
 			                          rect[0] + childWidth + childWidth,
 			                          rect[1] + childHeight})) {
 				this->addElementQuadNodeInTree(elementIndex,
-				                               this->nodes[node.firstChild + 1],
+				                               this->nodes[nodeIndex].firstChild + 1,
 				                               {rect[0] + childWidth,
 				                                rect[1],
 				                                rect[0] + childWidth + childWidth,
@@ -234,7 +223,7 @@ namespace QuadTree
 			                          rect[0] + childWidth,
 			                          rect[1] + childHeight + childHeight})) {
 				this->addElementQuadNodeInTree(elementIndex,
-				                               this->nodes[node.firstChild + 2],
+				                               this->nodes[nodeIndex].firstChild + 2,
 				                               {rect[0],
 				                                rect[1] + childHeight,
 				                                rect[0] + childWidth,
@@ -247,7 +236,7 @@ namespace QuadTree
 			                          rect[0] + childWidth + childWidth,
 			                          rect[1] + childHeight + childHeight})) {
 				this->addElementQuadNodeInTree(elementIndex,
-				                               this->nodes[node.firstChild + 3],
+				                               this->nodes[nodeIndex].firstChild + 3,
 				                               {rect[0] + childWidth,
 				                                rect[1] + childHeight,
 				                                rect[0] + childWidth + childWidth,
@@ -257,25 +246,25 @@ namespace QuadTree
 			return;
 		}
 
-		int quadNodeIndex = node.firstChild;
+		int quadNodeIndex = this->nodes[nodeIndex].firstChild;
 
-		if (node.count == 0) {
-			node.firstChild = this->elementNodes.insert({-1, elementIndex});
-			node.count++;
+		if (this->nodes[nodeIndex].count == 0) {
+			this->nodes[nodeIndex].firstChild = this->elementNodes.insert({-1, elementIndex});
+			this->nodes[nodeIndex].count++;
 			return;
 		} else {
 			while (true) {
 				if (this->elementNodes[quadNodeIndex].next == -1) {
 					this->elementNodes[quadNodeIndex].next = this->elementNodes.insert({-1, elementIndex});
-					node.count++;
+					this->nodes[nodeIndex].count++;
 					break;
 				}
 				quadNodeIndex = this->elementNodes[quadNodeIndex].next;
 			}
 		}
 
-		if (depth < this->maxDepth && static_cast<unsigned>(node.count) > this->maxElementsPerNode) {
-			this->split_leaf(node, rect);
+		if (depth < this->maxDepth && static_cast<unsigned>(this->nodes[nodeIndex].count) > this->maxElementsPerNode) {
+			this->split_leaf(nodeIndex, rect);
 		}
 
 	}
@@ -285,8 +274,7 @@ namespace QuadTree
 	{
 		int elementIndex = this->elements.insert(element);
 
-		this->addElementQuadNodeInTree(elementIndex, this->nodes[0], {this->xmin, this->ymin, this->xmax, this->ymax},
-		                               0);
+		this->addElementQuadNodeInTree(elementIndex, 0, {this->xmin, this->ymin, this->xmax, this->ymax}, 0);
 	}
 
 	template<typename T>
