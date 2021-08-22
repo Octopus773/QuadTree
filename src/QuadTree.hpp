@@ -86,7 +86,7 @@ namespace QuadTree
 
 		//! @brief Split a leaf node into children
 		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
-		void split_leaf(QuadNode &leaf, const std::array<double, 4> &rect);
+		void split_leaf(QuadNode leaf, const std::array<double, 4> &rect);
 
 		//! @brief creates the necessary QuadEltNode in the tree
 		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect,
@@ -129,7 +129,7 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::split_leaf(QuadNode &leaf, const std::array<double, 4> &rect)
+	void QuadTree<T>::split_leaf(QuadNode leaf, const std::array<double, 4> &rect)
 	{
 		auto &elementNodeIndex = leaf.firstChild;
 		std::array<std::vector<int>, 4> indexes_to_link;

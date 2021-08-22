@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <iostream>
+
 namespace QuadTree
 {
 
@@ -76,8 +78,8 @@ namespace QuadTree
 	template<class T>
 	void FreeList<T>::erase(int n)
 	{
-
-		if (this->_first_free < n) {
+		std::cout << "erasing the index " << n << std::endl;
+		if (this->_first_free != -1 && this->_first_free < n) {
 			this->_data[n].second = this->_data[this->_first_free].second;
 			this->_data[this->_first_free].second = n;
 		} else {
