@@ -14,7 +14,8 @@ namespace QuadTree
 {
 
 	//! @brief USed to get the correct value from a const double rect[4] (passed as argument)
-	enum Rect {
+	enum Rect
+	{
 		//! @brief minimum horizontal
 		minH = 0,
 		//! @brief minimum vertical
@@ -90,7 +91,8 @@ namespace QuadTree
 		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
 		void split_leaf(QuadNode &leaf, const std::array<double, 4> &rect);
 
-		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect, unsigned int depth);
+		void addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect,
+		                              unsigned int depth);
 
 	public:
 
@@ -101,12 +103,13 @@ namespace QuadTree
 
 	template<typename T>
 	QuadTree<T>::QuadTree(double x1, double y1, double x2, double y2)
-		: xmin(x1),
-		  ymin(y1),
-		  xmax(x2),
-		  ymax(y2),
-		  max_depth(5),
-		  max_element_per_node(8)
+		:  nodes({{-2, 0}}),
+		   xmin(x1),
+		   ymin(y1),
+		   xmax(x2),
+		   ymax(y2),
+		   max_depth(5),
+		   max_element_per_node(8)
 	{
 	}
 
@@ -173,7 +176,8 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect, unsigned int depth)
+	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, QuadNode &node, const std::array<double, 4> &rect,
+	                                           unsigned int depth)
 	{
 		if (node.count == -1) {
 
@@ -266,7 +270,8 @@ namespace QuadTree
 	{
 		int elementIndex = this->elements.insert(element);
 
-		this->addElementQuadNodeInTree(elementIndex, this->nodes[0], {this->xmin, this->ymin, this->xmax, this->ymax}, 0);
+		this->addElementQuadNodeInTree(elementIndex, this->nodes[0], {this->xmin, this->ymin, this->xmax, this->ymax},
+		                               0);
 	}
 }
 
