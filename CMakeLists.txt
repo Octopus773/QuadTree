@@ -37,7 +37,7 @@ add_executable(unit_tests EXCLUDE_FROM_ALL
 	tests/Point.cpp
 	tests/Point.hpp
 	tests/Collisions.hpp
-	)
+	tests/FreeListtests.cpp)
 
 find_package(Catch2 QUIET)
 if (NOT Catch2_FOUND)

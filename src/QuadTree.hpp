@@ -191,7 +191,7 @@ namespace QuadTree
 		}
 
 		for (const auto &index : indexes_to_remove) {
-			this->elementNodes.erase(index);
+			this->elementNodes.remove(index);
 		}
 
 		this->nodes[leafIndex].firstChild = this->nodes.size() - 4;
@@ -412,7 +412,7 @@ namespace QuadTree
 		int elementIndex = this->elements.findIndex(element);
 
 		this->removeElementInTree(elementIndex, RootNodeIndex, this->_rootRect);
-		this->elements.erase(elementIndex);
+		this->elements.remove(elementIndex);
 	}
 
 	template<typename T>
@@ -433,7 +433,7 @@ namespace QuadTree
 						this->elementNodes[prevElementNodeIndex].next = this->elementNodes[elementNodeIndex].next;
 					}
 					leaf.count--;
-					this->elementNodes.erase(elementNodeIndex);
+					this->elementNodes.remove(elementNodeIndex);
 					break;
 				}
 				prevElementNodeIndex = elementNodeIndex;

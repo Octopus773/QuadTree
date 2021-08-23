@@ -7,9 +7,9 @@
 namespace QuadTree
 {
 
-	/// Provides an indexed free list with constant-time removals from anywhere
-	/// in the list without invalidating indices. T must be trivially constructible
-	/// and destructible.
+	//! @brief Provides an indexed free list with constant-time removals from anywhere
+	//! in the list without invalidating indices. T must be trivially constructible
+	//! and destructible.
 	template<class T>
 	class FreeList
 	{
@@ -21,10 +21,13 @@ namespace QuadTree
 		int insert(T element);
 
 		//! @brief Removes the nth element from the free list.
-		void erase(int n);
+		void remove(int n);
 
 		//! @brief Removes all elements from the free list.
 		void clear();
+
+		//! @brief Create a vector with all the values of the list
+		[[nodiscard]] std::vector<T> toVector() const;
 
 		//! @brief Returns the range of valid indices.
 		[[nodiscard]] int range() const;
@@ -40,48 +43,45 @@ namespace QuadTree
 
 		//! @brief call pred with all the active elements
 		//! @note pred arguments 1: element ref, 2: index of the element
-		//! @note if the pred return false the for_each stop iterating and returns
-		void for_each(std::function<bool (T &, int)> pred);
+		//! @note if the pred return false the forEach stop iterating and returns
+		void forEach(std::function<bool (T &, int)> pred);
 
 		//! @brief call pred with all the active elements
 		//! @note pred argument element const ref
-		//! @note if the pred return false the for_each stop iterating and returns
-		void for_each(std::function<bool (T &)> pred);
+		//! @note if the pred return false the forEach stop iterating and returns
+		void forEach(std::function<bool (T &)> pred);
 
 		//! @brief call pred with all the active elements
 		//! @note pred arguments 1: element ref, 2: index of the element
-		//! @note if the pred return false the for_each stop iterating and returns
-		void for_each(std::function<bool (const T &, int)> pred) const;
+		//! @note if the pred return false the forEach stop iterating and returns
+		void forEach(std::function<bool (const T &, int)> pred) const;
 
 		//! @brief call pred with all the active elements
 		//! @note pred argument element const ref
-		//! @note if the pred return false the for_each stop iterating and returns
-		void for_each(std::function<bool (const T &)> pred) const;
+		//! @note if the pred return false the forEach stop iterating and returns
+		void forEach(std::function<bool (const T &)> pred) const;
 
 	private:
-		/*
-		union FreeElement
-		{
-			T element;
-			int next;
-		}; */
+		//! @brief The internal vector
 		std::vector <std::pair<T, int>> _data{};
 		//! @brief first free index
-		int _first_free;
+		int _firstFree;
+		int _lastFree;
 	};
 
 	template<class T>
 	FreeList<T>::FreeList()
-		: _first_free(-1)
+		: _firstFree(-1),
+		  _lastFree(-1)
 	{
 	}
 
 	template<class T>
 	int FreeList<T>::insert(T element)
 	{
-		if (this->_first_free != -1) {
-			const int index = this->_first_free;
-			this->_first_free = this->_data[this->_first_free].second;
+		if (this->_firstFree != -1) {
+			const int index = this->_firstFree;
+			this->_firstFree = this->_data[this->_firstFree].second;
 			this->_data[index].first = std::move(element);
 			return index;
 		} else {
@@ -91,14 +91,20 @@ namespace QuadTree
 	}
 
 	template<class T>
-	void FreeList<T>::erase(int n)
+	void FreeList<T>::remove(int n)
 	{
-		if (this->_first_free != -1 && this->_first_free < n) {
-			this->_data[n].second = this->_data[this->_first_free].second;
-			this->_data[this->_first_free].second = n;
+		if (n < this->_firstFree || this->_firstFree == -1) {
+			this->_data[n].second = this->_firstFree;
+			this->_firstFree = n;
 		} else {
-			this->_data[n].second = this->_first_free;
-			this->_first_free = n;
+			int freeIndex = this->_firstFree;
+			int prevFreeIndex = freeIndex;
+			while (freeIndex < n && freeIndex != -1) {
+				prevFreeIndex = freeIndex;
+				freeIndex = this->_data[freeIndex].second;
+			}
+			this->_data[n].second = freeIndex;
+			this->_data[prevFreeIndex].second = n;
 		}
 	}
 
@@ -106,7 +112,7 @@ namespace QuadTree
 	void FreeList<T>::clear()
 	{
 		this->_data.clear();
-		this->_first_free = -1;
+		this->_firstFree = -1;
 	}
 
 	template<class T>
@@ -131,7 +137,7 @@ namespace QuadTree
 	int FreeList<T>::findIndex(T element) const
 	{
 		int indexFound = -1;
-		this->for_each([&element, &indexFound](const auto &elementList, int elementIndex) {
+		this->forEach([&element, &indexFound](const auto &elementList, int elementIndex) {
 			if (element == elementList) {
 				indexFound = elementIndex;
 				return false;
@@ -142,9 +148,9 @@ namespace QuadTree
 	}
 
 	template<class T>
-	void FreeList<T>::for_each(std::function<bool(T &, int)> pred)
+	void FreeList<T>::forEach(std::function<bool(T &, int)> pred)
 	{
-		int next_empty_index = this->_first_free;
+		int next_empty_index = this->_firstFree;
 
 		for (int i = 0; i < this->_data.size(); i++) {
 			if (i == next_empty_index) {
@@ -158,17 +164,17 @@ namespace QuadTree
 	}
 
 	template<class T>
-	void FreeList<T>::for_each(std::function<bool(T &)> pred)
+	void FreeList<T>::forEach(std::function<bool(T &)> pred)
 	{
-		this->for_each([&pred](T &element, int) {
+		this->forEach([&pred](T &element, int) {
 			return pred(element);
 		});
 	}
 
 	template<class T>
-	void FreeList<T>::for_each(std::function<bool(const T &, int)> pred) const
+	void FreeList<T>::forEach(std::function<bool(const T &, int)> pred) const
 	{
-		int next_empty_index = this->_first_free;
+		int next_empty_index = this->_firstFree;
 
 		for (int i = 0; i < static_cast<int>(this->_data.size()); i++) {
 			if (i == next_empty_index) {
@@ -182,10 +188,20 @@ namespace QuadTree
 	}
 
 	template<class T>
-	void FreeList<T>::for_each(std::function<bool(const T &)> pred) const
+	void FreeList<T>::forEach(std::function<bool(const T &)> pred) const
 	{
-		this->for_each([&pred](T &element, int) {
+		this->forEach([&pred](T &element, int) {
 			return pred(element);
 		});
+	}
+
+	template<class T>
+	std::vector<T> FreeList<T>::toVector() const
+	{
+		std::vector<T> v;
+		this->forEach([&v](const auto &element) {
+			v.puish_back(element);
+		});
+		return v;
 	}
 }
