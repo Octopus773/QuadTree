@@ -51,6 +51,10 @@ namespace QuadTree
 	template<typename T>
 	class QuadTree
 	{
+	private:
+		//! @brief The index Of the root QuadNode in the nodes vector
+		static constexpr int RootNodeIndex = 0;
+
 		//! @brief Stores all the elements in the quadtree.
 		FreeList<std::shared_ptr<T>> elements;
 
@@ -61,10 +65,13 @@ namespace QuadTree
 		std::vector<QuadNode> nodes;
 
 		//! @brief Stores the quadtree extents.
-		double xmin;
-		double ymin;
-		double xmax;
-		double ymax;
+		double _xMin;
+		double _yMin;
+		double _xMax;
+		double _yMax;
+
+		//! @brief The rect of the quadtree
+		const std::array<double, 4> _rootRect;
 
 		// Stores the first free node in the quadtree to be reclaimed as 4
 		// contiguous nodes at once. A value of -1 indicates that the free
@@ -81,13 +88,15 @@ namespace QuadTree
 		                              unsigned int depth);
 
 
+		//! @brief Finds and return all the leaves nodes which an element is present in them
 		[[nodiscard]] std::vector<int>
 		findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect) const;
 
 	public:
 
 
-		std::vector<std::shared_ptr<T>> getNeighbours(const std::shared_ptr<T> &element) const;
+		//! @brief Get all the elements in the same quadNode of the given element
+		[[nodiscard]] std::vector<std::shared_ptr<T>> getNeighbours(const std::shared_ptr<T> &element) const;
 
 		//! @brief Stores the maximum depth allowed for the quadtree.
 		//! @note The tree won't be recreated when changing this value
@@ -100,6 +109,9 @@ namespace QuadTree
 		//! @brief Add an element in the tree
 		void add(std::shared_ptr<T> element);
 
+		//! @brief Remove the element from the quadTree completely
+		void remove(std::shared_ptr<T> element);
+
 
 		//! @brief create a quadtree
 		explicit QuadTree(double x1, double y1, double x2, double y2);
@@ -108,10 +120,11 @@ namespace QuadTree
 	template<typename T>
 	QuadTree<T>::QuadTree(double x1, double y1, double x2, double y2)
 		:  nodes({{-2, 0}}),
-		   xmin(x1),
-		   ymin(y1),
-		   xmax(x2),
-		   ymax(y2),
+		   _xMin(x1),
+		   _yMin(y1),
+		   _xMax(x2),
+		   _yMax(y2),
+		   _rootRect({x1, y1, x2, y2}),
 		   maxDepth(5),
 		   maxElementsPerNode(8)
 	{
@@ -274,7 +287,7 @@ namespace QuadTree
 	{
 		int elementIndex = this->elements.insert(element);
 
-		this->addElementQuadNodeInTree(elementIndex, 0, {this->xmin, this->ymin, this->xmax, this->ymax}, 0);
+		this->addElementQuadNodeInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
 	}
 
 	template<typename T>
@@ -286,7 +299,7 @@ namespace QuadTree
 			throw std::runtime_error("element not found in tree");
 		}
 
-		std::vector<int> leavesIndexes = this->findLeaves(index, 0, {this->xmin, this->ymin, this->xmax, this->ymax});
+		std::vector<int> leavesIndexes = this->findLeaves(index, 0, this->_rootRect);
 		std::vector<int> neighboursIndexes;
 
 		for (const auto &leaveIndex : leavesIndexes) {
@@ -302,6 +315,7 @@ namespace QuadTree
 		std::unordered_set<int> s;
 		for (int i : neighboursIndexes)
 			s.insert(i);
+		// removes itself from the neighbours index
 		s.erase(index);
 		neighboursIndexes.assign(s.begin(), s.end());
 		std::sort(neighboursIndexes.begin(), neighboursIndexes.end());
@@ -384,6 +398,35 @@ namespace QuadTree
 			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
 		}
 		return leavesIndexes;
+	}
+
+	template<typename T>
+	void QuadTree<T>::remove(std::shared_ptr<T> element)
+	{
+		int elementIndex = this->elements.findIndex(element);
+		std::vector<int> leavesIndexes = this->findLeaves(elementIndex, RootNodeIndex, this->_rootRect);
+
+		for (const auto &leaveIndex : leavesIndexes) {
+			auto &leaf = this->nodes[leaveIndex];
+			int elementNodeIndex = leaf.firstChild;
+			int prevElementNodeIndex = elementNodeIndex;
+
+			for (int i = 0; i < leaf.count; i++) {
+				if (this->elementNodes[elementNodeIndex].element == elementIndex) {
+					if (i == 0)  {
+						leaf.firstChild = this->elementNodes[elementNodeIndex].next;
+					} else {
+						this->elementNodes[prevElementNodeIndex].next = this->elementNodes[elementNodeIndex].next;
+					}
+					leaf.count--;
+					this->elementNodes.erase(elementNodeIndex);
+					break;
+				}
+				prevElementNodeIndex = elementNodeIndex;
+				elementNodeIndex = this->elementNodes[elementNodeIndex].next;
+			}
+		}
+		this->elements.erase(elementIndex);
 	}
 }
 

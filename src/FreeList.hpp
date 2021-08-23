@@ -39,7 +39,24 @@ namespace QuadTree
 		const T &operator[](int n) const;
 
 		//! @brief call pred with all the active elements
-		void for_each(std::function<void (T &)> pred);
+		//! @note pred arguments 1: element ref, 2: index of the element
+		//! @note if the pred return false the for_each stop iterating and returns
+		void for_each(std::function<bool (T &, int)> pred);
+
+		//! @brief call pred with all the active elements
+		//! @note pred argument element const ref
+		//! @note if the pred return false the for_each stop iterating and returns
+		void for_each(std::function<bool (T &)> pred);
+
+		//! @brief call pred with all the active elements
+		//! @note pred arguments 1: element ref, 2: index of the element
+		//! @note if the pred return false the for_each stop iterating and returns
+		void for_each(std::function<bool (const T &, int)> pred) const;
+
+		//! @brief call pred with all the active elements
+		//! @note pred argument element const ref
+		//! @note if the pred return false the for_each stop iterating and returns
+		void for_each(std::function<bool (const T &)> pred) const;
 
 	private:
 		/*
@@ -113,14 +130,19 @@ namespace QuadTree
 	template<class T>
 	int FreeList<T>::findIndex(T element) const
 	{
-		auto it = std::find_if(this->_data.begin(), this->_data.end(), [&element](const auto &elementList) {
-			return element == elementList.first;
+		int indexFound = -1;
+		this->for_each([&element, &indexFound](const auto &elementList, int elementIndex) {
+			if (element == elementList) {
+				indexFound = elementIndex;
+				return false;
+			}
+			return true;
 		});
-		return it == this->_data.end() ? -1 : it - this->_data.begin();
+		return indexFound;
 	}
 
 	template<class T>
-	void FreeList<T>::for_each(std::function<void(T &)> pred)
+	void FreeList<T>::for_each(std::function<bool(T &, int)> pred)
 	{
 		int next_empty_index = this->_first_free;
 
@@ -129,7 +151,41 @@ namespace QuadTree
 				next_empty_index = this->_data[i].second;
 				continue;
 			}
-			pred(this->_data[i].first);
+			if (!pred(this->_data[i].first, i)) {
+				break;
+			}
 		}
+	}
+
+	template<class T>
+	void FreeList<T>::for_each(std::function<bool(T &)> pred)
+	{
+		this->for_each([&pred](T &element, int) {
+			return pred(element);
+		});
+	}
+
+	template<class T>
+	void FreeList<T>::for_each(std::function<bool(const T &, int)> pred) const
+	{
+		int next_empty_index = this->_first_free;
+
+		for (int i = 0; i < static_cast<int>(this->_data.size()); i++) {
+			if (i == next_empty_index) {
+				next_empty_index = this->_data[i].second;
+				continue;
+			}
+			if (!pred(this->_data[i].first, i)) {
+				break;
+			}
+		}
+	}
+
+	template<class T>
+	void FreeList<T>::for_each(std::function<bool(const T &)> pred) const
+	{
+		this->for_each([&pred](T &element, int) {
+			return pred(element);
+		});
 	}
 }
