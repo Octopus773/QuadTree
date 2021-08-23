@@ -16,11 +16,13 @@ namespace QuadTree::Tests
 	class Point
 	{
 	private:
-		double _horizontalPos;
-		double _verticalPos;
+
 		std::string _name;
 		int _uid;
 	public:
+
+		double horizontalPos;
+		double verticalPos;
 
 		[[nodiscard]] std::string getName() const;
 

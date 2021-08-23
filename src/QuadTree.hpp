@@ -84,13 +84,16 @@ namespace QuadTree
 		void split_leaf(int leafIndex, const std::array<double, 4> &rect);
 
 		//! @brief creates the necessary QuadEltNode in the tree
-		void addElementQuadNodeInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect,
-		                              unsigned int depth);
+		void addElementInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect,
+		                      unsigned int depth);
 
 
 		//! @brief Finds and return all the leaves nodes which an element is present in them
 		[[nodiscard]] std::vector<int>
 		findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect) const;
+
+		//! @brief Finds and remove all QuadNodes referencing to the element index
+		void removeElementInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect);
 
 	public:
 
@@ -112,6 +115,9 @@ namespace QuadTree
 		//! @brief Remove the element from the quadTree completely
 		void remove(std::shared_ptr<T> element);
 
+		//! @brief Update the position of the element in the tree
+		//! @note You should only call this function if the results of the collideRect method of the object will be different (updating element position)
+		void update(std::shared_ptr<T> element);
 
 		//! @brief create a quadtree
 		explicit QuadTree(double x1, double y1, double x2, double y2);
@@ -193,8 +199,8 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::addElementQuadNodeInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect,
-	                                           unsigned int depth)
+	void QuadTree<T>::addElementInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect,
+	                                   unsigned int depth)
 	{
 		if (this->nodes[nodeIndex].count == -1) {
 
@@ -209,52 +215,52 @@ namespace QuadTree
 			                          rect[1],
 			                          rect[0] + childWidth,
 			                          rect[1] + childHeight})) {
-				this->addElementQuadNodeInTree(elementIndex,
-				                               this->nodes[nodeIndex].firstChild,
-				                               {rect[0],
-				                                rect[1],
-				                                rect[0] + childWidth,
-				                                rect[1] + childHeight},
-				                               depth + 1);
+				this->addElementInTree(elementIndex,
+				                       this->nodes[nodeIndex].firstChild,
+				                       {rect[0],
+				                        rect[1],
+				                        rect[0] + childWidth,
+				                        rect[1] + childHeight},
+				                       depth + 1);
 			}
 			// top left
 			if (element->collideRect({rect[0] + childWidth,
 			                          rect[1],
 			                          rect[0] + childWidth + childWidth,
 			                          rect[1] + childHeight})) {
-				this->addElementQuadNodeInTree(elementIndex,
-				                               this->nodes[nodeIndex].firstChild + 1,
-				                               {rect[0] + childWidth,
-				                                rect[1],
-				                                rect[0] + childWidth + childWidth,
-				                                rect[1] + childHeight},
-				                               depth + 1);
+				this->addElementInTree(elementIndex,
+				                       this->nodes[nodeIndex].firstChild + 1,
+				                       {rect[0] + childWidth,
+				                        rect[1],
+				                        rect[0] + childWidth + childWidth,
+				                        rect[1] + childHeight},
+				                       depth + 1);
 			}
 			// bottom right
 			if (element->collideRect({rect[0],
 			                          rect[1] + childHeight,
 			                          rect[0] + childWidth,
 			                          rect[1] + childHeight + childHeight})) {
-				this->addElementQuadNodeInTree(elementIndex,
-				                               this->nodes[nodeIndex].firstChild + 2,
-				                               {rect[0],
-				                                rect[1] + childHeight,
-				                                rect[0] + childWidth,
-				                                rect[1] + childHeight + childHeight},
-				                               depth + 1);
+				this->addElementInTree(elementIndex,
+				                       this->nodes[nodeIndex].firstChild + 2,
+				                       {rect[0],
+				                        rect[1] + childHeight,
+				                        rect[0] + childWidth,
+				                        rect[1] + childHeight + childHeight},
+				                       depth + 1);
 			}
 			// bottom left
 			if (element->collideRect({rect[0] + childWidth,
 			                          rect[1] + childHeight,
 			                          rect[0] + childWidth + childWidth,
 			                          rect[1] + childHeight + childHeight})) {
-				this->addElementQuadNodeInTree(elementIndex,
-				                               this->nodes[nodeIndex].firstChild + 3,
-				                               {rect[0] + childWidth,
-				                                rect[1] + childHeight,
-				                                rect[0] + childWidth + childWidth,
-				                                rect[1] + childHeight + childHeight},
-				                               depth + 1);
+				this->addElementInTree(elementIndex,
+				                       this->nodes[nodeIndex].firstChild + 3,
+				                       {rect[0] + childWidth,
+				                        rect[1] + childHeight,
+				                        rect[0] + childWidth + childWidth,
+				                        rect[1] + childHeight + childHeight},
+				                       depth + 1);
 			}
 			return;
 		}
@@ -287,7 +293,7 @@ namespace QuadTree
 	{
 		int elementIndex = this->elements.insert(element);
 
-		this->addElementQuadNodeInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
+		this->addElementInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
 	}
 
 	template<typename T>
@@ -404,10 +410,18 @@ namespace QuadTree
 	void QuadTree<T>::remove(std::shared_ptr<T> element)
 	{
 		int elementIndex = this->elements.findIndex(element);
-		std::vector<int> leavesIndexes = this->findLeaves(elementIndex, RootNodeIndex, this->_rootRect);
 
-		for (const auto &leaveIndex : leavesIndexes) {
-			auto &leaf = this->nodes[leaveIndex];
+		this->removeElementInTree(elementIndex, RootNodeIndex, this->_rootRect);
+		this->elements.erase(elementIndex);
+	}
+
+	template<typename T>
+	void QuadTree<T>::removeElementInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect)
+	{
+		std::vector<int> leavesIndexes = this->findLeaves(elementIndex, nodeIndex, rect);
+
+		for (const auto &leafIndex : leavesIndexes) {
+			auto &leaf = this->nodes[leafIndex];
 			int elementNodeIndex = leaf.firstChild;
 			int prevElementNodeIndex = elementNodeIndex;
 
@@ -426,7 +440,14 @@ namespace QuadTree
 				elementNodeIndex = this->elementNodes[elementNodeIndex].next;
 			}
 		}
-		this->elements.erase(elementIndex);
+	}
+
+	template<typename T>
+	void QuadTree<T>::update(std::shared_ptr<T> element)
+	{
+		int elementIndex = this->elements.findIndex(element);
+		this->removeElementInTree(elementIndex, RootNodeIndex, this->_rootRect);
+		this->addElementInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
 	}
 }
 

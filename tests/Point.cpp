@@ -10,9 +10,10 @@ namespace QuadTree::Tests
 {
 
 	Point::Point(double hPos, double vPos, std::string name)
-		: _horizontalPos(hPos),
-		  _verticalPos(vPos),
-		  _name(std::move(name))
+		: _name(std::move(name)),
+		  _uid(-1),
+		  horizontalPos(hPos),
+		  verticalPos(vPos)
 	{
 	}
 
@@ -23,14 +24,14 @@ namespace QuadTree::Tests
 
 	bool Point::collideRect(const std::array<double, 4> &rect)
 	{
-		return pointInRect(rect.data(), {this->_horizontalPos, this->_verticalPos});
+		return pointInRect(rect.data(), {this->horizontalPos, this->verticalPos});
 	}
 
 	Point::Point(double hPos, double vPos, int uid)
-		: _horizontalPos(hPos),
-		  _verticalPos(vPos),
-		  _name("Point"),
-		  _uid(uid)
+		: _name("Point"),
+		  _uid(uid),
+		  horizontalPos(hPos),
+		  verticalPos(vPos)
 	{
 	}
 

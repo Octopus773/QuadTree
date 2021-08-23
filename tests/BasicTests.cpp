@@ -62,10 +62,11 @@ TEST_CASE("QuadTree Basic Use 10x10", "[QuadTree]")
 
 
 	qT.remove(points[3]);
+	qT.remove(points[5]);
 
 	for (const auto &pt : points) {
 		std::vector<std::shared_ptr<QuadTree::Tests::Point>> neighbours;
-		if (pt->getUID() == 3) {
+		if (pt->getUID() == 3 || pt->getUID() == 5) {
 			CHECK_THROWS_AS(neighbours = qT.getNeighbours(pt), std::runtime_error);
 		} else {
 			neighbours = qT.getNeighbours(pt);
@@ -87,12 +88,49 @@ TEST_CASE("QuadTree Basic Use 10x10", "[QuadTree]")
 			CHECK(neighbours.empty());
 			break;
 		case 5:
-			CHECK(neighbours.empty());
 			break;
 		default:
 			CHECK(false);
 			break;
 		}
+	}
+
+	points[0]->horizontalPos = 7;
+	points[0]->verticalPos = 2.5;
+
+	qT.update(points[0]);
+
+	for (const auto &pt : points) {
+		std::vector<std::shared_ptr<QuadTree::Tests::Point>> neighbours;
+		if (pt->getUID() == 3 || pt->getUID() == 5) {
+			CHECK_THROWS_AS(neighbours = qT.getNeighbours(pt), std::runtime_error);
+		} else {
+			neighbours = qT.getNeighbours(pt);
+		}
+
+		switch (pt->getUID()) {
+		case 0:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 1);
+			break;
+		case 1:
+			CHECK(neighbours.size() == 1);
+			CHECK(neighbours[0]->getUID() == 0);
+			break;
+		case 2:
+			CHECK(neighbours.empty());
+			break;
+		case 3:
+			break;
+		case 4:
+			CHECK(neighbours.empty());
+			break;
+		case 5:
+			break;
+		default:
+			CHECK(false);
+			break;
+			}
 	}
 }
 
