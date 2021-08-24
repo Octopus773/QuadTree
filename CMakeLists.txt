@@ -10,15 +10,13 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(SOURCES
 	src/QuadTree.hpp
-	src/QuadTree.hpp
-	src/QuadNode.cpp
-	src/QuadNode.hpp
 	src/FreeList.hpp
 	)
 
 include_directories(src)
 
 add_library(quadtree STATIC ${SOURCES})
+set_target_properties(quadtree PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(quadtreetestbin EXCLUDE_FROM_ALL
 	tests/Point.cpp
@@ -37,7 +35,8 @@ add_executable(unit_tests EXCLUDE_FROM_ALL
 	tests/Point.cpp
 	tests/Point.hpp
 	tests/Collisions.hpp
-	tests/FreeListtests.cpp)
+	tests/FreeListtests.cpp
+	)
 
 find_package(Catch2 QUIET)
 if (NOT Catch2_FOUND)

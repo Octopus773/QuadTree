@@ -10,7 +10,6 @@
 #include <memory>
 #include <unordered_set>
 #include "FreeList.hpp"
-#include "QuadNode.hpp"
 
 namespace QuadTree
 {
