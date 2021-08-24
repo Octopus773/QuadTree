@@ -75,13 +75,9 @@ namespace QuadTree
 		// contiguous nodes at once. A value of -1 indicates that the free
 		// list is empty, at which point we simply insert 4 nodes to the
 		// back of the nodes array.
+		//! @brief variale used for keeping track of the firstFreeNode in the node vector
+		//! @warning You should not update this variable, you should use the _allocNodes and _freeNodes functions
 		int _firstFreeNode = EndOfList;
-
-		//! @brief Stores the quadtree extents.
-		double _xMin;
-		double _yMin;
-		double _xMax;
-		double _yMax;
 
 		//! @brief The rect of the quadtree
 		const std::array<double, 4> _rootRect;
@@ -104,7 +100,7 @@ namespace QuadTree
 
 		//! @brief Returns the index pointing to 4 continuous nodes
 		//! @note You should always use this function to create new nodes
-		int _allocNodes();
+		[[nodiscard]] int _allocNodes();
 
 		//! @brief Free the space taken by the 4 continuous nodes pointing by the given index
 		//! @note You should always use this function to free nodes
@@ -144,10 +140,6 @@ namespace QuadTree
 	template<typename T>
 	QuadTree<T>::QuadTree(double x1, double y1, double x2, double y2)
 		:  _nodes({{-2, 0}}),
-		   _xMin(x1),
-		   _yMin(y1),
-		   _xMax(x2),
-		   _yMax(y2),
 		   _rootRect({x1, y1, x2, y2}),
 		   maxDepth(5),
 		   maxElementsPerNode(8)
@@ -203,7 +195,7 @@ namespace QuadTree
 
 		int nodeIndex = this->_allocNodes();
 		for (const auto &indexes : indexes_to_link) {
-			this->_nodes[nodeIndex++] = {indexes.empty() ? -2 : indexes[0], indexes.size()};
+			this->_nodes[nodeIndex++] = {indexes.empty() ? -2 : indexes[0], static_cast<int>(indexes.size())};
 			for (int i = 0; i < static_cast<int>(indexes.size()) - 1; i++) {
 				this->_elementNodes[indexes[i]].next = indexes[i + 1];
 			}
@@ -347,7 +339,8 @@ namespace QuadTree
 
 
 		std::vector<std::shared_ptr<T>> neighbours;
-		for (const auto &neighbourIndex: neighboursIndexes) {
+		neighbours.reserve(neighboursIndexes.size());
+		for (const auto &neighbourIndex : neighboursIndexes) {
 			neighbours.emplace_back(this->_elements[neighbourIndex]);
 		}
 		return neighbours;
@@ -446,7 +439,7 @@ namespace QuadTree
 
 			for (int i = 0; i < leaf.count; i++) {
 				if (this->_elementNodes[elementNodeIndex].element == elementIndex) {
-					if (i == 0)  {
+					if (i == 0) {
 						leaf.firstChild = this->_elementNodes[elementNodeIndex].next;
 					} else {
 						this->_elementNodes[prevElementNodeIndex].next = this->_elementNodes[elementNodeIndex].next;
@@ -474,21 +467,19 @@ namespace QuadTree
 	{
 		// Only process the root if it's not a leaf.
 		std::vector<int> to_process;
-		if (this->_nodes[0].count == BranchIdentifier)
-			to_process.push_back(0);
+		if (this->_nodes[RootNodeIndex].count == BranchIdentifier)
+			to_process.push_back(RootNodeIndex);
 
-		while (!to_process.empty())
-		{
+		while (!to_process.empty()) {
 			const int node_index = to_process.back();
 			to_process.pop_back();
-			QuadNode& node = this->_nodes[node_index];
+			QuadNode &node = this->_nodes[node_index];
 
 			// Loop through the children.
 			int num_empty_leaves = 0;
-			for (int j=0; j < 4; ++j)
-			{
-				const int child_index = node.firstChild + j;
-				const QuadNode& child = this->_nodes[child_index];
+			for (int j = 0; j < 4; ++j) {
+				const int childIndex = node.firstChild + j;
+				const QuadNode &child = this->_nodes[childIndex];
 
 				// Increment empty leaf count if the child is an empty
 				// leaf. Otherwise if the child is a branch, add it to
@@ -496,13 +487,12 @@ namespace QuadTree
 				if (child.count == 0)
 					++num_empty_leaves;
 				else if (child.count == BranchIdentifier)
-					to_process.push_back(child_index);
+					to_process.push_back(childIndex);
 			}
 
 			// If all the children were empty leaves, remove them and
 			// make this node the new empty leaf.
-			if (num_empty_leaves == 4)
-			{
+			if (num_empty_leaves == 4) {
 				// Push all 4 children to the free list.
 				this->_freeNodes(node.firstChild);
 
@@ -530,7 +520,7 @@ namespace QuadTree
 	template<typename T>
 	void QuadTree<T>::_freeNodes(int nodeIndex)
 	{
-		this->_nodes[nodeIndex].first_child = this->_firstFreeNode;
+		this->_nodes[nodeIndex].firstChild = this->_firstFreeNode;
 		this->_firstFreeNode = nodeIndex;
 	}
 }

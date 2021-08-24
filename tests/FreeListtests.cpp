@@ -3,7 +3,6 @@
 //
 
 #include <catch2/catch.hpp>
-#include <map>
 
 #define private public
 #include "FreeList.hpp"
@@ -69,4 +68,21 @@ TEST_CASE("FreeList remove and insert", "[QuadTree][FreeList]")
 		}
 	}
 
+}
+
+TEST_CASE("FreeList toVector", "[QuadTree][FreeList]")
+{
+	QuadTree::FreeList<int> list;
+
+	for (int i = 0; i < 12; i++) {
+		list.insert(i);
+	}
+
+	list.remove(3);
+	list.remove(10);
+
+	std::vector<int> vector = list.toVector();
+	std::vector<int> ref{0, 1, 2, 4, 5, 6, 7, 8, 9, 11};
+
+	CHECK(vector == ref);
 }

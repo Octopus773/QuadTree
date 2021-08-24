@@ -99,6 +99,7 @@ TEST_CASE("QuadTree Basic Use 10x10", "[QuadTree]")
 	points[0]->verticalPos = 2.5;
 
 	qT.update(points[0]);
+	qT.cleanup();
 
 	for (const auto &pt : points) {
 		std::vector<std::shared_ptr<QuadTree::Tests::Point>> neighbours;

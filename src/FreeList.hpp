@@ -193,7 +193,7 @@ namespace QuadTree
 	template<class T>
 	void FreeList<T>::forEach(std::function<bool(const T &)> pred) const
 	{
-		this->forEach([&pred](T &element, int) {
+		this->forEach([&pred](const T &element, int) {
 			return pred(element);
 		});
 	}
@@ -202,8 +202,9 @@ namespace QuadTree
 	std::vector<T> FreeList<T>::toVector() const
 	{
 		std::vector<T> v;
-		this->forEach([&v](const auto &element) {
-			v.puish_back(element);
+		this->forEach([&v](const T &element) {
+			v.push_back(element);
+			return true;
 		});
 		return v;
 	}
