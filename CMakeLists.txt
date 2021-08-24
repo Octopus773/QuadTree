@@ -4,35 +4,25 @@ project(QuadTree)
 set(CMAKE_CXX_STANDARD 20)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wshadow -Wno-unused-parameter -W -g")
+	set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wshadow -W -g")
 endif ()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(SOURCES
-	src/World.cpp
-	src/World.hpp
-	src/PolygonTypes/Point.cpp
-	src/PolygonTypes/Point.hpp
-	src/PolygonTypes/APolygon.cpp
-	src/PolygonTypes/APolygon.hpp
-	src/Quadrant.cpp
-	src/Quadrant.hpp
-	src/ElementInfo.cpp
-	src/ElementInfo.hpp
-	src/Utils.cpp
-	src/Utils.hpp
-	src/Rect.cpp
-	src/Rect.hpp
-	src/Collisions.cpp
-	src/Collisions.hpp
-	src/PolygonTypes/Rectangle.cpp src/PolygonTypes/Rectangle.hpp)
+	src/QuadTree.hpp
+	src/FreeList.hpp
+	)
 
 include_directories(src)
 
 add_library(quadtree STATIC ${SOURCES})
+set_target_properties(quadtree PROPERTIES LINKER_LANGUAGE CXX)
 
 add_executable(quadtreetestbin EXCLUDE_FROM_ALL
-	tests/main.cpp)
+	tests/Point.cpp
+	tests/Point.hpp
+	tests/main.cpp
+	)
 target_link_libraries(quadtreetestbin PUBLIC quadtree sfml-window sfml-graphics sfml-system)
 
 
@@ -42,6 +32,10 @@ add_executable(unit_tests EXCLUDE_FROM_ALL
 	tests/Catch2Main.cpp
 	tests/UtilsFunctionTests.cpp
 	tests/CollisionsTests.cpp
+	tests/Point.cpp
+	tests/Point.hpp
+	tests/Collisions.hpp
+	tests/FreeListtests.cpp
 	)
 
 find_package(Catch2 QUIET)

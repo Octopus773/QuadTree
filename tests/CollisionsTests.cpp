@@ -4,50 +4,25 @@
 
 #include <catch2/catch.hpp>
 #include "Collisions.hpp"
-#include "Rect.hpp"
 
-using namespace QuadTree;
+using namespace QuadTree::Tests;
 
-TEST_CASE("onSegment basic use", "[QuadTree][Collisions][onSegment]")
+TEST_CASE("pointInRect", "[QuadTree][Collisions]")
 {
-	CHECK(Collisions::onSegment({0, 0}, {5, 5}, {10, 10}));
-	CHECK(Collisions::onSegment({1, 3.2}, {1, 4}, {1, 4.1}));
-	CHECK(Collisions::onSegment({1, 3.2}, {1, 3.2}, {1, 3.1}));
+	double rect[4] = {0, 0, 10, 10};
+	CHECK(pointInRect(rect, {2.5, 2.5}));
+	CHECK(pointInRect(rect, {0, 0}));
+	CHECK(pointInRect(rect, {0, 1}));
+	CHECK(!pointInRect(rect, {0, -1}));
+	CHECK(pointInRect(rect, {10, 10}));
+	CHECK(pointInRect(rect, {5, 5}));
+	CHECK(pointInRect(rect, {3.4, 8.2}));
 
-	// not in
-	CHECK(!Collisions::onSegment({1, 3.2}, {1, 4.2}, {1, 3.1}));
-	CHECK(!Collisions::onSegment({0, 0}, {0, 15}, {0, 10}));
+	CHECK(pointInRect(rect, {5, 0}));
+	CHECK(pointInRect(rect, {2.3, 7.898}));
+	CHECK(!pointInRect(rect, {10.01, 10}));
+	CHECK(!pointInRect(rect, {576, -456}));
+	CHECK(pointInRect(rect, {-0, -0}));
+	CHECK(!pointInRect(rect, {-2, 3}));
 }
 
-TEST_CASE("isPointInsideConvexPolygon functional tests", "[QuadTree][Collisions][isPointInsideConvexPolygon]")
-{
-	std::vector<std::pair<double, double>> polygon1 = {{0, 0}, {10, 0}, {10, 10}, {0, 10}};
-	std::pair<double, double> p = {20, 20};
-	CHECK(!Collisions::isPointInsideConvexPolygon(polygon1, p));
-
-	p = {5, 5};
-	CHECK(Collisions::isPointInsideConvexPolygon(polygon1, p));
-
-	std::vector<std::pair<double, double>> polygon2 = {{0, 0}, {5, 5}, {5, 0}};
-	p = {3, 3};
-	CHECK(Collisions::isPointInsideConvexPolygon(polygon2, p));
-
-	p = {5, 1};
-	CHECK(Collisions::isPointInsideConvexPolygon(polygon2, p));
-
-	p = {8, 1};
-	CHECK(!Collisions::isPointInsideConvexPolygon(polygon2, p));
-
-	std::vector<std::pair<double, double>> polygon3 = {{0, 0}, {10, 0}, {10, 10}, {0, 10}};
-	p = {-1,10};
-	CHECK(!Collisions::isPointInsideConvexPolygon(polygon3, p));
-}
-
-TEST_CASE("isOverlapping rect normal use", "[QuadTree][Collisions][isOverlapping]")
-{
-	CHECK(Collisions::isOverlapping({0, 0, 10, 10}, {0, 0, 10, 10}));
-	CHECK(Collisions::isOverlapping({0, 0, 10, 10}, {10, 10, 10, 10}));
-	CHECK(!Collisions::isOverlapping({0, 0, 7, 7}, {8, 8, 10, 10}));
-	CHECK(!Collisions::isOverlapping({40, 10, 100, 23}, {8, 8, 10, 10}));
-	CHECK(Collisions::isOverlapping({4, 4, 4, 4}, {4, 4, 4, 4}));
-}
