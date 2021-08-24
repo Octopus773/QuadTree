@@ -93,6 +93,8 @@ namespace QuadTree
 	template<class T>
 	void FreeList<T>::remove(int n)
 	{
+		// the this->_firstFree index should be the lowest available and so on to use the lowest possible index at each insertion
+		// it helps for the forEach function and if we want to shrink the vector
 		if (n < this->_firstFree || this->_firstFree == -1) {
 			this->_data[n].second = this->_firstFree;
 			this->_firstFree = n;
