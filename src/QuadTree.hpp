@@ -55,20 +55,27 @@ namespace QuadTree
 		//! @brief The index Of the root QuadNode in the nodes vector
 		static constexpr int RootNodeIndex = 0;
 
+		//! @brief When this value is encountered in traversing a singly list it means it's the end of the list
+		static constexpr int EndOfList = -1;
+
+		//! @brief If the count member of a QuadNode as this value it means it's a branch
+		//! @note Branches are not leaves
+		static constexpr int BranchIdentifier = -1;
+
 		//! @brief Stores all the elements in the quadtree.
-		FreeList<std::shared_ptr<T>> elements;
+		FreeList<std::shared_ptr<T>> _elements;
 
 		//! @brief Stores all the element nodes in the quadtree.
-		FreeList<QuadEltNode> elementNodes;
+		FreeList<QuadEltNode> _elementNodes;
 
 		//! @brief Stores all the nodes in the quadtree. The first node in this sequence is always the root.
-		std::vector<QuadNode> nodes;
+		std::vector<QuadNode> _nodes;
 
 		// Stores the first free node in the quadtree to be reclaimed as 4
 		// contiguous nodes at once. A value of -1 indicates that the free
 		// list is empty, at which point we simply insert 4 nodes to the
 		// back of the nodes array.
-		int _firstFreeNode = -1;
+		int _firstFreeNode = EndOfList;
 
 		//! @brief Stores the quadtree extents.
 		double _xMin;
@@ -136,7 +143,7 @@ namespace QuadTree
 
 	template<typename T>
 	QuadTree<T>::QuadTree(double x1, double y1, double x2, double y2)
-		:  nodes({{-2, 0}}),
+		:  _nodes({{-2, 0}}),
 		   _xMin(x1),
 		   _yMin(y1),
 		   _xMax(x2),
@@ -150,7 +157,7 @@ namespace QuadTree
 	template<typename T>
 	void QuadTree<T>::_splitLeaf(int leafIndex, const std::array<double, 4> &rect)
 	{
-		auto &elementNodeIndex = this->nodes[leafIndex].firstChild;
+		auto &elementNodeIndex = this->_nodes[leafIndex].firstChild;
 		std::array<std::vector<int>, 4> indexes_to_link;
 		std::vector<int> indexes_to_remove;
 
@@ -158,68 +165,68 @@ namespace QuadTree
 		const double childHeight = (rect[3] - rect[1]) / 2;
 
 		do {
-			const auto elementNode = this->elementNodes[elementNodeIndex];
-			const auto &element = this->elements[elementNode.element];
+			const auto elementNode = this->_elementNodes[elementNodeIndex];
+			const auto &element = this->_elements[elementNode.element];
 
 			// top right
 			if (element->collideRect({rect[0],
 			                          rect[1],
 			                          rect[0] + childWidth,
 			                          rect[1] + childHeight})) {
-				indexes_to_link[0].emplace_back(this->elementNodes.insert({-1, elementNode.element}));
+				indexes_to_link[0].emplace_back(this->_elementNodes.insert({EndOfList, elementNode.element}));
 			}
 			// top left
 			if (element->collideRect({rect[0] + childWidth,
 			                          rect[1],
 			                          rect[0] + childWidth + childWidth,
 			                          rect[1] + childHeight})) {
-				indexes_to_link[1].emplace_back(this->elementNodes.insert({-1, elementNode.element}));
+				indexes_to_link[1].emplace_back(this->_elementNodes.insert({EndOfList, elementNode.element}));
 			}
 			// bottom right
 			if (element->collideRect({rect[0],
 			                          rect[1] + childHeight,
 			                          rect[0] + childWidth,
 			                          rect[1] + childHeight + childHeight})) {
-				indexes_to_link[2].emplace_back(this->elementNodes.insert({-1, elementNode.element}));
+				indexes_to_link[2].emplace_back(this->_elementNodes.insert({EndOfList, elementNode.element}));
 			}
 			// bottom left
 			if (element->collideRect({rect[0] + childWidth,
 			                          rect[1] + childHeight,
 			                          rect[0] + childWidth + childWidth,
 			                          rect[1] + childHeight + childHeight})) {
-				indexes_to_link[3].emplace_back(this->elementNodes.insert({-1, elementNode.element}));
+				indexes_to_link[3].emplace_back(this->_elementNodes.insert({EndOfList, elementNode.element}));
 			}
 
 			indexes_to_remove.push_back(elementNodeIndex);
 			elementNodeIndex = elementNode.next;
-		} while (elementNodeIndex != -1);
+		} while (elementNodeIndex != EndOfList);
 
 		int nodeIndex = this->_allocNodes();
 		for (const auto &indexes : indexes_to_link) {
-			this->nodes[nodeIndex++] = {indexes.empty() ? -2 : indexes[0], indexes.size()};
+			this->_nodes[nodeIndex++] = {indexes.empty() ? -2 : indexes[0], indexes.size()};
 			for (int i = 0; i < static_cast<int>(indexes.size()) - 1; i++) {
-				this->elementNodes[indexes[i]].next = indexes[i + 1];
+				this->_elementNodes[indexes[i]].next = indexes[i + 1];
 			}
 		}
 
 		for (const auto &index : indexes_to_remove) {
-			this->elementNodes.remove(index);
+			this->_elementNodes.remove(index);
 		}
 
-		this->nodes[leafIndex].firstChild = this->nodes.size() - 4;
-		this->nodes[leafIndex].count = -1;
+		this->_nodes[leafIndex].firstChild = this->_nodes.size() - 4;
+		this->_nodes[leafIndex].count = BranchIdentifier;
 	}
 
 	template<typename T>
 	void QuadTree<T>::_addElementInTree(int elementIndex, int nodeIndex, const std::array<double, 4> &rect,
 	                                    unsigned int depth)
 	{
-		if (this->nodes[nodeIndex].count == -1) {
+		if (this->_nodes[nodeIndex].count == BranchIdentifier) {
 
 			const double childWidth = (rect[2] - rect[0]) / 2;
 			const double childHeight = (rect[3] - rect[1]) / 2;
 
-			const auto &element = this->elements[elementIndex];
+			const auto &element = this->_elements[elementIndex];
 
 
 			// top right
@@ -228,7 +235,7 @@ namespace QuadTree
 			                          rect[0] + childWidth,
 			                          rect[1] + childHeight})) {
 				this->_addElementInTree(elementIndex,
-				                        this->nodes[nodeIndex].firstChild,
+				                        this->_nodes[nodeIndex].firstChild,
 				                        {rect[0],
 				                         rect[1],
 				                         rect[0] + childWidth,
@@ -241,7 +248,7 @@ namespace QuadTree
 			                          rect[0] + childWidth + childWidth,
 			                          rect[1] + childHeight})) {
 				this->_addElementInTree(elementIndex,
-				                        this->nodes[nodeIndex].firstChild + 1,
+				                        this->_nodes[nodeIndex].firstChild + 1,
 				                        {rect[0] + childWidth,
 				                         rect[1],
 				                         rect[0] + childWidth + childWidth,
@@ -254,7 +261,7 @@ namespace QuadTree
 			                          rect[0] + childWidth,
 			                          rect[1] + childHeight + childHeight})) {
 				this->_addElementInTree(elementIndex,
-				                        this->nodes[nodeIndex].firstChild + 2,
+				                        this->_nodes[nodeIndex].firstChild + 2,
 				                        {rect[0],
 				                         rect[1] + childHeight,
 				                         rect[0] + childWidth,
@@ -267,7 +274,7 @@ namespace QuadTree
 			                          rect[0] + childWidth + childWidth,
 			                          rect[1] + childHeight + childHeight})) {
 				this->_addElementInTree(elementIndex,
-				                        this->nodes[nodeIndex].firstChild + 3,
+				                        this->_nodes[nodeIndex].firstChild + 3,
 				                        {rect[0] + childWidth,
 				                         rect[1] + childHeight,
 				                         rect[0] + childWidth + childWidth,
@@ -277,24 +284,24 @@ namespace QuadTree
 			return;
 		}
 
-		int quadNodeIndex = this->nodes[nodeIndex].firstChild;
+		int quadNodeIndex = this->_nodes[nodeIndex].firstChild;
 
-		if (this->nodes[nodeIndex].count == 0) {
-			this->nodes[nodeIndex].firstChild = this->elementNodes.insert({-1, elementIndex});
-			this->nodes[nodeIndex].count++;
+		if (this->_nodes[nodeIndex].count == 0) {
+			this->_nodes[nodeIndex].firstChild = this->_elementNodes.insert({EndOfList, elementIndex});
+			this->_nodes[nodeIndex].count++;
 			return;
 		} else {
 			while (true) {
-				if (this->elementNodes[quadNodeIndex].next == -1) {
-					this->elementNodes[quadNodeIndex].next = this->elementNodes.insert({-1, elementIndex});
-					this->nodes[nodeIndex].count++;
+				if (this->_elementNodes[quadNodeIndex].next == EndOfList) {
+					this->_elementNodes[quadNodeIndex].next = this->_elementNodes.insert({EndOfList, elementIndex});
+					this->_nodes[nodeIndex].count++;
 					break;
 				}
-				quadNodeIndex = this->elementNodes[quadNodeIndex].next;
+				quadNodeIndex = this->_elementNodes[quadNodeIndex].next;
 			}
 		}
 
-		if (depth < this->maxDepth && static_cast<unsigned>(this->nodes[nodeIndex].count) > this->maxElementsPerNode) {
+		if (depth < this->maxDepth && static_cast<unsigned>(this->_nodes[nodeIndex].count) > this->maxElementsPerNode) {
 			this->_splitLeaf(nodeIndex, rect);
 		}
 
@@ -303,7 +310,7 @@ namespace QuadTree
 	template<typename T>
 	void QuadTree<T>::add(std::shared_ptr<T> element)
 	{
-		int elementIndex = this->elements.insert(element);
+		int elementIndex = this->_elements.insert(element);
 
 		this->_addElementInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
 	}
@@ -311,9 +318,9 @@ namespace QuadTree
 	template<typename T>
 	std::vector<std::shared_ptr<T>> QuadTree<T>::getNeighbours(const std::shared_ptr<T> &element) const
 	{
-		int index = this->elements.findIndex(element);
+		int index = this->_elements.findIndex(element);
 
-		if (index == -1) {
+		if (index == EndOfList) {
 			throw std::runtime_error("element not found in tree");
 		}
 
@@ -321,11 +328,11 @@ namespace QuadTree
 		std::vector<int> neighboursIndexes;
 
 		for (const auto &leaveIndex : leavesIndexes) {
-			const auto &leaf = this->nodes[leaveIndex];
+			const auto &leaf = this->_nodes[leaveIndex];
 			int elementNodeIndex = leaf.firstChild;
 			for (int i = 0; i < leaf.count; i++) {
-				neighboursIndexes.emplace_back(this->elementNodes[elementNodeIndex].element);
-				elementNodeIndex = this->elementNodes[elementNodeIndex].next;
+				neighboursIndexes.emplace_back(this->_elementNodes[elementNodeIndex].element);
+				elementNodeIndex = this->_elementNodes[elementNodeIndex].next;
 			}
 		}
 
@@ -341,7 +348,7 @@ namespace QuadTree
 
 		std::vector<std::shared_ptr<T>> neighbours;
 		for (const auto &neighbourIndex: neighboursIndexes) {
-			neighbours.emplace_back(this->elements[neighbourIndex]);
+			neighbours.emplace_back(this->_elements[neighbourIndex]);
 		}
 		return neighbours;
 	}
@@ -350,9 +357,9 @@ namespace QuadTree
 	std::vector<int> QuadTree<T>::_findLeaves(int elementIndex, int nodeIndex, const std::array<double, 4> &rect) const
 	{
 		std::vector<int> leavesIndexes;
-		auto &node = this->nodes[nodeIndex];
+		auto &node = this->_nodes[nodeIndex];
 
-		if (node.count != -1) {
+		if (node.count != BranchIdentifier) {
 			leavesIndexes.emplace_back(nodeIndex);
 			return leavesIndexes;
 		}
@@ -360,7 +367,7 @@ namespace QuadTree
 		const double childWidth = (rect[2] - rect[0]) / 2;
 		const double childHeight = (rect[3] - rect[1]) / 2;
 
-		const auto &element = this->elements[elementIndex];
+		const auto &element = this->_elements[elementIndex];
 
 
 		// top right
@@ -421,10 +428,10 @@ namespace QuadTree
 	template<typename T>
 	void QuadTree<T>::remove(std::shared_ptr<T> element)
 	{
-		int elementIndex = this->elements.findIndex(element);
+		int elementIndex = this->_elements.findIndex(element);
 
 		this->_removeElementInTree(elementIndex, RootNodeIndex, this->_rootRect);
-		this->elements.remove(elementIndex);
+		this->_elements.remove(elementIndex);
 	}
 
 	template<typename T>
@@ -433,23 +440,23 @@ namespace QuadTree
 		std::vector<int> leavesIndexes = this->_findLeaves(elementIndex, nodeIndex, rect);
 
 		for (const auto &leafIndex : leavesIndexes) {
-			auto &leaf = this->nodes[leafIndex];
+			auto &leaf = this->_nodes[leafIndex];
 			int elementNodeIndex = leaf.firstChild;
 			int prevElementNodeIndex = elementNodeIndex;
 
 			for (int i = 0; i < leaf.count; i++) {
-				if (this->elementNodes[elementNodeIndex].element == elementIndex) {
+				if (this->_elementNodes[elementNodeIndex].element == elementIndex) {
 					if (i == 0)  {
-						leaf.firstChild = this->elementNodes[elementNodeIndex].next;
+						leaf.firstChild = this->_elementNodes[elementNodeIndex].next;
 					} else {
-						this->elementNodes[prevElementNodeIndex].next = this->elementNodes[elementNodeIndex].next;
+						this->_elementNodes[prevElementNodeIndex].next = this->_elementNodes[elementNodeIndex].next;
 					}
 					leaf.count--;
-					this->elementNodes.remove(elementNodeIndex);
+					this->_elementNodes.remove(elementNodeIndex);
 					break;
 				}
 				prevElementNodeIndex = elementNodeIndex;
-				elementNodeIndex = this->elementNodes[elementNodeIndex].next;
+				elementNodeIndex = this->_elementNodes[elementNodeIndex].next;
 			}
 		}
 	}
@@ -457,7 +464,7 @@ namespace QuadTree
 	template<typename T>
 	void QuadTree<T>::update(std::shared_ptr<T> element)
 	{
-		int elementIndex = this->elements.findIndex(element);
+		int elementIndex = this->_elements.findIndex(element);
 		this->_removeElementInTree(elementIndex, RootNodeIndex, this->_rootRect);
 		this->_addElementInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
 	}
@@ -467,28 +474,28 @@ namespace QuadTree
 	{
 		// Only process the root if it's not a leaf.
 		std::vector<int> to_process;
-		if (this->nodes[0].count == -1)
+		if (this->_nodes[0].count == BranchIdentifier)
 			to_process.push_back(0);
 
 		while (!to_process.empty())
 		{
 			const int node_index = to_process.back();
 			to_process.pop_back();
-			QuadNode& node = this->nodes[node_index];
+			QuadNode& node = this->_nodes[node_index];
 
 			// Loop through the children.
 			int num_empty_leaves = 0;
 			for (int j=0; j < 4; ++j)
 			{
 				const int child_index = node.firstChild + j;
-				const QuadNode& child = this->nodes[child_index];
+				const QuadNode& child = this->_nodes[child_index];
 
 				// Increment empty leaf count if the child is an empty
 				// leaf. Otherwise if the child is a branch, add it to
 				// the stack to be processed in the next iteration.
 				if (child.count == 0)
 					++num_empty_leaves;
-				else if (child.count == -1)
+				else if (child.count == BranchIdentifier)
 					to_process.push_back(child_index);
 			}
 
@@ -500,7 +507,7 @@ namespace QuadTree
 				this->_freeNodes(node.firstChild);
 
 				// Make this node the new empty leaf.
-				node.firstChild = -1;
+				node.firstChild = EndOfList;
 				node.count = 0;
 			}
 		}
@@ -509,21 +516,21 @@ namespace QuadTree
 	template<typename T>
 	int QuadTree<T>::_allocNodes()
 	{
-		if (this->_firstFreeNode == -1) {
+		if (this->_firstFreeNode == EndOfList) {
 			for (int i = 0; i < 4; i++) {
-				this->nodes.emplace_back(-2, 0);
+				this->_nodes.emplace_back(-2, 0);
 			}
-			return static_cast<int>(this->nodes.size()) - 4;
+			return static_cast<int>(this->_nodes.size()) - 4;
 		}
 		int tmp = this->_firstFreeNode;
-		this->_firstFreeNode = this->nodes[this->_firstFreeNode].firstChild;
+		this->_firstFreeNode = this->_nodes[this->_firstFreeNode].firstChild;
 		return tmp;
 	}
 
 	template<typename T>
 	void QuadTree<T>::_freeNodes(int nodeIndex)
 	{
-		this->nodes[nodeIndex].first_child = this->_firstFreeNode;
+		this->_nodes[nodeIndex].first_child = this->_firstFreeNode;
 		this->_firstFreeNode = nodeIndex;
 	}
 }

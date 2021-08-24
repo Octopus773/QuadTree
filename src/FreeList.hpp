@@ -14,6 +14,9 @@ namespace QuadTree
 	class FreeList
 	{
 	public:
+		//! @brief When this value is encountered in traversing a singly list it means it's the end of the list
+		static constexpr int EndOfList = -1;
+
 		//! @brief Creates a new free list.
 		FreeList();
 
@@ -66,26 +69,24 @@ namespace QuadTree
 		std::vector <std::pair<T, int>> _data{};
 		//! @brief first free index
 		int _firstFree;
-		int _lastFree;
 	};
 
 	template<class T>
 	FreeList<T>::FreeList()
-		: _firstFree(-1),
-		  _lastFree(-1)
+		: _firstFree(EndOfList)
 	{
 	}
 
 	template<class T>
 	int FreeList<T>::insert(T element)
 	{
-		if (this->_firstFree != -1) {
+		if (this->_firstFree != EndOfList) {
 			const int index = this->_firstFree;
 			this->_firstFree = this->_data[this->_firstFree].second;
 			this->_data[index].first = std::move(element);
 			return index;
 		} else {
-			this->_data.push_back({element, -1});
+			this->_data.push_back({element, EndOfList});
 			return static_cast<int>(this->_data.size() - 1);
 		}
 	}
@@ -95,13 +96,13 @@ namespace QuadTree
 	{
 		// the this->_firstFree index should be the lowest available and so on to use the lowest possible index at each insertion
 		// it helps for the forEach function and if we want to shrink the vector
-		if (n < this->_firstFree || this->_firstFree == -1) {
+		if (n < this->_firstFree || this->_firstFree == EndOfList) {
 			this->_data[n].second = this->_firstFree;
 			this->_firstFree = n;
 		} else {
 			int freeIndex = this->_firstFree;
 			int prevFreeIndex = freeIndex;
-			while (freeIndex < n && freeIndex != -1) {
+			while (freeIndex < n && freeIndex != EndOfList) {
 				prevFreeIndex = freeIndex;
 				freeIndex = this->_data[freeIndex].second;
 			}
@@ -114,7 +115,7 @@ namespace QuadTree
 	void FreeList<T>::clear()
 	{
 		this->_data.clear();
-		this->_firstFree = -1;
+		this->_firstFree = EndOfList;
 	}
 
 	template<class T>
