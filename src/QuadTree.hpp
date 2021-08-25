@@ -75,7 +75,7 @@ namespace QuadTree
 		// list is empty, at which point we simply insert 4 nodes to the
 		// back of the nodes array.
 		//! @brief variale used for keeping track of the firstFreeNode in the node vector
-		//! @warning You should not update this variable, you should use the _allocNodes and _freeNodes functions
+		//! @warning You should not update this variable, you should use the _allocNodes and _freeNode functions
 		int _firstFreeNode = EndOfList;
 
 		//! @brief The rect of the quadtree
@@ -103,7 +103,11 @@ namespace QuadTree
 
 		//! @brief Free the space taken by the 4 continuous nodes pointing by the given index
 		//! @note You should always use this function to free nodes
-		void _freeNodes(int nodeIndex);
+		void _freeNode(int nodeIndex);
+
+		//! @brief Will reset the node list to only the root
+		//! @note Used for recreating the tree we're clearing the list but the vector size doesn't change (used for fast reset)
+		void _resetNodes();
 
 	public:
 
@@ -131,6 +135,10 @@ namespace QuadTree
 
 		//! @brief Clears all the empty nodes to shrink the tree
 		void cleanup();
+
+		//! @brief Reconstruct the tree
+		//! @note This method should be faster for updating the tree than calling .update for each element if you're updating more than half of the elements
+		void recreate();
 
 		//! @brief create a quadtree
 		explicit QuadTree(double x1, double y1, double x2, double y2);
@@ -493,7 +501,7 @@ namespace QuadTree
 			// make this node the new empty leaf.
 			if (num_empty_leaves == 4) {
 				// Push all 4 children to the free list.
-				this->_freeNodes(node.firstChild);
+				this->_freeNode(node.firstChild);
 
 				// Make this node the new empty leaf.
 				node.firstChild = EndOfList;
@@ -517,10 +525,33 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::_freeNodes(int nodeIndex)
+	void QuadTree<T>::_freeNode(int nodeIndex)
 	{
 		this->_nodes[nodeIndex].firstChild = this->_firstFreeNode;
 		this->_firstFreeNode = nodeIndex;
+	}
+
+	template<typename T>
+	void QuadTree<T>::recreate()
+	{
+		this->_elementNodes.clear();
+
+	}
+
+	template<typename T>
+	void QuadTree<T>::_resetNodes()
+	{
+		int nodeSize = this->_nodes.size();
+		if (nodeSize < 2) {
+			return;
+		}
+		this->_firstFreeNode = 1;
+		for (int i = 0; i < nodeSize; i++) {
+			if (i == 0) {
+				continue;
+			}
+			this->_nodes[i].firstChild = i == nodeSize - 1 ? EndOfList : i + 1;
+		}
 	}
 }
 
