@@ -539,6 +539,7 @@ namespace QuadTree
 
 		this->_elements.forEach([this](const T &, int elementIndex) {
 			this->_addElementInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
+			return true;
 		});
 
 	}

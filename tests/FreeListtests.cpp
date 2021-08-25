@@ -86,3 +86,41 @@ TEST_CASE("FreeList toVector", "[QuadTree][FreeList]")
 
 	CHECK(vector == ref);
 }
+
+TEST_CASE("FreeList reset", "[QuadTree][FreeList]")
+{
+	QuadTree::FreeList<int> list;
+
+	for (int i = 0; i < 12; i++) {
+		list.insert(i);
+	}
+
+	list.remove(3);
+	list.remove(10);
+
+	CHECK(list._data.size() == 12);
+	list.reset();
+	CHECK(list._data.size() == 12);
+
+	std::vector<int> ref{};
+	CHECK(list.toVector() == ref);
+
+	for (int i = 0; i < 12; i++) {
+		list.insert(i);
+		ref.emplace_back(i);
+	}
+	CHECK(list.toVector() == ref);
+}
+
+TEST_CASE("FreeList findIndex", "[QuadTree][FreeList]")
+{
+	QuadTree::FreeList<int> list;
+
+	for (int i = 0; i < 12; i++) {
+		list.insert(i);
+	}
+
+	CHECK(list.findIndex(3) == 3);
+	CHECK(list.findIndex(4) == 4);
+	CHECK(list.findIndex(10) == 10);
+}

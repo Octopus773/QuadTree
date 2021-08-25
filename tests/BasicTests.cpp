@@ -10,6 +10,19 @@
 #include "Point.hpp"
 #include "QuadTree.hpp"
 
+template <typename  T>
+size_t getSizeNodes(QuadTree::QuadTree<T> &qT)
+{
+	size_t sizeFree = 0;
+	int freeIndex = qT._firstFreeNode;
+
+	while (freeIndex != QuadTree::QuadTree<T>::EndOfList) {
+		sizeFree++;
+		freeIndex = qT._nodes[freeIndex].firstChild;
+	}
+	return qT._nodes.size() - (sizeFree * 4);
+}
+
 
 TEST_CASE("QuadTree Basic Use 10x10", "[QuadTree]")
 {
@@ -60,6 +73,9 @@ TEST_CASE("QuadTree Basic Use 10x10", "[QuadTree]")
 		}
 	}
 
+	REQUIRE(getSizeNodes(qT) == 9);
+	REQUIRE(qT._elements.size() == 6);
+
 
 	qT.remove(points[3]);
 	qT.remove(points[5]);
@@ -99,7 +115,6 @@ TEST_CASE("QuadTree Basic Use 10x10", "[QuadTree]")
 	points[0]->verticalPos = 2.5;
 
 	qT.update(points[0]);
-	qT.cleanup();
 
 	for (const auto &pt : points) {
 		std::vector<std::shared_ptr<QuadTree::Tests::Point>> neighbours;
@@ -133,6 +148,17 @@ TEST_CASE("QuadTree Basic Use 10x10", "[QuadTree]")
 			break;
 			}
 	}
+
+	REQUIRE(qT._nodes.size() == 9);
+	REQUIRE(qT._elements.size() == 4);
+
+	qT.remove(points[2]);
+	qT.remove(points[4]);
+
+	qT.cleanup();
+
+	REQUIRE(getSizeNodes(qT) == 5);
+	REQUIRE(qT._elements.size() == 2);
 }
 
 TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")

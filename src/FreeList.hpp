@@ -29,6 +29,9 @@ namespace QuadTree
 		//! @brief Removes all elements from the free list and free the memory.
 		void clear();
 
+		//! @brief The number of active elements in the list
+		[[nodiscard]] size_t size() const;
+
 		//! @brief Removes all elements from the list but doesn't free the memory
 		//! @note Function used to clear and quickly refill the list
 		void reset();
@@ -51,26 +54,26 @@ namespace QuadTree
 		//! @brief call pred with all the active elements
 		//! @note pred arguments 1: element ref, 2: index of the element
 		//! @note if the pred return false the forEach stop iterating and returns
-		void forEach(std::function<bool (T &, int)> pred);
+		void forEach(std::function<bool(T &, int)> pred);
 
 		//! @brief call pred with all the active elements
 		//! @note pred argument element const ref
 		//! @note if the pred return false the forEach stop iterating and returns
-		void forEach(std::function<bool (T &)> pred);
+		void forEach(std::function<bool(T &)> pred);
 
 		//! @brief call pred with all the active elements
 		//! @note pred arguments 1: element ref, 2: index of the element
 		//! @note if the pred return false the forEach stop iterating and returns
-		void forEach(std::function<bool (const T &, int)> pred) const;
+		void forEach(std::function<bool(const T &, int)> pred) const;
 
 		//! @brief call pred with all the active elements
 		//! @note pred argument element const ref
 		//! @note if the pred return false the forEach stop iterating and returns
-		void forEach(std::function<bool (const T &)> pred) const;
+		void forEach(std::function<bool(const T &)> pred) const;
 
 	private:
 		//! @brief The internal vector
-		std::vector <std::pair<T, int>> _data{};
+		std::vector<std::pair<T, int>> _data{};
 		//! @brief first free index
 		int _firstFree;
 	};
@@ -224,5 +227,16 @@ namespace QuadTree
 		for (int i = 0; i < size; i++) {
 			this->_data[i].second = i == size - 1 ? EndOfList : i + 1;
 		}
+	}
+
+	template<class T>
+	size_t FreeList<T>::size() const
+	{
+		size_t size = 0;
+		this->forEach([&size](const T &, int) {
+			size++;
+			return true;
+		});
+		return size;
 	}
 }
