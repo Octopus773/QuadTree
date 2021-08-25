@@ -105,7 +105,7 @@ namespace QuadTree
 		//! @note You should always use this function to free nodes
 		void _freeNode(int nodeIndex);
 
-		//! @brief Will reset the node list to only the root
+		//! @brief Will reset the node list. Keep only the root
 		//! @note Used for recreating the tree we're clearing the list but the vector size doesn't change (used for fast reset)
 		void _resetNodes();
 
@@ -138,7 +138,7 @@ namespace QuadTree
 
 		//! @brief Reconstruct the tree
 		//! @note This method should be faster for updating the tree than calling .update for each element if you're updating more than half of the elements
-		void recreate();
+		void reCreate();
 
 		//! @brief create a quadtree
 		explicit QuadTree(double x1, double y1, double x2, double y2);
@@ -532,9 +532,14 @@ namespace QuadTree
 	}
 
 	template<typename T>
-	void QuadTree<T>::recreate()
+	void QuadTree<T>::reCreate()
 	{
-		this->_elementNodes.clear();
+		this->_elementNodes.reset();
+		this->_resetNodes();
+
+		this->_elements.forEach([this](const T &, int elementIndex) {
+			this->_addElementInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
+		});
 
 	}
 

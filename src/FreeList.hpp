@@ -26,8 +26,12 @@ namespace QuadTree
 		//! @brief Removes the nth element from the free list.
 		void remove(int n);
 
-		//! @brief Removes all elements from the free list.
+		//! @brief Removes all elements from the free list and free the memory.
 		void clear();
+
+		//! @brief Removes all elements from the list but doesn't free the memory
+		//! @note Function used to clear and quickly refill the list
+		void reset();
 
 		//! @brief Create a vector with all the values of the list
 		[[nodiscard]] std::vector<T> toVector() const;
@@ -207,5 +211,18 @@ namespace QuadTree
 			return true;
 		});
 		return v;
+	}
+
+	template<class T>
+	void FreeList<T>::reset()
+	{
+		if (this->_data.empty()) {
+			return;
+		}
+		int size = this->_data.size();
+		this->_firstFree = 0;
+		for (int i = 0; i < size; i++) {
+			this->_data[i].second = i == size - 1 ? EndOfList : i + 1;
+		}
 	}
 }
