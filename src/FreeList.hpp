@@ -162,7 +162,7 @@ namespace QuadTree
 	{
 		int next_empty_index = this->_firstFree;
 
-		for (int i = 0; i < this->_data.size(); i++) {
+		for (int i = 0; i < static_cast<int>(this->_data.size()); i++) {
 			if (i == next_empty_index) {
 				next_empty_index = this->_data[i].second;
 				continue;

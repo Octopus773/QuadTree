@@ -212,7 +212,7 @@ namespace QuadTree
 			this->_elementNodes.remove(index);
 		}
 
-		this->_nodes[leafIndex].firstChild = this->_nodes.size() - 4;
+		this->_nodes[leafIndex].firstChild = nodeIndex - 4;
 		this->_nodes[leafIndex].count = BranchIdentifier;
 	}
 
@@ -550,6 +550,8 @@ namespace QuadTree
 	void QuadTree<T>::_resetNodes()
 	{
 		int nodeSize = this->_nodes.size();
+
+		this->_nodes[0].count = 0;
 		if (nodeSize < 2) {
 			return;
 		}

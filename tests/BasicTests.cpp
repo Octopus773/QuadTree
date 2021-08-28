@@ -486,4 +486,36 @@ TEST_CASE("QuadTree reCreation test", "[QuadTree][cleanup]")
 	qT.remove(points[3]);
 
 	qT.reCreate();
+
+	for (const auto &pt : points) {
+		std::vector<std::shared_ptr<QuadTree::Tests::Point>> neighbours;
+		if (pt->getUID() == 2 || pt->getUID() == 3) {
+			CHECK_THROWS_AS(neighbours = qT.getNeighbours(pt), std::runtime_error);
+		} else {
+			neighbours = qT.getNeighbours(pt);
+		}
+
+		switch (pt->getUID()) {
+		case 0:
+			CHECK(neighbours.empty());
+			break;
+		case 1:
+			CHECK(neighbours.empty());
+			break;
+		case 2:
+		case 3:
+			break;
+		case 4:
+			REQUIRE(neighbours.size() == 1);
+			REQUIRE(neighbours[0]->getUID() == 5);
+			break;
+		case 5:
+			REQUIRE(neighbours.size() == 1);
+			REQUIRE(neighbours[0]->getUID() == 4);
+			break;
+		default:
+			CHECK(false);
+			break;
+		}
+	}
 }
