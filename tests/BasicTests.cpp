@@ -462,7 +462,7 @@ TEST_CASE("QuadTree cleanup test with not empty tree", "[QuadTree][cleanup]")
 	REQUIRE(getSizeNodes(qT) == 9);
 }
 
-TEST_CASE("QuadTree reCreation test", "[QuadTree][cleanup]")
+TEST_CASE("QuadTree reCreation test 6 -> 4 points", "[QuadTree][reCreation]")
 {
 	QuadTree::QuadTree<QuadTree::Tests::Point> qT(0, 0, 10, 10);
 
@@ -515,6 +515,75 @@ TEST_CASE("QuadTree reCreation test", "[QuadTree][cleanup]")
 			break;
 		default:
 			CHECK(false);
+			break;
+		}
+	}
+}
+
+TEST_CASE("QuadTree reCreation test 6 -> 3 points", "[QuadTree][reCreation]")
+{
+	QuadTree::QuadTree<QuadTree::Tests::Point> qT(0, 0, 10, 10);
+
+	qT.maxElementsPerNode = 3;
+
+	std::vector<std::shared_ptr<QuadTree::Tests::Point>> points;
+
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(4, 4, 0));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(7, 3, 1));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(6.5, 6, 2));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(6, 6.5, 3));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(8, 7, 4));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(9, 9, 5));
+
+	for (auto &pt : points) {
+		qT.add(pt);
+	}
+
+	qT.remove(points[2]);
+	qT.remove(points[3]);
+	qT.remove(points[0]);
+
+	qT.reCreate();
+
+	for (const auto &pt : points) {
+		std::vector<std::shared_ptr<QuadTree::Tests::Point>> neighbours;
+		if (pt->getUID() == 2 || pt->getUID() == 3 || pt->getUID() == 0) {
+			CHECK_THROWS_AS(neighbours = qT.getNeighbours(pt), std::runtime_error);
+		} else {
+			neighbours = qT.getNeighbours(pt);
+		}
+
+		switch (pt->getUID()) {
+		case 1:
+			REQUIRE(neighbours.size() == 2);
+			for (const auto &value : {4, 5}) {
+				REQUIRE(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
+			break;
+		case 0:
+		case 2:
+		case 3:
+			break;
+		case 4:
+			REQUIRE(neighbours.size() == 2);
+			for (const auto &value : {1, 5}) {
+				REQUIRE(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
+			break;
+		case 5:
+			REQUIRE(neighbours.size() == 2);
+			for (const auto &value : {4, 1}) {
+				REQUIRE(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
+					return neighbour->getUID() == value;
+				}) != neighbours.end());
+			}
+			break;
+		default:
+			REQUIRE(false);
 			break;
 		}
 	}
