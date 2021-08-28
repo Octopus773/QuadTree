@@ -21,6 +21,8 @@ set_target_properties(quadtree PROPERTIES LINKER_LANGUAGE CXX)
 add_executable(quadtreetestbin EXCLUDE_FROM_ALL
 	tests/Point.cpp
 	tests/Point.hpp
+	tests/Rect.cpp
+	tests/Rect.hpp
 	tests/main.cpp
 	)
 target_link_libraries(quadtreetestbin PUBLIC quadtree sfml-window sfml-graphics sfml-system)
@@ -36,6 +38,8 @@ add_executable(unit_tests EXCLUDE_FROM_ALL
 	tests/Point.hpp
 	tests/Collisions.hpp
 	tests/FreeListtests.cpp
+	tests/Rect.cpp
+	tests/Rect.hpp
 	)
 
 find_package(Catch2 QUIET)
