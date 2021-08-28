@@ -10,6 +10,8 @@
 #include "Point.hpp"
 #include "QuadTree.hpp"
 
+//! @brief Return the size of the _nodes internal member
+//! @param qT the quadtree
 template <typename  T>
 size_t getSizeNodes(QuadTree::QuadTree<T> &qT)
 {
@@ -398,4 +400,90 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 		}
 
 	}
+}
+
+TEST_CASE("QuadTree cleanup test with empty tree", "[QuadTree][cleanup]")
+{
+	QuadTree::QuadTree<QuadTree::Tests::Point> qT(0, 0, 10, 10);
+
+	qT.maxElementsPerNode = 3;
+
+	std::vector<std::shared_ptr<QuadTree::Tests::Point>> points;
+
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(4, 4, 0));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(7, 3, 1));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(6.5, 6, 2));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(6, 6.5, 3));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(8, 7, 4));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(9, 9, 5));
+
+	for (auto &pt : points) {
+		qT.add(pt);
+	}
+	REQUIRE(getSizeNodes(qT) == 9);
+
+	for (auto &pt : points) {
+		qT.remove(pt);
+	}
+	REQUIRE(getSizeNodes(qT) == 9);
+	qT.cleanup();
+	REQUIRE(getSizeNodes(qT) == 5);
+	qT.cleanup();
+	REQUIRE(getSizeNodes(qT) == 1);
+}
+
+TEST_CASE("QuadTree cleanup test with not empty tree", "[QuadTree][cleanup]")
+{
+	QuadTree::QuadTree<QuadTree::Tests::Point> qT(0, 0, 10, 10);
+
+	qT.maxElementsPerNode = 3;
+
+	std::vector<std::shared_ptr<QuadTree::Tests::Point>> points;
+
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(4, 4, 0));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(7, 3, 1));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(6.5, 6, 2));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(6, 6.5, 3));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(8, 7, 4));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(9, 9, 5));
+
+	for (auto &pt : points) {
+		qT.add(pt);
+	}
+	REQUIRE(getSizeNodes(qT) == 9);
+
+	qT.remove(points[2]);
+	qT.remove(points[3]);
+
+	REQUIRE(getSizeNodes(qT) == 9);
+	qT.cleanup();
+	REQUIRE(getSizeNodes(qT) == 9);
+	qT.cleanup();
+	REQUIRE(getSizeNodes(qT) == 9);
+}
+
+TEST_CASE("QuadTree reCreation test", "[QuadTree][cleanup]")
+{
+	QuadTree::QuadTree<QuadTree::Tests::Point> qT(0, 0, 10, 10);
+
+	qT.maxElementsPerNode = 3;
+
+	std::vector<std::shared_ptr<QuadTree::Tests::Point>> points;
+
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(4, 4, 0));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(7, 3, 1));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(6.5, 6, 2));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(6, 6.5, 3));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(8, 7, 4));
+	points.emplace_back(std::make_shared<QuadTree::Tests::Point>(9, 9, 5));
+
+	for (auto &pt : points) {
+		qT.add(pt);
+	}
+	REQUIRE(getSizeNodes(qT) == 9);
+
+	qT.remove(points[2]);
+	qT.remove(points[3]);
+
+	qT.reCreate();
 }

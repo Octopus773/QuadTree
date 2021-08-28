@@ -133,7 +133,7 @@ namespace QuadTree
 		//! @note You should onlythis->nodes.size() call this function if the results of the collideRect method of the object will be different (updating element position)
 		void update(std::shared_ptr<T> element);
 
-		//! @brief Clears all the empty nodes to shrink the tree
+		//! @brief Clears the empty leaf nodes to shrink the tree
 		void cleanup();
 
 		//! @brief Reconstruct the tree
@@ -472,8 +472,8 @@ namespace QuadTree
 	template<typename T>
 	void QuadTree<T>::cleanup()
 	{
-		// Only process the root if it's not a leaf.
 		std::vector<int> to_process;
+		// Only process the root if it's not a leaf.
 		if (this->_nodes[RootNodeIndex].count == BranchIdentifier)
 			to_process.push_back(RootNodeIndex);
 
@@ -491,10 +491,12 @@ namespace QuadTree
 				// Increment empty leaf count if the child is an empty
 				// leaf. Otherwise if the child is a branch, add it to
 				// the stack to be processed in the next iteration.
-				if (child.count == 0)
+				if (child.count == 0) {
 					++num_empty_leaves;
-				else if (child.count == BranchIdentifier)
+				}
+				else if (child.count == BranchIdentifier) {
 					to_process.push_back(childIndex);
+				}
 			}
 
 			// If all the children were empty leaves, remove them and
@@ -537,7 +539,7 @@ namespace QuadTree
 		this->_elementNodes.reset();
 		this->_resetNodes();
 
-		this->_elements.forEach([this](const T &, int elementIndex) {
+		this->_elements.forEach([this](const std::shared_ptr<T> &, int elementIndex) {
 			this->_addElementInTree(elementIndex, RootNodeIndex, this->_rootRect, 0);
 			return true;
 		});
