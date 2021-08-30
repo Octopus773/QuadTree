@@ -53,18 +53,77 @@ namespace QuadTree::Tests
 
 	bool Rect::collide(const Rect &rect, int &axis)
 	{
-		bool ARightOfB = this->getLeft() > rect.getRight();
+		bool topLeft;
+		bool topRight;
+		bool bottomLeft;
+		bool bottomRight;
+		std::array<bool, 4> points{false};
+
+
+		auto rectanglePts = rectToArray(*this);
+
+		points[0] = pointInRect({rect.minHorizontal, rect.minVertical, rect.maxHorizontal, rect.maxVertical},
+		                        rectanglePts[0]);
+		points[1] = pointInRect({rect.minHorizontal, rect.minVertical, rect.maxHorizontal, rect.maxVertical},
+		                        rectanglePts[1]);
+		points[2] = pointInRect({rect.minHorizontal, rect.minVertical, rect.maxHorizontal, rect.maxVertical},
+		                        rectanglePts[3]);
+		points[3] = pointInRect({rect.minHorizontal, rect.minVertical, rect.maxHorizontal, rect.maxVertical},
+		                        rectanglePts[2]);
+
+		int count = 0;
+		for (const auto &point : points) {
+			if (point) {
+				count++;
+			}
+		}
+
+		switch (count) {
+		case 1:
+			break;
+		case 2:
+			if ((points[0] && points[1])
+			    || (points[2] && points[3])) {
+				axis = 2;
+			} else {
+				axis = 1;
+			}
+			return true;
+		default: return false;
+		}
+		std::pair<double, double> thisRectPoint;
+		std::pair<double, double> otherRectOppositePoint;
+
+		if (points[0]) {
+			thisRectPoint = rectanglePts[0];
+			otherRectOppositePoint = {rect.maxHorizontal, rect.maxVertical};
+		} else if (points[1]) {
+			thisRectPoint = rectanglePts[1];
+			otherRectOppositePoint = rectToArray(rect)[3];
+		} else if (points[2]) {
+			thisRectPoint = rectanglePts[3];
+			otherRectOppositePoint = rectToArray(rect)[1];
+		} else {
+			thisRectPoint = rectanglePts[2];
+			otherRectOppositePoint = {rect.minHorizontal, rect.minVertical};
+		}
+		double width = std::abs(thisRectPoint.first - otherRectOppositePoint.first);
+		double height = std::abs(thisRectPoint.second - otherRectOppositePoint.second);
+		axis = width == std::max(width, height) ? 2 : 1;
+		return true;
+
+			bool AIsRightOfB = this->getLeft() > rect.getRight();
 		bool AIsLeftOfB = this->getRight() < rect.getLeft();
 		bool AIsAboveB = this->getBottom() < rect.getTop();
 		bool AIsBelowB = this->getTop() > rect.getBottom();
 
-		if (ARightOfB || AIsLeftOfB) {
+		if (AIsRightOfB || AIsLeftOfB) {
 			axis = 1;
 		} else {
 			axis = 2;
 		}
 		return !(
-			ARightOfB
+			AIsRightOfB
 			|| AIsLeftOfB
 			|| AIsAboveB
 			|| AIsBelowB

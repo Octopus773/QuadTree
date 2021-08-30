@@ -97,5 +97,16 @@ namespace QuadTree::Tests
 	// for debug purpuses (expansion of custom structs with catch2 lib)
 	std::ostream &operator<<(std::ostream &os, Rect const &rect);
 
+	//! @brief gives an array of the 4 rectangle points from a rect
+	inline std::array<std::pair<double, double>, 4> rectToArray(const Rect &rect)
+	{
+		return {{
+			        {rect.minHorizontal, rect.minVertical},
+			        {rect.minHorizontal + rect.getWidth(), rect.minVertical},
+			        {rect.maxHorizontal, rect.maxVertical},
+			        {rect.minHorizontal, rect.minVertical + rect.getHeight()}
+		        }};
+	}
+
 
 }

@@ -42,16 +42,6 @@ void drawRect(sf::RenderWindow &window, const std::array<std::pair<double, doubl
 	window.draw(line, 2, sf::Lines);
 }
 
-inline std::array<std::pair<double, double>, 4> rectToArray(const QuadTree::Tests::Rect &rect)
-{
-	return {{
-		        {rect.minHorizontal, rect.minVertical},
-		        {rect.minHorizontal + rect.getWidth(), rect.minVertical},
-		        {rect.maxHorizontal, rect.maxVertical},
-		        {rect.minHorizontal, rect.minVertical + rect.getHeight()}
-	        }};
-}
-
 
 int main(int ac, char **av)
 {
