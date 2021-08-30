@@ -8,26 +8,26 @@
 namespace QuadTree::Tests
 {
 	Rect::Rect(double minHori, double minVert, double maxHori, double maxVert)
-		: minVertical(minVert),
-		  minHorizontal(minHori),
-		  maxHorizontal(maxHori),
-		  maxVertical(maxVert)
+		: points({{
+			          {minHori, minVert},
+			          {maxHori, maxVert},
+		          }})
 	{
 	}
 
 	Rect::Rect()
-		: minVertical(0),
-		  minHorizontal(0),
-		  maxHorizontal(0),
-		  maxVertical(0)
+		: points({{
+			          {0, 0},
+			          {0, 0},
+		          }})
 	{
 	}
 
 	Rect::Rect(double h, double w, double size)
-		: minVertical(w),
-		  minHorizontal(h),
-		  maxHorizontal(h + size),
-		  maxVertical(w + size)
+		: points({{
+			          {w, h},
+			          {w + size, h + size},
+		          }})
 	{
 	}
 
@@ -51,82 +51,65 @@ namespace QuadTree::Tests
 		});
 	}
 
-	bool Rect::collide(const Rect &rect, int &axis)
+	bool Rect::collide(const Rect &rect1, const Rect &rect2, int &axis)
 	{
-		bool topLeft;
-		bool topRight;
-		bool bottomLeft;
-		bool bottomRight;
-		std::array<bool, 4> points{false};
+		std::array<bool, 4> areCollidingPoints{false};
+		bool wasColliding = rect1.isCollided;
 
 
-		auto rectanglePts = rectToArray(*this);
+		auto rectanglePts = rectToArray(rect1);
 
-		points[0] = pointInRect({rect.minHorizontal, rect.minVertical, rect.maxHorizontal, rect.maxVertical},
-		                        rectanglePts[0]);
-		points[1] = pointInRect({rect.minHorizontal, rect.minVertical, rect.maxHorizontal, rect.maxVertical},
-		                        rectanglePts[1]);
-		points[2] = pointInRect({rect.minHorizontal, rect.minVertical, rect.maxHorizontal, rect.maxVertical},
-		                        rectanglePts[3]);
-		points[3] = pointInRect({rect.minHorizontal, rect.minVertical, rect.maxHorizontal, rect.maxVertical},
-		                        rectanglePts[2]);
+		areCollidingPoints[0] = pointInRect(rect2.points, rectanglePts[0]);
+		areCollidingPoints[1] = pointInRect(rect2.points, rectanglePts[1]);
+		areCollidingPoints[2] = pointInRect(rect2.points, rectanglePts[3]);
+		areCollidingPoints[3] = pointInRect(rect2.points, rectanglePts[2]);
 
 		int count = 0;
-		for (const auto &point : points) {
+		for (const auto &point: areCollidingPoints) {
 			if (point) {
 				count++;
 			}
 		}
 
 		switch (count) {
-		case 1:
-			break;
+		case 1: break;
 		case 2:
-			if ((points[0] && points[1])
-			    || (points[2] && points[3])) {
+			if ((areCollidingPoints[0] && areCollidingPoints[1])
+			    || (areCollidingPoints[2] && areCollidingPoints[3])) {
 				axis = 2;
 			} else {
 				axis = 1;
 			}
+			//rect1.isCollided = true;
 			return true;
-		default: return false;
+		default:// rect1.isCollided = false;
+			return false;
 		}
 		std::pair<double, double> thisRectPoint;
 		std::pair<double, double> otherRectOppositePoint;
 
-		if (points[0]) {
+		if (areCollidingPoints[0]) {
 			thisRectPoint = rectanglePts[0];
-			otherRectOppositePoint = {rect.maxHorizontal, rect.maxVertical};
-		} else if (points[1]) {
+			otherRectOppositePoint = {rect2.maxHorizontal, rect2.maxVertical};
+		} else if (areCollidingPoints[1]) {
 			thisRectPoint = rectanglePts[1];
-			otherRectOppositePoint = rectToArray(rect)[3];
-		} else if (points[2]) {
+			otherRectOppositePoint = rectToArray(rect2)[3];
+		} else if (areCollidingPoints[2]) {
 			thisRectPoint = rectanglePts[3];
-			otherRectOppositePoint = rectToArray(rect)[1];
+			otherRectOppositePoint = rectToArray(rect2)[1];
 		} else {
 			thisRectPoint = rectanglePts[2];
-			otherRectOppositePoint = {rect.minHorizontal, rect.minVertical};
+			otherRectOppositePoint = {rect2.minHorizontal, rect2.minVertical};
 		}
 		double width = std::abs(thisRectPoint.first - otherRectOppositePoint.first);
 		double height = std::abs(thisRectPoint.second - otherRectOppositePoint.second);
 		axis = width == std::max(width, height) ? 2 : 1;
+		//	rect1.isCollided = true;
 		return true;
+	}
 
-			bool AIsRightOfB = this->getLeft() > rect.getRight();
-		bool AIsLeftOfB = this->getRight() < rect.getLeft();
-		bool AIsAboveB = this->getBottom() < rect.getTop();
-		bool AIsBelowB = this->getTop() > rect.getBottom();
-
-		if (AIsRightOfB || AIsLeftOfB) {
-			axis = 1;
-		} else {
-			axis = 2;
-		}
-		return !(
-			AIsRightOfB
-			|| AIsLeftOfB
-			|| AIsAboveB
-			|| AIsBelowB
-		);
+	bool Rect::collide(const Rect &rect, int &axis)
+	{
+		return collide(*this, rect, axis) || collide(rect, *this, axis);
 	}
 }

@@ -14,13 +14,26 @@ namespace QuadTree::Tests
 	//! @brief A structure to represent an axis aligned rectangle (AABB)
 	struct Rect
 	{
+		enum Pt
+		{
+			minHorizontal = 0,
+			minVertical = 0,
+			maxHorizontal = 1,
+			maxVertical = 1
+		};
+
 		//! @brief name of the rect
 		std::string name = "Rect";
 
 		//! @brief uid of the rect
 		int uid = -1;
 
-		//! @brief The minimum Vertical point
+		bool isCollided = false;
+
+		//! @note first x second y
+		std::array<std::pair<double, double> , 2> points;
+
+	/*	//! @brief The minimum Vertical point
 		double minVertical;
 		//! @brief The minimum Horizontal Point
 		double minHorizontal;
@@ -28,48 +41,51 @@ namespace QuadTree::Tests
 		double maxHorizontal;
 		//! @brief The maximum Vertical Point
 		double maxVertical;
-
+*/
 		//! @brief 0 x 1 y
-		std::pair<double, double> velocity = {(rand() % 3) + 1, (rand() % 3) + 1};
+		//std::pair<double, double> velocity = {(rand() % 3) + 1, (rand() % 3) + 1};
+		std::pair<double, double> velocity = {1, 0};
 
 		bool collide(const Rect &rect, int &axis);
+
+		static bool collide(const Rect &rect1, const Rect &rect2, int &axis);
 
 		//! @brief get the width of the rect
 		[[nodiscard]] inline double getWidth() const
 		{
-			return this->maxHorizontal - this->minHorizontal;
+			return this->points[maxHorizontal].first - this->points[minHorizontal].first;
 		}
 
 		//! @brief get the height of the rect
 		[[nodiscard]] inline double getHeight() const
 		{
-			return this->maxVertical - this->minVertical;
+			return this->points[maxVertical].second - this->points[minVertical].second;
 		}
 
 		//! @brief get the left point of the rect
 		[[nodiscard]] inline double getLeft() const
 		{
-			return this->minHorizontal;
+			return this->points[minHorizontal].first;
 		}
 
 		//! @brief get the left point of the rect
 		[[nodiscard]] inline double getRight() const
 		{
-			return this->maxHorizontal;
+			return this->points[maxHorizontal].first;
 		}
 
 
 		//! @brief get the left point of the rect
 		[[nodiscard]] inline double getBottom() const
 		{
-			return this->maxVertical;
+			return this->points[maxVertical].second;
 		}
 
 
 		//! @brief get the left point of the rect
 		[[nodiscard]] inline double getTop() const
 		{
-			return this->minVertical;
+			return this->points[minVertical].second;
 		}
 
 
@@ -88,10 +104,7 @@ namespace QuadTree::Tests
 
 	inline bool operator==(const Rect &rect1, const Rect &rect2)
 	{
-		return rect1.maxVertical == rect2.maxVertical
-		       && rect1.maxHorizontal == rect2.maxHorizontal
-		       && rect1.minVertical == rect2.minVertical
-		       && rect1.minHorizontal == rect2.minHorizontal;
+		return rect1.points == rect2.points;
 	}
 
 	// for debug purpuses (expansion of custom structs with catch2 lib)
@@ -101,10 +114,10 @@ namespace QuadTree::Tests
 	inline std::array<std::pair<double, double>, 4> rectToArray(const Rect &rect)
 	{
 		return {{
-			        {rect.minHorizontal, rect.minVertical},
-			        {rect.minHorizontal + rect.getWidth(), rect.minVertical},
-			        {rect.maxHorizontal, rect.maxVertical},
-			        {rect.minHorizontal, rect.minVertical + rect.getHeight()}
+			        rect.points[0],
+			        {rect.points[rect.minHorizontal].first + rect.getWidth(), rect.points[0].second},
+			        rect.points[1],
+			        {rect.points[0].first, rect.points[0].second + rect.getHeight()}
 		        }};
 	}
 

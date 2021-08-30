@@ -16,8 +16,8 @@
 
 #define ELT_SPEED 10
 
-#define WORLD_MIN_H 2
-#define WORLD_MIN_V 2
+#define WORLD_MIN_H 0
+#define WORLD_MIN_V 0
 #define WORLD_MAX_H 1000
 #define WORLD_MAX_V 1000
 
@@ -52,10 +52,11 @@ int main(int ac, char **av)
 
 	std::vector<std::shared_ptr<QuadTree::Tests::Rect>> rects {{
 		std::make_shared<QuadTree::Tests::Rect>(2, 2, 200),
-		std::make_shared<QuadTree::Tests::Rect>(2, 500, 200),
-		std::make_shared<QuadTree::Tests::Rect>(500, 2, 100),
-		std::make_shared<QuadTree::Tests::Rect>(500, 500, 100),
-		std::make_shared<QuadTree::Tests::Rect>(700, 700, 100),
+		std::make_shared<QuadTree::Tests::Rect>(20, 500, 150),
+		//std::make_shared<QuadTree::Tests::Rect>(500, 500, 200),
+	//	std::make_shared<QuadTree::Tests::Rect>(500, 2, 100),
+	//	std::make_shared<QuadTree::Tests::Rect>(500, 500, 100),
+	//	std::make_shared<QuadTree::Tests::Rect>(700, 700, 100),
 	}};
 
 	for (auto &rect : rects) {
@@ -80,15 +81,15 @@ int main(int ac, char **av)
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(now - clock).count() > 10) {
 			clock = now;
 			for (auto &rect : rects) {
-				rect->minHorizontal += rect->velocity.first;
-				rect->minVertical += rect->velocity.second;
-				rect->maxVertical += rect->velocity.second;
-				rect->maxHorizontal += rect->velocity.first;
+				rect->points[0].first += rect->velocity.first;
+				rect->points[0].second += rect->velocity.second;
+				rect->points[1].second += rect->velocity.second;
+				rect->points[1].first += rect->velocity.first;
 
-				if (rect->maxVertical > WORLD_MAX_V || rect->minVertical < WORLD_MIN_V) {
+				if (rect->getBottom() > WORLD_MAX_V || rect->getTop() < WORLD_MIN_V) {
 					rect->velocity.second *= -1;
 				}
-				if (rect->maxHorizontal > WORLD_MAX_H || rect->minHorizontal < WORLD_MIN_H) {
+				if (rect->getRight() > WORLD_MAX_H || rect->getLeft() < WORLD_MIN_H) {
 					rect->velocity.first *= -1;
 				}
 
@@ -115,7 +116,7 @@ int main(int ac, char **av)
 		}
 		window.clear();
 		for (auto &rect : rects) {
-			drawRect(window, rectToArray(*rect), sf::Color::Yellow);
+			drawRect(window, rectToArray(*rect), rect->isCollided ? sf::Color::Red : sf::Color::Yellow);
 
 		}
 
