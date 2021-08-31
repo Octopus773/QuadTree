@@ -88,3 +88,42 @@ TEST_CASE("Rect collision basic collision (1point in rect) horizontal", "[QuadTr
 	REQUIRE(rect2.collide(rect1, axis));
 	REQUIRE(axis == QuadTree::Tests::Rect::HorizontalAxis);
 }
+
+TEST_CASE("Rect collision same size basic collision (2points in rect) horizontal", "[QuadTree][Collisions]")
+{
+	QuadTree::Tests::Rect rect1(0, 0, 100);
+	QuadTree::Tests::Rect rect2(0, 100, 100);
+
+	int axis = -1;
+	REQUIRE(rect1.collide(rect2, axis));
+	REQUIRE(axis == QuadTree::Tests::Rect::HorizontalAxis);
+
+	REQUIRE(rect2.collide(rect1, axis));
+	REQUIRE(axis == QuadTree::Tests::Rect::HorizontalAxis);
+}
+
+TEST_CASE("Rect collision same size basic collision (2points in rect) vertical", "[QuadTree][Collisions]")
+{
+	QuadTree::Tests::Rect rect1(0, 0, 100);
+	QuadTree::Tests::Rect rect2(100, 0, 100);
+
+	int axis = -1;
+	REQUIRE(rect1.collide(rect2, axis));
+	REQUIRE(axis == QuadTree::Tests::Rect::VerticalAxis);
+
+	REQUIRE(rect2.collide(rect1, axis));
+	REQUIRE(axis == QuadTree::Tests::Rect::VerticalAxis);
+}
+
+TEST_CASE("Rect collision same size half basic collision (2points in rect) horizontal", "[QuadTree][Collisions]")
+{
+	QuadTree::Tests::Rect rect1(0, 0, 10);
+	QuadTree::Tests::Rect rect2(0, 5, 10);
+
+	int axis = -1;
+	REQUIRE(rect1.collide(rect2, axis));
+	REQUIRE(axis == QuadTree::Tests::Rect::HorizontalAxis);
+
+	REQUIRE(rect2.collide(rect1, axis));
+	REQUIRE(axis == QuadTree::Tests::Rect::HorizontalAxis);
+}

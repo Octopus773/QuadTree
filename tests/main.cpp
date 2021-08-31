@@ -48,18 +48,24 @@ int main(int ac, char **av)
 	srand(std::time(nullptr));
 	QuadTree::QuadTree<QuadTree::Tests::Rect> qT(0, 0, 1000, 1000);
 
+	qT.maxElementsPerNode = 2;
 
 
-	std::vector<std::shared_ptr<QuadTree::Tests::Rect>> rects {{
-		std::make_shared<QuadTree::Tests::Rect>(2, 2, 100),
-		std::make_shared<QuadTree::Tests::Rect>(20, 500, 100),
-		std::make_shared<QuadTree::Tests::Rect>(500, 500, 100),
-		std::make_shared<QuadTree::Tests::Rect>(500, 2, 100),
-		std::make_shared<QuadTree::Tests::Rect>(800, 2, 100),
-		std::make_shared<QuadTree::Tests::Rect>(900, 2, 100),
-		std::make_shared<QuadTree::Tests::Rect>(2, 800, 100),
-		std::make_shared<QuadTree::Tests::Rect>(2, 900, 100),
-	}};
+	int incY = 0;
+	int incX = 0;
+	std::vector<std::shared_ptr<QuadTree::Tests::Rect>> rects {};
+
+	int size = 10;
+
+	for (int i = 0; i < 50; i++) {
+		rects.emplace_back(std::make_shared<QuadTree::Tests::Rect>((size + 3) * incY, (size + 3) * incX++, size));
+
+		if (((size + 3) * incX) + size > WORLD_MAX_H) {
+			incX = 0;
+			incY++;
+		}
+	}
+	rects[0]->isCollided = true;
 
 	for (auto &rect : rects) {
 		qT.add(rect);
@@ -96,7 +102,7 @@ int main(int ac, char **av)
 				}
 
 			}
-			qT.reCreate();
+		//	qT.reCreate();
 
 			for (auto &rect : rects) {
 				auto neighbours = qT.getNeighbours(rect);
@@ -107,7 +113,7 @@ int main(int ac, char **av)
 					if (rect->collide(*neighbour, axis)) {
 					//	rect->isCollided = true;
 					//	continue;
-						if (axis == 1) {
+						if (axis == QuadTree::Tests::Rect::HorizontalAxis) {
 							rect->velocity.first *= -1;
 						} else {
 							rect->velocity.second *= -1;
