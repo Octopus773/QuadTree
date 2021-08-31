@@ -51,12 +51,14 @@ int main(int ac, char **av)
 
 
 	std::vector<std::shared_ptr<QuadTree::Tests::Rect>> rects {{
-		std::make_shared<QuadTree::Tests::Rect>(2, 2, 200),
-		std::make_shared<QuadTree::Tests::Rect>(20, 500, 150),
-		//std::make_shared<QuadTree::Tests::Rect>(500, 500, 200),
-	//	std::make_shared<QuadTree::Tests::Rect>(500, 2, 100),
-	//	std::make_shared<QuadTree::Tests::Rect>(500, 500, 100),
-	//	std::make_shared<QuadTree::Tests::Rect>(700, 700, 100),
+		std::make_shared<QuadTree::Tests::Rect>(2, 2, 100),
+		std::make_shared<QuadTree::Tests::Rect>(20, 500, 100),
+		std::make_shared<QuadTree::Tests::Rect>(500, 500, 100),
+		std::make_shared<QuadTree::Tests::Rect>(500, 2, 100),
+		std::make_shared<QuadTree::Tests::Rect>(800, 2, 100),
+		std::make_shared<QuadTree::Tests::Rect>(900, 2, 100),
+		std::make_shared<QuadTree::Tests::Rect>(2, 800, 100),
+		std::make_shared<QuadTree::Tests::Rect>(2, 900, 100),
 	}};
 
 	for (auto &rect : rects) {
@@ -101,7 +103,9 @@ int main(int ac, char **av)
 
 				for (const auto &neighbour : neighbours) {
 					int axis = 0;
+					rect->isCollided = false;
 					if (rect->collide(*neighbour, axis)) {
+						rect->isCollided = true;
 						if (axis == 1) {
 							rect->velocity.first *= -1;
 						} else {

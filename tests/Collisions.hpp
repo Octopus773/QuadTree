@@ -40,7 +40,7 @@ namespace QuadTree::Tests
 		return pointInRect({
 			                   rect[0].first,
 			                   rect[0].second,
-			                   rect[2].first,
+			                   rect[1].first,
 			                   rect[1].second
 		                   }, pointPos);
 	}

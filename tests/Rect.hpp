@@ -43,8 +43,8 @@ namespace QuadTree::Tests
 		double maxVertical;
 */
 		//! @brief 0 x 1 y
-		//std::pair<double, double> velocity = {(rand() % 3) + 1, (rand() % 3) + 1};
-		std::pair<double, double> velocity = {1, 0};
+		std::pair<double, double> velocity = {(rand() % 3) + 1, (rand() % 3) + 1};
+		//std::pair<double, double> velocity = {1, 0};
 
 		bool collide(const Rect &rect, int &axis);
 
