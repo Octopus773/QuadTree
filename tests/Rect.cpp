@@ -54,8 +54,6 @@ namespace QuadTree::Tests
 	bool Rect::collide(const Rect &rect1, const Rect &rect2, int &axis)
 	{
 		std::array<bool, 4> areCollidingPoints{false};
-		bool wasColliding = rect1.isCollided;
-
 
 		auto rectanglePts = rectToArray(rect1);
 
@@ -80,17 +78,15 @@ namespace QuadTree::Tests
 			} else {
 				axis = 1;
 			}
-			//rect1.isCollided = true;
 			return true;
-		default:// rect1.isCollided = false;
-			return false;
+		default: return false;
 		}
 		std::pair<double, double> thisRectPoint;
 		std::pair<double, double> otherRectOppositePoint;
 
 		if (areCollidingPoints[0]) {
 			thisRectPoint = rectanglePts[0];
-			otherRectOppositePoint = {rect2.maxHorizontal, rect2.maxVertical};
+			otherRectOppositePoint = {rect2.getRight(), rect2.getBottom()};
 		} else if (areCollidingPoints[1]) {
 			thisRectPoint = rectanglePts[1];
 			otherRectOppositePoint = rectToArray(rect2)[3];
@@ -99,17 +95,16 @@ namespace QuadTree::Tests
 			otherRectOppositePoint = rectToArray(rect2)[1];
 		} else {
 			thisRectPoint = rectanglePts[2];
-			otherRectOppositePoint = {rect2.minHorizontal, rect2.minVertical};
+			otherRectOppositePoint = {rect2.getLeft(), rect2.getTop()};
 		}
 		double width = std::abs(thisRectPoint.first - otherRectOppositePoint.first);
 		double height = std::abs(thisRectPoint.second - otherRectOppositePoint.second);
 		axis = width == std::max(width, height) ? 2 : 1;
-		//	rect1.isCollided = true;
 		return true;
 	}
 
 	bool Rect::collide(const Rect &rect, int &axis)
 	{
-		return collide(*this, rect, axis) || collide(rect, *this, axis);
+		return this->collide(*this, rect, axis) || this->collide(rect, *this, axis);
 	}
 }

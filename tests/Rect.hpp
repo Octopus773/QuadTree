@@ -22,6 +22,11 @@ namespace QuadTree::Tests
 			maxVertical = 1
 		};
 
+		//! @brief Value of the axis param for collide functions
+		static constexpr int HorizontalAxis = 1;
+		//! @brief Value of the axis param for collide functions
+		static constexpr int VerticalAxis = 2;
+
 		//! @brief name of the rect
 		std::string name = "Rect";
 
@@ -46,6 +51,7 @@ namespace QuadTree::Tests
 		std::pair<double, double> velocity = {(rand() % 3) + 1, (rand() % 3) + 1};
 		//std::pair<double, double> velocity = {1, 0};
 
+		//! @brief Tells if the rect is colliding and the axis will be set to 1 if it's the x axis and 2 if it's y axis
 		bool collide(const Rect &rect, int &axis);
 
 		static bool collide(const Rect &rect1, const Rect &rect2, int &axis);

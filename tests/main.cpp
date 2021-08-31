@@ -103,9 +103,10 @@ int main(int ac, char **av)
 
 				for (const auto &neighbour : neighbours) {
 					int axis = 0;
-					rect->isCollided = false;
+					//rect->isCollided = false;
 					if (rect->collide(*neighbour, axis)) {
-						rect->isCollided = true;
+					//	rect->isCollided = true;
+					//	continue;
 						if (axis == 1) {
 							rect->velocity.first *= -1;
 						} else {
