@@ -103,6 +103,10 @@ namespace QuadTree
 
 		//! @brief Free the space taken by the 4 continuous nodes pointing by the given index
 		//! @note You should always use this function to free nodes
+		void _freeNodes(int firstNodeIndex);
+
+		//! @brief Free the space taken by the 1 node pointing by the given index
+		//! @note You should always use this function to free a single node
 		void _freeNode(int nodeIndex);
 
 		//! @brief Will reset the node list. Keep only the root
@@ -503,7 +507,7 @@ namespace QuadTree
 			// make this node the new empty leaf.
 			if (num_empty_leaves == 4) {
 				// Push all 4 children to the free list.
-				this->_freeNode(node.firstChild);
+				this->_freeNodes(node.firstChild);
 
 				// Make this node the new empty leaf.
 				node.firstChild = EndOfList;
@@ -522,8 +526,19 @@ namespace QuadTree
 			return static_cast<int>(this->_nodes.size()) - 4;
 		}
 		int tmp = this->_firstFreeNode;
-		this->_firstFreeNode = this->_nodes[this->_firstFreeNode].firstChild;
+		for (int i = 0; i < 4; i++) {
+			this->_firstFreeNode = this->_nodes[this->_firstFreeNode].firstChild;
+		}
 		return tmp;
+	}
+
+	template<typename T>
+	void QuadTree<T>::_freeNodes(int firstNodeIndex)
+	{
+		firstNodeIndex += 3;
+		for (int i = 0; i < 4; i++) {
+			this->_freeNode(firstNodeIndex--);
+		}
 	}
 
 	template<typename T>
@@ -556,10 +571,7 @@ namespace QuadTree
 			return;
 		}
 		this->_firstFreeNode = 1;
-		for (int i = 0; i < nodeSize; i++) {
-			if (i == 0) {
-				continue;
-			}
+		for (int i = 1; i < nodeSize; i++) {
 			this->_nodes[i].firstChild = i == nodeSize - 1 ? EndOfList : i + 1;
 		}
 	}

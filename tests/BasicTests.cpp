@@ -22,7 +22,7 @@ size_t getSizeNodes(QuadTree::QuadTree<T> &qT)
 		sizeFree++;
 		freeIndex = qT._nodes[freeIndex].firstChild;
 	}
-	return qT._nodes.size() - (sizeFree * 4);
+	return qT._nodes.size() - sizeFree;
 }
 
 
@@ -587,4 +587,36 @@ TEST_CASE("QuadTree reCreation test 6 -> 3 points", "[QuadTree][reCreation]")
 			break;
 		}
 	}
+}
+
+TEST_CASE("_allocNodes & _freeNodes", "[QuadTree][Memory]")
+{
+	QuadTree::QuadTree<QuadTree::Tests::Point> qT(0, 0, 10, 10);
+
+	REQUIRE(getSizeNodes(qT) == 1);
+	REQUIRE(qT._firstFreeNode == -1);
+
+	int index = qT._allocNodes();
+
+	REQUIRE(index == 1);
+	REQUIRE(getSizeNodes(qT) == 5);
+	REQUIRE(qT._firstFreeNode == -1);
+
+	index = qT._allocNodes();
+
+	REQUIRE(index == 5);
+	REQUIRE(getSizeNodes(qT) == 9);
+	REQUIRE(qT._firstFreeNode == -1);
+
+	qT._freeNodes(1);
+	REQUIRE(qT._firstFreeNode == 1);
+	REQUIRE(getSizeNodes(qT) == 5);
+
+	index = qT._allocNodes();
+
+	REQUIRE(index == 1);
+	REQUIRE(getSizeNodes(qT) == 9);
+	REQUIRE(qT._firstFreeNode == -1);
+
+
 }
