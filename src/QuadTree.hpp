@@ -78,9 +78,6 @@ namespace QuadTree
 		//! @warning You should not update this variable, you should use the _allocNodes and _freeNode functions
 		int _firstFreeNode = EndOfList;
 
-		//! @brief The rect of the quadtree
-		const std::array<double, 4> _rootRect;
-
 		//! @brief Split a leaf node into children
 		//! @note rect [0] xmin [1] ymin [2] xmax [3] ymax
 		void _splitLeaf(int leafIndex, const std::array<double, 4> &rect);
@@ -115,6 +112,8 @@ namespace QuadTree
 
 	public:
 
+		//! @brief The rect of the quadtree
+		const std::array<double, 4> _rootRect;
 
 		//! @brief Get all the elements in the same quadNode of the given element
 		[[nodiscard]] std::vector<std::shared_ptr<T>> getNeighbours(const std::shared_ptr<T> &element) const;

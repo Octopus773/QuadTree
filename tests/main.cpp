@@ -9,7 +9,7 @@
 
 #include <SFML/Graphics.hpp>
 
-
+#define private public
 #include "QuadTree.hpp"
 #include "Point.hpp"
 #include "Rect.hpp"
@@ -20,7 +20,6 @@
 #define WORLD_MIN_V 0
 #define WORLD_MAX_H 1000
 #define WORLD_MAX_V 1000
-
 
 void drawRect(sf::RenderWindow &window, const std::array<std::pair<double, double>, 4> &points, sf::Color color = sf::Color::White)
 {
@@ -42,13 +41,26 @@ void drawRect(sf::RenderWindow &window, const std::array<std::pair<double, doubl
 	window.draw(line, 2, sf::Lines);
 }
 
+template <typename T>
+void drawQuadTree(sf::RenderWindow &window, const QuadTree::QuadTree<T> &qT, int index, const std::array<double, 4> &rect)
+{
+	drawRect(window, QuadTree::Tests::rectToArray(rect));
+	if (qT._nodes[index].count != QuadTree::QuadTree<T>::EndOfList) {
+		return;
+	}
+	int firstChild = qT._nodes[index].firstChild;
+	drawQuadTree(window, qT, firstChild, {rect[0], rect[1], rect[2] / 2, rect[3] / 2});
+	drawQuadTree(window, qT, firstChild + 1, {rect[2] / 2, rect[1], rect[2], rect[3] / 2});
+	drawQuadTree(window, qT, firstChild + 2, {rect[2] / 2, rect[3] / 2, rect[2], rect[3]});
+	drawQuadTree(window, qT, firstChild + 3, {rect[0], rect[3] / 2, rect[2] / 2, rect[3]});
+}
 
 int main(int ac, char **av)
 {
 	srand(std::time(nullptr));
 	QuadTree::QuadTree<QuadTree::Tests::Rect> qT(0, 0, 1000, 1000);
 
-	qT.maxElementsPerNode = 3;
+	qT.maxElementsPerNode = 5;
 
 
 	int incY = 0;
@@ -111,10 +123,7 @@ int main(int ac, char **av)
 
 				for (const auto &neighbour : neighbours) {
 					int axis = 0;
-					//rect->isCollided = false;
 					if (rect->collide(*neighbour, axis)) {
-					//	rect->isCollided = true;
-					//	continue;
 						if (axis == QuadTree::Tests::Rect::HorizontalAxis) {
 							rect->velocity.first *= -1;
 						} else {
@@ -128,6 +137,7 @@ int main(int ac, char **av)
 
 		}
 		window.clear();
+		drawQuadTree(window, qT, 0, qT._rootRect);
 		for (auto &rect : rects) {
 			drawRect(window, rectToArray(*rect), rect->isCollided ? sf::Color::Red : sf::Color::Yellow);
 

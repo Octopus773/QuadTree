@@ -127,5 +127,16 @@ namespace QuadTree::Tests
 		        }};
 	}
 
+	//! @brief gives an array of the 4 rectangle points from a rect
+	inline std::array<std::pair<double, double>, 4> rectToArray(const std::array<double, 4> &rect)
+	{
+		return {{
+			        {rect[0], rect[1]},
+			        {rect[2], rect[1]},
+			        {rect[2], rect[3]},
+			        {rect[0], rect[3]}
+		        }};
+	}
+
 
 }
