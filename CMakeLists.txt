@@ -40,7 +40,8 @@ add_executable(unit_tests EXCLUDE_FROM_ALL
 	tests/FreeListtests.cpp
 	tests/Rect.cpp
 	tests/Rect.hpp
-	)
+	tests/QuadTreeRectTests.cpp
+	tests/TestsUtils.hpp)
 
 find_package(Catch2 QUIET)
 if (NOT Catch2_FOUND)

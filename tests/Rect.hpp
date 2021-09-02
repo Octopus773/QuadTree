@@ -100,7 +100,7 @@ namespace QuadTree::Tests
 
 		Rect();
 
-		Rect(double h, double w, double size);
+		Rect(double h, double w, double size, int UID = 0);
 
 		Rect(double minHori,
 		     double minVert,

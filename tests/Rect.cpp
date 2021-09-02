@@ -23,8 +23,9 @@ namespace QuadTree::Tests
 	{
 	}
 
-	Rect::Rect(double h, double w, double size)
-		: points({{
+	Rect::Rect(double h, double w, double size, int UID)
+		: uid(UID),
+		  points({{
 			          {w, h},
 			          {w + size, h + size},
 		          }})
@@ -42,8 +43,10 @@ namespace QuadTree::Tests
 	{
 		std::array<std::pair<double, double>, 4> pts{{
 			                                             {this->points[0].first, this->points[0].second},
-			                                             {this->points[0].first, this->points[0].second + this->getHeight()},
-			                                             {this->points[0].first + this->getWidth(), this->points[0].second},
+			                                             {this->points[0].first,
+			                                              this->points[0].second + this->getHeight()},
+			                                             {this->points[0].first + this->getWidth(),
+			                                              this->points[0].second},
 			                                             {this->points[1].first, this->points[1].second}
 		                                             }};
 		return std::all_of(pts.begin(), pts.end(), [&rect = std::as_const(rect)](auto pt) {

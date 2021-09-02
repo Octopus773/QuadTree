@@ -9,10 +9,12 @@
 
 #include "Point.hpp"
 #include "QuadTree.hpp"
+#include "TestsUtils.hpp"
+
 
 //! @brief Return the size of the _nodes internal member
 //! @param qT the quadtree
-template <typename  T>
+template<typename T>
 size_t getSizeNodes(QuadTree::QuadTree<T> &qT)
 {
 	size_t sizeFree = 0;
@@ -24,7 +26,6 @@ size_t getSizeNodes(QuadTree::QuadTree<T> &qT)
 	}
 	return qT._nodes.size() - sizeFree;
 }
-
 
 TEST_CASE("QuadTree Basic Use 10x10", "[QuadTree]")
 {
@@ -236,20 +237,20 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 		switch (pt->getUID()) {
 			// node 5
 		case 2:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 22);
 			break;
 		case 22:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 2);
 			break;
 			// node 6
 		case 3:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 15);
 			break;
 		case 15:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 3);
 			break;
 			// node 7
@@ -262,20 +263,20 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 			break;
 		// node 9
 		case 1:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 8);
 			break;
 		case 8:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 1);
 			break;
 			// node 11
 		case 6:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 17);
 			break;
 		case 17:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 6);
 			break;
 			// node 12
@@ -305,11 +306,11 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 			break;
 			// node 13
 		case 4:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 18);
 			break;
 		case 18:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 4);
 			break;
 			// node 14
@@ -347,11 +348,11 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 			break;
 			// node 15
 		case 11:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 12);
 			break;
 		case 12:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 11);
 			break;
 			// node 16
@@ -364,11 +365,11 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 			break;
 			// node 20
 		case 9:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 13);
 			break;
 		case 13:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 9);
 			break;
 			// node 21
@@ -377,20 +378,20 @@ TEST_CASE("QuadTree Basic Use 510x510", "[QuadTree]")
 			break;
 			// node 23
 		case 0:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 25);
 			break;
 		case 25:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 0);
 			break;
 			// node 24
 		case 5:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 26);
 			break;
 		case 26:
-			CHECK(neighbours.size() == 1);
+			REQUIRE(neighbours.size() == 1);
 			CHECK(neighbours[0]->getUID() == 5);
 			break;
 		default:
