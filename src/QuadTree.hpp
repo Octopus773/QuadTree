@@ -110,6 +110,8 @@ namespace QuadTree
 		//! @note Used for recreating the tree we're clearing the list but the vector size doesn't change (used for fast reset)
 		void _resetNodes();
 
+		void _splitLeafRec(int leafIndex, const std::array<double, 4> &rect, unsigned int depth);
+
 	public:
 
 		//! @brief The rect of the quadtree
@@ -210,13 +212,28 @@ namespace QuadTree
 				this->_elementNodes[indexes[i]].next = indexes[i + 1];
 			}
 		}
+		nodeIndex -= 4;
 
 		for (const auto &index : indexes_to_remove) {
 			this->_elementNodes.remove(index);
 		}
 
-		this->_nodes[leafIndex].firstChild = nodeIndex - 4;
+		this->_nodes[leafIndex].firstChild = nodeIndex;
 		this->_nodes[leafIndex].count = BranchIdentifier;
+	}
+
+	template<typename T>
+	void QuadTree<T>::_splitLeafRec(int leafIndex, const std::array<double, 4> &rect, unsigned int depth)
+	{
+		this->_splitLeaf(leafIndex, rect);
+
+		depth++;
+
+		for (int i = this->_nodes[leafIndex].firstChild; i < this->_nodes[leafIndex].firstChild + 4; i++) {
+			if (depth < this->maxDepth && static_cast<unsigned>(this->_nodes[i].count) > this->maxElementsPerNode) {
+				this->_splitLeafRec(i, rect, depth);
+			}
+		}
 	}
 
 	template<typename T>
@@ -304,9 +321,8 @@ namespace QuadTree
 		}
 
 		if (depth < this->maxDepth && static_cast<unsigned>(this->_nodes[nodeIndex].count) > this->maxElementsPerNode) {
-			this->_splitLeaf(nodeIndex, rect);
+			this->_splitLeafRec(nodeIndex, rect, depth);
 		}
-
 	}
 
 	template<typename T>

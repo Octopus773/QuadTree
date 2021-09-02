@@ -60,16 +60,16 @@ int main(int ac, char **av)
 	srand(std::time(nullptr));
 	QuadTree::QuadTree<QuadTree::Tests::Rect> qT(0, 0, 1000, 1000);
 
-	qT.maxElementsPerNode = 5;
+	qT.maxElementsPerNode = 3;
 
 
 	int incY = 0;
 	int incX = 0;
 	std::vector<std::shared_ptr<QuadTree::Tests::Rect>> rects {};
 
-	int size = 10;
+	int size = 100;
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 6; i++) {
 		rects.emplace_back(std::make_shared<QuadTree::Tests::Rect>((size + 3) * incY, (size + 3) * incX++, size));
 
 		if (((size + 3) * incX) + size > WORLD_MAX_H) {
@@ -113,10 +113,10 @@ int main(int ac, char **av)
 					rect->velocity.first *= -1;
 				}
 
-				qT.update(rect);
+			//	qT.update(rect);
 
 			}
-			//qT.reCreate();
+			qT.reCreate();
 
 			for (auto &rect : rects) {
 				auto neighbours = qT.getNeighbours(rect);

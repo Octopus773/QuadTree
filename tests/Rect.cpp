@@ -41,10 +41,10 @@ namespace QuadTree::Tests
 	bool Rect::collideRect(const std::array<double, 4> &rect)
 	{
 		std::array<std::pair<double, double>, 4> pts{{
-			                                             {this->minHorizontal, this->minVertical},
-			                                             {this->minHorizontal, this->minVertical + this->getHeight()},
-			                                             {this->minHorizontal + this->getWidth(), this->minVertical},
-			                                             {this->maxHorizontal, this->maxVertical}
+			                                             {this->points[0].first, this->points[0].second},
+			                                             {this->points[0].first, this->points[0].second + this->getHeight()},
+			                                             {this->points[0].first + this->getWidth(), this->points[0].second},
+			                                             {this->points[1].first, this->points[1].second}
 		                                             }};
 		return std::all_of(pts.begin(), pts.end(), [&rect = std::as_const(rect)](auto pt) {
 			return pointInRect(rect.data(), pt);
