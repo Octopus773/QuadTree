@@ -52,8 +52,8 @@ TEST_CASE("Basic Use with Rect usages", "[QuadTree][Rect]")
 			}
 			break;
 		case 2:
-			REQUIRE(neighbours.size() == 3);
-			for (const auto &value : {1, 3, 4}) {
+			REQUIRE(neighbours.size() == 4);
+			for (const auto &value : {0, 1, 3, 4}) {
 				REQUIRE(std::find_if(neighbours.begin(), neighbours.end(), [value](const auto &neighbour) {
 					return neighbour->uid == value;
 				}) != neighbours.end());

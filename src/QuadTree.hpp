@@ -176,7 +176,7 @@ namespace QuadTree
 	template<typename T>
 	void QuadTree<T>::_splitLeaf(int leafIndex, const std::array<double, 4> &rect)
 	{
-		auto &elementNodeIndex = this->_nodes[leafIndex].firstChild;
+		int elementNodeIndex = this->_nodes[leafIndex].firstChild;
 		std::array<std::vector<int>, 4> indexes_to_link;
 		std::vector<int> indexes_to_remove;
 
