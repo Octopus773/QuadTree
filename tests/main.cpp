@@ -60,16 +60,17 @@ int main(int ac, char **av)
 	srand(std::time(nullptr));
 	QuadTree::QuadTree<QuadTree::Tests::Rect> qT(0, 0, 1000, 1000);
 
-	qT.maxElementsPerNode = 3;
+	qT.maxElementsPerNode = 8;
+	qT.maxDepth = 5;
 
 
 	int incY = 0;
 	int incX = 0;
 	std::vector<std::shared_ptr<QuadTree::Tests::Rect>> rects {};
 
-	int size = 10;
+	int size = 50;
 
-	for (int i = 0; i < 69; i++) {
+	for (int i = 0; i < 20; i++) {
 		rects.emplace_back(std::make_shared<QuadTree::Tests::Rect>((size + 3) * incY, (size + 3) * incX++, size));
 
 		if (((size + 3) * incX) + size > WORLD_MAX_H) {
@@ -116,10 +117,12 @@ int main(int ac, char **av)
 			//	qT.update(rect);
 
 			}
+			//qT.cleanup();
 			qT.reCreate();
 
 			for (auto &rect : rects) {
 				auto neighbours = qT.getNeighbours(rect);
+				rect->isCollided = false;
 
 				for (const auto &neighbour : neighbours) {
 					int axis = 0;
@@ -129,6 +132,8 @@ int main(int ac, char **av)
 						} else {
 							rect->velocity.second *= -1;
 						}
+						rect->isCollided = true;
+						break;
 					}
 				}
 			}
