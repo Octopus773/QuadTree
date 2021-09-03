@@ -49,10 +49,10 @@ void drawQuadTree(sf::RenderWindow &window, const QuadTree::QuadTree<T> &qT, int
 		return;
 	}
 	int firstChild = qT._nodes[index].firstChild;
-	drawQuadTree(window, qT, firstChild, {rect[0], rect[1], rect[2] / 2, rect[3] / 2});
-	drawQuadTree(window, qT, firstChild + 1, {rect[2] / 2, rect[1], rect[2], rect[3] / 2});
-	drawQuadTree(window, qT, firstChild + 2, {rect[2] / 2, rect[3] / 2, rect[2], rect[3]});
-	drawQuadTree(window, qT, firstChild + 3, {rect[0], rect[3] / 2, rect[2] / 2, rect[3]});
+	drawQuadTree(window, qT, firstChild, QuadTree::QuadTree<T>::_getQuadrant(rect, QuadTree::Quadrant::topLeft));
+	drawQuadTree(window, qT, firstChild + 1, QuadTree::QuadTree<T>::_getQuadrant(rect, QuadTree::Quadrant::topRight));
+	drawQuadTree(window, qT, firstChild + 2, QuadTree::QuadTree<T>::_getQuadrant(rect, QuadTree::Quadrant::bottomLeft));
+	drawQuadTree(window, qT, firstChild + 3, QuadTree::QuadTree<T>::_getQuadrant(rect, QuadTree::Quadrant::bottomRight));
 }
 
 int main(int ac, char **av)
@@ -67,9 +67,9 @@ int main(int ac, char **av)
 	int incX = 0;
 	std::vector<std::shared_ptr<QuadTree::Tests::Rect>> rects {};
 
-	int size = 100;
+	int size = 10;
 
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 69; i++) {
 		rects.emplace_back(std::make_shared<QuadTree::Tests::Rect>((size + 3) * incY, (size + 3) * incX++, size));
 
 		if (((size + 3) * incX) + size > WORLD_MAX_H) {
