@@ -34,8 +34,8 @@ namespace QuadTree::Tests
 
 	std::ostream &operator<<(std::ostream &os, Rect const &rect)
 	{
-		os << '{' << rect.minHorizontal << ", " << rect.minVertical << "}, {" << rect.maxHorizontal << ", "
-		   << rect.maxVertical << "}";
+		os << '{' << rect.points[0].first << ", " << rect.points[0].second << "}, {" << rect.points[1].first << ", "
+		   << rect.points[1].second << "}";
 		return os;
 	}
 

@@ -14,13 +14,6 @@ namespace QuadTree::Tests
 	//! @brief A structure to represent an axis aligned rectangle (AABB)
 	struct Rect
 	{
-		enum Pt
-		{
-			minHorizontal = 0,
-			minVertical = 0,
-			maxHorizontal = 1,
-			maxVertical = 1
-		};
 
 		//! @brief Value of the axis param for collide functions
 		static constexpr int HorizontalAxis = 1;
@@ -59,39 +52,39 @@ namespace QuadTree::Tests
 		//! @brief get the width of the rect
 		[[nodiscard]] inline double getWidth() const
 		{
-			return this->points[maxHorizontal].first - this->points[minHorizontal].first;
+			return this->points[1].first - this->points[0].first;
 		}
 
 		//! @brief get the height of the rect
 		[[nodiscard]] inline double getHeight() const
 		{
-			return this->points[maxVertical].second - this->points[minVertical].second;
+			return this->points[1].second - this->points[0].second;
 		}
 
 		//! @brief get the left point of the rect
 		[[nodiscard]] inline double getLeft() const
 		{
-			return this->points[minHorizontal].first;
+			return this->points[0].first;
 		}
 
 		//! @brief get the left point of the rect
 		[[nodiscard]] inline double getRight() const
 		{
-			return this->points[maxHorizontal].first;
+			return this->points[1].first;
 		}
 
 
 		//! @brief get the left point of the rect
 		[[nodiscard]] inline double getBottom() const
 		{
-			return this->points[maxVertical].second;
+			return this->points[1].second;
 		}
 
 
 		//! @brief get the left point of the rect
 		[[nodiscard]] inline double getTop() const
 		{
-			return this->points[minVertical].second;
+			return this->points[0].second;
 		}
 
 
@@ -121,7 +114,7 @@ namespace QuadTree::Tests
 	{
 		return {{
 			        rect.points[0],
-			        {rect.points[rect.minHorizontal].first + rect.getWidth(), rect.points[0].second},
+			        {rect.points[0].first + rect.getWidth(), rect.points[0].second},
 			        rect.points[1],
 			        {rect.points[0].first, rect.points[0].second + rect.getHeight()}
 		        }};
