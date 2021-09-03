@@ -259,62 +259,35 @@ namespace QuadTree
 	{
 		if (this->_nodes[nodeIndex].count == BranchIdentifier) {
 
-			const double childWidth = (rect[2] - rect[0]) / 2;
-			const double childHeight = (rect[3] - rect[1]) / 2;
-
 			const auto &element = this->_elements[elementIndex];
 
 
-			// top right
-			if (element->collideRect({rect[0],
-			                          rect[1],
-			                          rect[0] + childWidth,
-			                          rect[1] + childHeight})) {
+			// top left
+			if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::topLeft))) {
 				this->_addElementInTree(elementIndex,
 				                        this->_nodes[nodeIndex].firstChild,
-				                        {rect[0],
-				                         rect[1],
-				                         rect[0] + childWidth,
-				                         rect[1] + childHeight},
+				                        QuadTree<T>::_getQuadrant(rect, Quadrant::topLeft),
 				                        depth + 1);
 			}
-			// top left
-			if (element->collideRect({rect[0] + childWidth,
-			                          rect[1],
-			                          rect[0] + childWidth + childWidth,
-			                          rect[1] + childHeight})) {
+			// top right
+			if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::topRight))) {
 				this->_addElementInTree(elementIndex,
 				                        this->_nodes[nodeIndex].firstChild + 1,
-				                        {rect[0] + childWidth,
-				                         rect[1],
-				                         rect[0] + childWidth + childWidth,
-				                         rect[1] + childHeight},
-				                        depth + 1);
-			}
-			// bottom right
-			if (element->collideRect({rect[0],
-			                          rect[1] + childHeight,
-			                          rect[0] + childWidth,
-			                          rect[1] + childHeight + childHeight})) {
-				this->_addElementInTree(elementIndex,
-				                        this->_nodes[nodeIndex].firstChild + 2,
-				                        {rect[0],
-				                         rect[1] + childHeight,
-				                         rect[0] + childWidth,
-				                         rect[1] + childHeight + childHeight},
+				                        QuadTree<T>::_getQuadrant(rect, Quadrant::topRight),
 				                        depth + 1);
 			}
 			// bottom left
-			if (element->collideRect({rect[0] + childWidth,
-			                          rect[1] + childHeight,
-			                          rect[0] + childWidth + childWidth,
-			                          rect[1] + childHeight + childHeight})) {
+			if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::bottomLeft))) {
+				this->_addElementInTree(elementIndex,
+				                        this->_nodes[nodeIndex].firstChild + 2,
+				                        QuadTree<T>::_getQuadrant(rect, Quadrant::bottomLeft),
+				                        depth + 1);
+			}
+			// bottom right
+			if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::bottomRight))) {
 				this->_addElementInTree(elementIndex,
 				                        this->_nodes[nodeIndex].firstChild + 3,
-				                        {rect[0] + childWidth,
-				                         rect[1] + childHeight,
-				                         rect[0] + childWidth + childWidth,
-				                         rect[1] + childHeight + childHeight},
+				                        QuadTree<T>::_getQuadrant(rect, Quadrant::bottomRight),
 				                        depth + 1);
 			}
 			return;
@@ -611,16 +584,19 @@ namespace QuadTree
 	template<typename T>
 	std::array<double, 4> QuadTree<T>::_getQuadrant(const std::array<double, 4> &parentRect, Quadrant quadrantIndex)
 	{
+		const double childWidth = (parentRect[2] - parentRect[0]) / 2;
+		const double childHeight = (parentRect[3] - parentRect[1]) / 2;
+
 		switch (quadrantIndex) {
 		case Quadrant::topLeft:
-			return {parentRect[0], parentRect[1], parentRect[2] / 2, parentRect[3] / 2};
+			return {parentRect[0], parentRect[1], parentRect[0] + childWidth, parentRect[1] + childHeight};
 		case Quadrant::topRight:
-			return {parentRect[2] / 2, parentRect[1], parentRect[2], parentRect[3] / 2};
+			return {parentRect[0] + childWidth, parentRect[1], parentRect[2], parentRect[1] + childHeight};
 		case Quadrant::bottomLeft:
-			return {parentRect[0], parentRect[3] / 2, parentRect[2] / 2, parentRect[3]};
+			return {parentRect[0], parentRect[1] + childHeight, parentRect[0] + childWidth, parentRect[3]};
 		case Quadrant::bottomRight:
 		default:
-			return {parentRect[2] / 2, parentRect[3] / 2, parentRect[2], parentRect[3]};
+			return {parentRect[0] + childWidth, parentRect[1] + childHeight, parentRect[2], parentRect[3]};
 		}
 	}
 }
