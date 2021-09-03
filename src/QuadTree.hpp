@@ -27,6 +27,15 @@ namespace QuadTree
 		maxV = 3
 	};
 
+	//! @brief Enum sued to get the correct quadrant
+	enum Quadrant
+	{
+		topLeft = 0,
+		topRight = 1,
+		bottomLeft = 2,
+		bottomRight = 3
+	};
+
 	//! @brief Represents a node in the quadtree.
 	struct QuadNode
 	{
@@ -111,6 +120,12 @@ namespace QuadTree
 		void _resetNodes();
 
 		void _splitLeafRec(int leafIndex, const std::array<double, 4> &rect, unsigned int depth);
+
+
+		//! @brief Get the correct quadrant Rect
+		//! @param parentRect The rect of the parent
+		//! @param quadrantIndex The desired quadrant
+		static inline std::array<double, 4> _getQuadrant(const std::array<double, 4> &parentRect, Quadrant quadrantIndex);
 
 	public:
 
@@ -229,10 +244,12 @@ namespace QuadTree
 
 		depth++;
 
+		int inc = 0;
 		for (int i = this->_nodes[leafIndex].firstChild; i < this->_nodes[leafIndex].firstChild + 4; i++) {
 			if (depth < this->maxDepth && static_cast<unsigned>(this->_nodes[i].count) > this->maxElementsPerNode) {
-				this->_splitLeafRec(i, rect, depth);
+				this->_splitLeafRec(i, QuadTree<T>::_getQuadrant(rect, static_cast<Quadrant>(inc)), depth);
 			}
+			inc++;
 		}
 	}
 
@@ -588,6 +605,22 @@ namespace QuadTree
 		this->_firstFreeNode = 1;
 		for (int i = 1; i < nodeSize; i++) {
 			this->_nodes[i].firstChild = i == nodeSize - 1 ? EndOfList : i + 1;
+		}
+	}
+
+	template<typename T>
+	std::array<double, 4> QuadTree<T>::_getQuadrant(const std::array<double, 4> &parentRect, Quadrant quadrantIndex)
+	{
+		switch (quadrantIndex) {
+		case Quadrant::topLeft:
+			return {parentRect[0], parentRect[1], parentRect[2] / 2, parentRect[3] / 2};
+		case Quadrant::topRight:
+			return {parentRect[2] / 2, parentRect[1], parentRect[2], parentRect[3] / 2};
+		case Quadrant::bottomLeft:
+			return {parentRect[0], parentRect[3] / 2, parentRect[2] / 2, parentRect[3]};
+		case Quadrant::bottomRight:
+		default:
+			return {parentRect[2] / 2, parentRect[3] / 2, parentRect[2], parentRect[3]};
 		}
 	}
 }
