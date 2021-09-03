@@ -180,39 +180,24 @@ namespace QuadTree
 		std::array<std::vector<int>, 4> indexes_to_link;
 		std::vector<int> indexes_to_remove;
 
-		const double childWidth = (rect[2] - rect[0]) / 2;
-		const double childHeight = (rect[3] - rect[1]) / 2;
-
 		do {
 			const auto elementNode = this->_elementNodes[elementNodeIndex];
 			const auto &element = this->_elements[elementNode.element];
 
-			// top right
-			if (element->collideRect({rect[0],
-			                          rect[1],
-			                          rect[0] + childWidth,
-			                          rect[1] + childHeight})) {
+			// top left
+			if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::topLeft))) {
 				indexes_to_link[0].emplace_back(this->_elementNodes.insert({EndOfList, elementNode.element}));
 			}
-			// top left
-			if (element->collideRect({rect[0] + childWidth,
-			                          rect[1],
-			                          rect[0] + childWidth + childWidth,
-			                          rect[1] + childHeight})) {
+			// top right
+			if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::topRight))) {
 				indexes_to_link[1].emplace_back(this->_elementNodes.insert({EndOfList, elementNode.element}));
 			}
-			// bottom right
-			if (element->collideRect({rect[0],
-			                          rect[1] + childHeight,
-			                          rect[0] + childWidth,
-			                          rect[1] + childHeight + childHeight})) {
+			// bottom left
+			if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::bottomLeft))) {
 				indexes_to_link[2].emplace_back(this->_elementNodes.insert({EndOfList, elementNode.element}));
 			}
-			// bottom left
-			if (element->collideRect({rect[0] + childWidth,
-			                          rect[1] + childHeight,
-			                          rect[0] + childWidth + childWidth,
-			                          rect[1] + childHeight + childHeight})) {
+			// bottom right
+			if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::bottomRight))) {
 				indexes_to_link[3].emplace_back(this->_elementNodes.insert({EndOfList, elementNode.element}));
 			}
 
@@ -372,63 +357,35 @@ namespace QuadTree
 			leavesIndexes.emplace_back(nodeIndex);
 			return leavesIndexes;
 		}
-
-		const double childWidth = (rect[2] - rect[0]) / 2;
-		const double childHeight = (rect[3] - rect[1]) / 2;
-
 		const auto &element = this->_elements[elementIndex];
 
 
-		// top right
-		if (element->collideRect({rect[0],
-		                          rect[1],
-		                          rect[0] + childWidth,
-		                          rect[1] + childHeight})) {
+		// top left
+		if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::topLeft))) {
 			auto leavesFound = this->_findLeaves(elementIndex,
 			                                     node.firstChild,
-			                                     {rect[0],
-			                                      rect[1],
-			                                      rect[0] + childWidth,
-			                                      rect[1] + childHeight});
+			                                     QuadTree<T>::_getQuadrant(rect, Quadrant::topLeft));
 			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
 		}
-		// top left
-		if (element->collideRect({rect[0] + childWidth,
-		                          rect[1],
-		                          rect[0] + childWidth + childWidth,
-		                          rect[1] + childHeight})) {
+		// top right
+		if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::topRight))) {
 			auto leavesFound = this->_findLeaves(elementIndex,
 			                                     node.firstChild + 1,
-			                                     {rect[0] + childWidth,
-			                                      rect[1],
-			                                      rect[0] + childWidth + childWidth,
-			                                      rect[1] + childHeight});
-			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
-		}
-		// bottom right
-		if (element->collideRect({rect[0],
-		                          rect[1] + childHeight,
-		                          rect[0] + childWidth,
-		                          rect[1] + childHeight + childHeight})) {
-			auto leavesFound = this->_findLeaves(elementIndex,
-			                                     node.firstChild + 2,
-			                                     {rect[0],
-			                                      rect[1] + childHeight,
-			                                      rect[0] + childWidth,
-			                                      rect[1] + childHeight + childHeight});
+			                                     QuadTree<T>::_getQuadrant(rect, Quadrant::topRight));
 			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
 		}
 		// bottom left
-		if (element->collideRect({rect[0] + childWidth,
-		                          rect[1] + childHeight,
-		                          rect[0] + childWidth + childWidth,
-		                          rect[1] + childHeight + childHeight})) {
+		if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::bottomLeft))) {
+			auto leavesFound = this->_findLeaves(elementIndex,
+			                                     node.firstChild + 2,
+			                                     QuadTree<T>::_getQuadrant(rect, Quadrant::bottomLeft));
+			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
+		}
+		// bottom right
+		if (element->collideRect(QuadTree<T>::_getQuadrant(rect, Quadrant::bottomRight))) {
 			auto leavesFound = this->_findLeaves(elementIndex,
 			                                     node.firstChild + 3,
-			                                     {rect[0] + childWidth,
-			                                      rect[1] + childHeight,
-			                                      rect[0] + childWidth + childWidth,
-			                                      rect[1] + childHeight + childHeight});
+			                                     QuadTree<T>::_getQuadrant(rect, Quadrant::bottomRight));
 			leavesIndexes.insert(leavesIndexes.end(), leavesFound.begin(), leavesFound.end());
 		}
 		return leavesIndexes;
