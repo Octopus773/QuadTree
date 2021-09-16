@@ -3,6 +3,16 @@ project(QuadTree)
 
 set(CMAKE_CXX_STANDARD 20)
 
+
+## If you want to link SFML statically
+# set(SFML_STATIC_LIBRARIES TRUE)
+
+## In most cases better set in the CMake cache
+set(SFML_DIR "C:/Users/clebi/libraries/SFML-2.5.1/lib/cmake/SFML")
+
+
+find_package(SFML 2.5 COMPONENTS graphics system window REQUIRED)
+
 if (CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wshadow -W -g")
 endif ()

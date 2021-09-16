@@ -8,6 +8,7 @@
 #include <list>
 #include <algorithm>
 #include <memory>
+#include <stdexcept>
 #include <unordered_set>
 #include "FreeList.hpp"
 
