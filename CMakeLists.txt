@@ -4,15 +4,6 @@ project(QuadTree)
 set(CMAKE_CXX_STANDARD 20)
 
 
-## If you want to link SFML statically
-set(SFML_STATIC_LIBRARIES TRUE)
-
-## In most cases better set in the CMake cache
-set(SFML_DIR "C:/Users/clebi/libraries/SFML-2.5.1/lib/cmake/SFML")
-
-
-find_package(SFML 2.5 COMPONENTS graphics system window REQUIRED)
-
 if (CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -Wshadow -W -g")
 endif ()
@@ -35,6 +26,17 @@ add_executable(quadtreetestbin EXCLUDE_FROM_ALL
 	tests/Rect.hpp
 	tests/main.cpp
 	)
+
+if (WIN32)
+	## If you want to link SFML statically
+	set(SFML_STATIC_LIBRARIES TRUE)
+
+	## In most cases better set in the CMake cache
+	set(SFML_DIR C:/Users/clebi/libraries/SFML-2.5.1/lib/cmake/SFML)
+endif()
+
+find_package(SFML 2.5 COMPONENTS graphics system window QUIET)
+
 target_link_libraries(quadtreetestbin PUBLIC sfml-window sfml-graphics sfml-system)
 
 
@@ -47,11 +49,12 @@ add_executable(unit_tests EXCLUDE_FROM_ALL
 	tests/Point.cpp
 	tests/Point.hpp
 	tests/Collisions.hpp
-	tests/FreeListtests.cpp
+	tests/FreeListTests.cpp
 	tests/Rect.cpp
 	tests/Rect.hpp
 	tests/QuadTreeRectTests.cpp
-	tests/TestsUtils.hpp)
+	tests/TestsUtils.hpp
+	)
 
 find_package(Catch2 QUIET)
 if (NOT Catch2_FOUND)
